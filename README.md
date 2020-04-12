@@ -24,7 +24,7 @@ Nwipe also includes the following pseudo random number generators:
 * twister
 * isaac
 
-## Obtaining and running shredos the easy way !
+## Obtaining and writing shredos to a USB flash drive, the easy way !
 
 You can of course compile shredos from source but that can take a long time and you can run into all sorts of problems if your not familiar with compiling an operating system. So if you just want to get started with using shredos anmd nwipe then just download the shredos image file and write it to a USB flash drive. Please note this will over write the existing contents of your USB flash drive.
 
@@ -43,7 +43,7 @@ dd if=shredos.img of=/dev/sdx (where sdx is the device name of your USB drive, t
 
 ```
 
-## Compiling ShredOS and burning to USB stick, the harder way !
+## Compiling shredos and burning to USB stick, the harder way !
 
 The ShredOS system is built using buildroot.
 The final system size is about 12MB but due to minimim fat32 partition size, the ending image is about
