@@ -1,0 +1,9 @@
+#!/bin/sh
+
+# trap the ctrl+c signal
+trap "echo" INT
+
+while true
+do
+    /usr/bin/nwipe
+done
