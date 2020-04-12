@@ -27,9 +27,20 @@ Nwipe also includes the following pseudo random number generators:
 ## Obtaining and running shredos the easy way !
 
 You can of course compile shredos from source but that can take a long time and you can run into all sorts of problems if your not familiar with compiling an operating system. So if you just want to get started with using shredos anmd nwipe then just download the shredos image file and write it to a USB flash drive. Please note this will over write the existing contents of your USB flash drive.
+
+Download the shredos image file from [here](https://github.com/PartialVolume/shredos.2020.02/releases/download/v2020.02.0.29rc.001/shredos.img.tar.gz)
 ```
-(TO BE COMPLETED)
-Download the shredos image file from here
+Check it's not corrupt by running the following command and comparing with the checksum below:
+$ sha1sum shredos.img.tar.gz
+26dc684b18d41d22fedf01f642148ba648237a67  shredos.img.tar.gz
+
+Unzip the image file
+$ gunzip shredos.img.tar.gz
+$ tar xvf shredos.img.tar
+
+Write the .img file to your USB flash drive
+dd if=shredos.img of=/dev/sdx (where sdx is the device name of your USB drive, this can be obtained from the results of sudo fdisk -l)
+
 ```
 
 ## Compiling ShredOS and burning to USB stick
