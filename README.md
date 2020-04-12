@@ -3,7 +3,7 @@
 ShredOS is a USB bootable small linux distribution with the sole purpose of securely erasing your
 disks using the program [nwipe](https://github.com/martijnvanbrummelen/nwipe).
 
-This version of Shredos includes the latest nwipe master, Smartmontools, a hexeditor [hexedit](https://linux.die.net/man/1/hexedit), that can be run in the second virtial terminal, ALT-F2, hdparm for wiping using the drives internal firmmware and loadkeys for setting the keyboard you are using. i.e. loadkeys uk, loadkeys fr etc.
+This version of Shredos includes the latest nwipe master, Smartmontools, a hexeditor [hexedit](https://linux.die.net/man/1/hexedit), that can be run in the second virtual terminal, ALT-F2, hdparm for wiping using the drives internal firmmware and loadkeys for setting the keyboard you are using. i.e. loadkeys uk, loadkeys fr etc.
 
 ShredOS boots very quickly and depending upon the host system can boot in as little
 as 2 seconds. Nwipe will then list the disks present on the host system. You can then
