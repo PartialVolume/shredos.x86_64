@@ -43,7 +43,7 @@ dd if=shredos.img of=/dev/sdx (where sdx is the device name of your USB drive, t
 
 ```
 
-## Compiling ShredOS and burning to USB stick
+## Compiling ShredOS and burning to USB stick, the harder way !
 
 The ShredOS system is built using buildroot.
 The final system size is about 12MB but due to minimim fat32 partition size, the ending image is about
