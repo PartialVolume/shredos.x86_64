@@ -42,6 +42,34 @@ Write the .img file to your USB flash drive
 dd if=shredos.img of=/dev/sdx (where sdx is the device name of your USB drive, this can be obtained from the results of sudo fdisk -l)
 
 ```
+#### Some things to note:
+- ShredOS has three tty terminals, ALT-F1 (Where nwipe is initially launched), ALT-F2 (A virtual terminal), ALT-F3 (console log, login required which is root with no password).
+- The version of nwipe that runs in the default terminal will automatically restart when you exit it, either at the end of a wipe or using CONTROL-C to abort. So if you want to run nwipe in the traditional way, along with any command line options you require, then use the second terminal ALT-F2, as an example, you could then use the command ```nwipe --nousb --logfile=nwipe.log``` etc. If you do use ALT-F2 to run a second copy of nwipe, please remember that if you already have one copy of nwipe already wiping the second copy of nwipe will hang on starting, therefore nwipe in the default terminal should be left at the drive selection screen to prevent the second occurence of nwipe from hanging. Alternatively, a second occurrence of nwipe could be started by specifying the drive on the command line, i.e.```nwipe /dev/sdc``` etc.
+
+#### The latest ShredOS now includes the following:
+- smartmontools package, Nwipes ability to detect serial numbers on USB devices now works on USB bridges who's chipset supports that functionality. This also now works in ShredOS 20200405.
+- You can now set the type of keyboard you are using. Type loadkeys uk, loadkeys us, loadkeys fr, loadkeys cf, loadkeys by, loadkeys cf, load cz etc. See /usr/share/keymaps/i386/ for full list of keymaps.
+
+Examples are:
+(azerty:) azerty, be-latin1, fr-latin1, fr-latin9, fr-pc, fr, wangbe, wangbe2
+
+(bepo:) fr-bepo-latin9, fr-bepo
+
+(carpalx:) carpalx-full, carpalx
+
+(colemak:) en-latin9
+
+(dvorak:) ANSI-dvorak, dvorak-ca-fr, dvorak-es, dvorak-fr, dvorak-l, dvorak-la, dvorak-programmer, dvorak-r, dvorak-ru, dvorak-sv-a1, dvorak-sv-a5, dvorak-uk, dvorak, no
+
+(fgGIod:) tr_f-latin5, trf
+
+(include:) applkey, backspace, ctrl, euro, euro1, euro2, keypad, unicode, windowkeys
+
+(olpc:) es, pt
+
+(qwerty:) bashkir, bg-cp1251, bg-cp855, bg_bds-cp1251, bg_bds-utf8, bg_pho-cp1251, ... by, cf, cz, dk, es, et, fi, gr, il, it, jp106, kazakh, la-latin1, lt, lv, mk, nl, nl2, no, pc110, pl, ro, ru, sk-qwerty, sr-cy, sv-latin1, ua, uk, us (for the full list see /usr/share/keymaps/i386/qwerty)
+
+- hdparm is also available for those that want to do a firmware supported wipe. A firmware wipe is a planned enhancement to nwipe.
 
 ## Compiling shredos and burning to USB stick, the harder way !
 
