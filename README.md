@@ -28,11 +28,11 @@ Nwipe also includes the following pseudo random number generators:
 
 You can of course compile shredos from source but that can take a long time and you can run into all sorts of problems if your not familiar with compiling an operating system. So if you just want to get started with using shredos and nwipe then just download the shredos image file and write it to a USB flash drive. Please note this will over write the existing contents of your USB flash drive.
 
-Download the shredos image file from [here](https://github.com/PartialVolume/shredos.2020.02/releases/download/v2020.02.0.29rc.001/shredos.img.tar.gz)
+Download the shredos image file from [here](https://github.com/PartialVolume/shredos.2020.02/releases/download/v2020.02.0.29rc.002/shredos.img.tar.gz)
 ```
 Check it's not corrupt by running the following command and comparing with the checksum below:
 $ sha1sum shredos.img.tar.gz
-26dc684b18d41d22fedf01f642148ba648237a67  shredos.img.tar.gz
+bddee6b8313b31c8ff8bd8e704708081ed3f7680  shredos.img.tar.gz
 
 Unzip the image file
 $ gunzip shredos.img.tar.gz
