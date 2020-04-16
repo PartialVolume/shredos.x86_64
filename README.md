@@ -1,6 +1,6 @@
 # ShredOS 2020.02
 
-ShredOS is a USB bootable small linux distribution with the sole purpose of securely erasing your
+ShredOS is a USB bootable small linux distribution with the sole purpose of securely erasing the entire contents of your
 disks using the program [nwipe](https://github.com/martijnvanbrummelen/nwipe).
 
 This version of Shredos includes the latest nwipe master, Smartmontools, a hexeditor [hexedit](https://linux.die.net/man/1/hexedit), that can be run in the second virtual terminal, ALT-F2, hdparm for wiping using the drives internal firmmware and loadkeys for setting the keyboard you are using. i.e. loadkeys uk, loadkeys fr etc.
