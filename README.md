@@ -5,10 +5,7 @@ disks using the program [nwipe](https://github.com/martijnvanbrummelen/nwipe).
 
 This version of Shredos includes the latest nwipe master, Smartmontools, a hexeditor [hexedit](https://linux.die.net/man/1/hexedit), that can be run in the second virtual terminal, ALT-F2, hdparm for wiping using the drives internal firmmware and loadkeys for setting the keyboard you are using. i.e. loadkeys uk, loadkeys fr etc.
 
-ShredOS boots very quickly and depending upon the host system can boot in as little
-as 2 seconds. Nwipe will then list the disks present on the host system. You can then
-select the methods by which you want to securely erase the disk/s. Nwipe is able to
-simultanuosly wipe multiple disks using a threaded software architecture.
+ShredOS boots very quickly and depending upon the host system can boot in as little as 2 seconds. Nwipe will then list the disks present on the host system. You can then select the methods by which you want to securely erase the disk/s. Nwipe is able to simultanuosly wipe multiple disks using a threaded software architecture.
 
 For an upto date list of supported wipe methods see the [nwipe](https://github.com/martijnvanbrummelen/nwipe) page.
 * Quick erase        - Fills the device with zeros, one round only.
@@ -44,7 +41,7 @@ dd if=shredos.img of=/dev/sdx (where sdx is the device name of your USB drive, t
 ```
 #### Some things to note:
 - ShredOS has three tty terminals, ALT-F1 (Where nwipe is initially launched), ALT-F2 (A virtual terminal), ALT-F3 (console log, login required which is root with no password).
-- The version of nwipe that runs in the default terminal will automatically restart when you exit it, either at the end of a wipe or using CONTROL-C to abort. So if you want to run nwipe in the traditional way, along with any command line options you require, then use the second terminal ALT-F2, as an example, you could then use the command ```nwipe --nousb --logfile=nwipe.log``` etc. If you do use ALT-F2 to run a second copy of nwipe, please remember that if you already have one copy of nwipe already wiping the second copy of nwipe will hang on starting, therefore nwipe in the default terminal should be left at the drive selection screen to prevent the second occurence of nwipe from hanging. Alternatively, a second occurrence of nwipe could be started by specifying the drive on the command line, i.e.```nwipe /dev/sdc``` etc.
+- The version of nwipe that runs in the default terminal will automatically restart when you exit it, either at the end of a wipe or using CONTROL-C to abort. So if you want to run nwipe in the traditional way, along with any command line options you require, then use the second terminal ALT-F2, as an example, you could then use the command ```nwipe --nousb --logfile=nwipe.log``` etc. If you do use ALT-F2 to run a second copy of nwipe, please remember that if you already have one copy of nwipe wiping, the second copy of nwipe will hang on starting. Therefore nwipe in the default terminal should be left at the drive selection screen to prevent the second occurence of nwipe from hanging. Alternatively, a second occurrence of nwipe could be started by specifying the drive on the command line, i.e.```nwipe /dev/sdc``` etc.
 
 #### The latest ShredOS now includes the following:
 - smartmontools package, Nwipes ability to detect serial numbers on USB devices now works on USB bridges who's chipset supports that functionality. This also now works in ShredOS 20200405.
