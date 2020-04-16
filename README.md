@@ -35,8 +35,10 @@ Unzip the image file
 $ gunzip shredos.img.tar.gz
 $ tar xvf shredos.img.tar
 
-Write the .img file to your USB flash drive
+If you are using linux or a MAC write the .img file to your USB flash drive using the following command:
 dd if=shredos.img of=/dev/sdx (where sdx is the device name of your USB drive, this can be obtained from the results of sudo fdisk -l)
+
+If you are a windows user, use a program such as [Rufus](https://rufus.ie/) or [etcher](https://www.balena.io/etcher/) to write the image to a USB stick, remembering that the entire contents of the USB flash drive will be overwritten.
 
 ```
 #### Some things to note:
