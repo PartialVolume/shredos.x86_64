@@ -41,7 +41,7 @@ dd if=shredos.img of=/dev/sdx (where sdx is the device name of your USB drive, t
 
 ```
 #### Windows users:
-If you are a windows user, use a program such as [Rufus](https://rufus.ie/) or [etcher](https://www.balena.io/etcher/) to write the image file to a USB stick, remembering that the entire contents of the USB flash drive will be overwritten.
+If you are a windows user, use a program such as [Rufus](https://rufus.ie/) or [etcher](https://www.balena.io/etcher/) to write the image file to a USB stick, remembering that the entire contents of the USB flash drive will be overwritten. [Winzip](https://www.winzip.com/win/en/) be used to extract the shredos.img file from the compressed shredos.img.tar.gz file that you downloaded. [hastab](http://implbits.com/products/hashtab/) can be downloaded and used to confirm the sha1 checksum.
 
 #### Some things to note:
 - **Virtual Terminals:** ShredOS has three tty terminals, ALT-F1 (Where nwipe is initially launched), ALT-F2 (A virtual terminal), ALT-F3 (console log, login required which is root with no password).
