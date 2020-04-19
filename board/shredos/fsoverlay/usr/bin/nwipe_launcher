@@ -3,7 +3,9 @@
 # trap the ctrl+c signal
 trap "echo" INT
 
+# run nwipe with a time stamped log file
 while true
 do
-    /usr/bin/nwipe
+    /usr/bin/nwipe --logfile=nwipe_log_$(date +%Y%m%d-%H%M%S).txt
 done
+

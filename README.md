@@ -1,14 +1,11 @@
 # ShredOS 2020.02
 
-ShredOS is a USB bootable small linux distribution with the sole purpose of securely erasing your
+ShredOS is a USB bootable small linux distribution with the sole purpose of securely erasing the entire contents of your
 disks using the program [nwipe](https://github.com/martijnvanbrummelen/nwipe).
 
 This version of Shredos includes the latest nwipe master, Smartmontools, a hexeditor [hexedit](https://linux.die.net/man/1/hexedit), that can be run in the second virtual terminal, ALT-F2, hdparm for wiping using the drives internal firmmware and loadkeys for setting the keyboard you are using. i.e. loadkeys uk, loadkeys fr etc.
 
-ShredOS boots very quickly and depending upon the host system can boot in as little
-as 2 seconds. Nwipe will then list the disks present on the host system. You can then
-select the methods by which you want to securely erase the disk/s. Nwipe is able to
-simultanuosly wipe multiple disks using a threaded software architecture.
+ShredOS boots very quickly and depending upon the host system can boot in as little as 2 seconds. Nwipe will then list the disks present on the host system. You can then select the methods by which you want to securely erase the disk/s. Nwipe is able to simultanuosly wipe multiple disks using a threaded software architecture.
 
 For an upto date list of supported wipe methods see the [nwipe](https://github.com/martijnvanbrummelen/nwipe) page.
 * Quick erase        - Fills the device with zeros, one round only.
@@ -28,23 +25,48 @@ Nwipe also includes the following pseudo random number generators:
 
 You can of course compile shredos from source but that can take a long time and you can run into all sorts of problems if your not familiar with compiling an operating system. So if you just want to get started with using shredos and nwipe then just download the shredos image file and write it to a USB flash drive. Please note this will over write the existing contents of your USB flash drive.
 
-Download the shredos image file from [here](https://github.com/PartialVolume/shredos.2020.02/releases/download/v2020.02.0.29rc.003/shredos.img.tar.gz)
+Download the shredos image file from [here](https://github.com/PartialVolume/shredos.2020.02/releases/download/v2020.02.004-0.29.006/shredos.img.tar.gz)
 ```
 Check it's not corrupt by running the following command and comparing with the checksum below:
 $ sha1sum shredos.img.tar.gz
-9adf5d213b4996b533432df0aeb28a09421ce138  shredos.img.tar.gz
+db37ea8526a17898b0fb34a2ec4d254744ef08a1 shredos.img.tar.gz
 
 Unzip the image file
 $ gunzip shredos.img.tar.gz
 $ tar xvf shredos.img.tar
 
-Write the .img file to your USB flash drive
+If you are using linux or a MAC write the .img file to your USB flash drive using the following command:
 dd if=shredos.img of=/dev/sdx (where sdx is the device name of your USB drive, this can be obtained from the results of sudo fdisk -l)
 
 ```
+#### Windows users:
+If you are a windows user, use a program such as [Rufus](https://rufus.ie/) or [etcher](https://www.balena.io/etcher/) to write the image file to a USB stick, remembering that the entire contents of the USB flash drive will be overwritten.
+
 #### Some things to note:
-- ShredOS has three tty terminals, ALT-F1 (Where nwipe is initially launched), ALT-F2 (A virtual terminal), ALT-F3 (console log, login required which is root with no password).
-- The version of nwipe that runs in the default terminal will automatically restart when you exit it, either at the end of a wipe or using CONTROL-C to abort. So if you want to run nwipe in the traditional way, along with any command line options you require, then use the second terminal ALT-F2, as an example, you could then use the command ```nwipe --nousb --logfile=nwipe.log``` etc. If you do use ALT-F2 to run a second copy of nwipe, please remember that if you already have one copy of nwipe already wiping the second copy of nwipe will hang on starting, therefore nwipe in the default terminal should be left at the drive selection screen to prevent the second occurence of nwipe from hanging. Alternatively, a second occurrence of nwipe could be started by specifying the drive on the command line, i.e.```nwipe /dev/sdc``` etc.
+- **Virtual Terminals:** ShredOS has three tty terminals, ALT-F1 (Where nwipe is initially launched), ALT-F2 (A virtual terminal), ALT-F3 (console log, login required which is root with no password).
+- **Running nwipe with command line options:** The version of nwipe that runs in the default terminal will automatically restart when you exit it, either at the end of a wipe or using CONTROL-C to abort. So if you want to run nwipe in the traditional way, along with any command line options you require, then use the second terminal ALT-F2, as an example, you could then use the command ```nwipe --nousb --logfile=nwipe.log``` etc. If you do use ALT-F2 to run a second copy of nwipe, please remember that if you already have one copy of nwipe wiping, the second copy of nwipe will hang on starting. Therefore nwipe in the default terminal should be left at the drive selection screen to prevent the second occurence of nwipe from hanging. Alternatively, a second occurrence of nwipe could be started by specifying the drive on the command line as long as that drive is not already being wiped by the first instance of nwipe, i.e.```nwipe /dev/sdc``` etc.
+- **Reading and saving nwipes log files:** The nwipe that is automatically launched in the first virtual terminal ALT-F1, creates a log file that contains the details of the wipe/s and a summary table that shows successfull erasure or failure. The file is time stamped within it's name. A new timestamped log file is created each time nwipe is started. The files can be found in the / directory. A example being nwipe_log_20200418-084910.txt. As currently, shredos does not have persistent storage, if you want to keep these files between reboots of shredos, you will need to manually copy them to the USB stick as follows:
+
+1. Locate the device name of your USB stick from it's model & size. If the | character isn't displayed properly use loadkeys fr etc to select the correct keyboard if not US qwerty prior to running this pipe command.
+```
+fdisk -l | more
+```
+2. Create a directory that we will mount the USB flash drive on
+```
+mkdir /store
+```
+3. Mount the USB flash drive, replacing sdx with the device name of your USB flash drive found in step 1
+```
+mount /dev/sdx1 /store
+```
+4. Copy the log files to the USB flash drive
+```
+cp /nwipe_log* /store/
+```
+5. Unmount the USB flash drive
+```
+cd /;umount store
+```
 
 #### The latest ShredOS now includes the following:
 - smartmontools package, Nwipes ability to detect serial numbers on USB devices now works on USB bridges who's chipset supports that functionality. This also now works in ShredOS 20200405.
