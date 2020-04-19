@@ -1,6 +1,6 @@
 # ShredOS 2020.02
 
-[![](https://img.shields.io/github/downloads/NHellFire/dban/latest/total.svg "Latest version")](https://github.com/PartialVolume/shredos.2020.02/releases/latest)
+[![](https://img.shields.io/github/downloads/PartialVolume/shredos.2020.02/latest/total.svg "Latest version")](https://github.com/PartialVolume/shredos.2020.02/releases/latest)
 
 ShredOS is a USB bootable small linux distribution with the sole purpose of securely erasing the entire contents of your
 disks using the program [nwipe](https://github.com/martijnvanbrummelen/nwipe).
