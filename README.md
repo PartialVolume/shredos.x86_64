@@ -38,7 +38,7 @@ Download the shredos image file from [here](https://github.com/PartialVolume/shr
 ```
 Check it's not corrupt by running the following command and comparing with the checksum below:
 $ sha1sum shredos.img.tar.gz (shasum instead of sha1sum if your using a MAC)
-db37ea8526a17898b0fb34a2ec4d254744ef08a1 shredos.img.tar.gz
+d2395822109d00542c5bdb2ae1beecc7ca6dd14f shredos-20201231.img.gz
 
 Unzip the image file
 $ gunzip shredos.img.tar.gz
