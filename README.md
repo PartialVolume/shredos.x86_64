@@ -1,7 +1,6 @@
 # ShredOS 2020.02
 
 [![](https://img.shields.io/github/downloads/PartialVolume/shredos.2020.02/latest/total.svg "Latest version")](https://github.com/PartialVolume/shredos.2020.02/releases/latest)
-[![](https://img.shields.io/github/downloads/PartialVolume/shredos.2020.02/v2020.02.004-0.30.001/total.svg "v2020.02.004-0.30.001")](https://github.com/PartialVolume/shredos.2020.02/releases/v2020.02.004-0.30.001)
 [![](https://img.shields.io/github/downloads/PartialVolume/shredos.2020.02/v2020.02.004-0.29.006/total.svg "v2020.02.004-0.29.006")](https://github.com/PartialVolume/shredos.2020.02/releases/v2020.02.004-0.29.006)
 [![](https://img.shields.io/github/downloads/PartialVolume/shredos.2020.02/v2020.02.0.29rc.003/total.svg "v2020.02.0.29rc.003")](https://github.com/PartialVolume/shredos.2020.02/releases/v2020.02.0.29rc.003)
 [![](https://img.shields.io/github/downloads/PartialVolume/shredos.2020.02/v2020.02.0.29rc.002/total.svg "v2020.02.0.29rc.002")](https://github.com/PartialVolume/shredos.2020.02/releases/v2020.02.0.29rc.002)
@@ -33,12 +32,12 @@ Nwipe also includes the following pseudo random number generators:
 
 You can of course compile shredos from source but that can take a long time and you can run into all sorts of problems if your not familiar with compiling an operating system. So if you just want to get started with using shredos and nwipe then just download the shredos image file and write it to a USB flash drive. Please note this will over write the existing contents of your USB flash drive.
 
-Download the shredos image file from [here](https://github.com/PartialVolume/shredos.2020.02/releases/download/v2020.02.004-0.30.001/shredos-20201231.img.gz)
+Download the shredos image file from [here](https://github.com/PartialVolume/shredos.2020.02/releases/download/v2020.02.004-0.29.006/shredos.img.tar.gz)
 #### Linux (and MAC) users
 ```
 Check it's not corrupt by running the following command and comparing with the checksum below:
 $ sha1sum shredos.img.tar.gz (shasum instead of sha1sum if your using a MAC)
-d2395822109d00542c5bdb2ae1beecc7ca6dd14f shredos-20201231.img.gz
+sha1 db37ea8526a17898b0fb34a2ec4d254744ef08a1 shredos.img.tar.gz
 
 Unzip the image file
 $ gunzip shredos.img.tar.gz
