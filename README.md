@@ -1,6 +1,8 @@
-# ShredOS 2020.02
+# ShredOS x86_64 for all Intel 64bit processors and 64 bit compatible processors 
+for the 32 bit version of ShredOS that will run on both 32bit and 64bit processors, see [ShredOS i686](https://github.com/PartialVolume/shredos.i686)
 
 [![](https://img.shields.io/github/downloads/PartialVolume/shredos.2020.02/latest/total.svg "Latest version")](https://github.com/PartialVolume/shredos.2020.02/releases/latest)
+[![](https://img.shields.io/github/downloads/PartialVolume/shredos.i686/v2020.02.005_i686-0.30.001/total.svg "v2020.02.005_i686-0.30.001")](https://github.com/PartialVolume/shredos.i686/releases/v2020.02.005_i686-0.30.001)
 [![](https://img.shields.io/github/downloads/PartialVolume/shredos.2020.02/v2020.02.004-0.29.006/total.svg "v2020.02.004-0.29.006")](https://github.com/PartialVolume/shredos.2020.02/releases/v2020.02.004-0.29.006)
 [![](https://img.shields.io/github/downloads/PartialVolume/shredos.2020.02/v2020.02.0.29rc.003/total.svg "v2020.02.0.29rc.003")](https://github.com/PartialVolume/shredos.2020.02/releases/v2020.02.0.29rc.003)
 [![](https://img.shields.io/github/downloads/PartialVolume/shredos.2020.02/v2020.02.0.29rc.002/total.svg "v2020.02.0.29rc.002")](https://github.com/PartialVolume/shredos.2020.02/releases/v2020.02.0.29rc.002)
@@ -34,14 +36,17 @@ Nwipe also includes the following pseudo random number generators:
 
 You can of course compile shredos from source but that can take a long time and you can run into all sorts of problems if your not familiar with compiling an operating system. So if you just want to get started with using shredos and nwipe then just download the shredos image file and write it to a USB flash drive. Please note this will over write the existing contents of your USB flash drive.
 
-Download the shredos image file from [here](https://github.com/PartialVolume/shredos.2020.02/releases/download/v2020.02.004-0.29.006/shredos.img.tar.gz)
+Download shredos for 64 bit processors from [here](https://github.com/PartialVolume/shredos.2020.02/releases/download/v2020.02.004-0.29.006/shredos.img.tar.gz)
+
+Download shredos for 32 bit processors from [here](https://github.com/PartialVolume/shredos.i686/releases/download/v2020.02.005_i686-0.30.001/shredos-20210106.img)
+
 #### Linux (and MAC) users
 ```
-Check it's not corrupt by running the following command and comparing with the checksum below:
+Check it's not corrupt by running the following command and comparing with the checksum shown in the release notes:
 $ sha1sum shredos.img.tar.gz (shasum instead of sha1sum if your using a MAC)
-sha1 db37ea8526a17898b0fb34a2ec4d254744ef08a1 shredos.img.tar.gz
+(example) sha1 db37ea8526a17898b0fb34a2ec4d254744ef08a1 shredos.img.tar.gz
 
-Unzip the image file
+Note ! Unzip the image file if required, skip gunzip & tar commands if the file extension ends with .img
 $ gunzip shredos.img.tar.gz
 $ tar xvf shredos.img.tar
 
