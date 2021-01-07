@@ -1,7 +1,7 @@
 # ShredOS x86_64 for all Intel 64bit processors and 64 bit compatible processors 
 for the 32 bit version of ShredOS that will run on both 32bit and 64bit processors, see [ShredOS i686](https://github.com/PartialVolume/shredos.i686)
 
-[![](https://img.shields.io/github/downloads/PartialVolume/shredos.2020.02/latest/total.svg "Latest version")](https://github.com/PartialVolume/shredos.2020.02/releases/latest)
+[![](https://img.shields.io/github/downloads/PartialVolume/shredos.2020.02/latest/total.svg "Latest x86_64 version")](https://github.com/PartialVolume/shredos.2020.02/releases/latest)
 [![](https://img.shields.io/github/downloads/PartialVolume/shredos.2020.02/v2020.02.005_x86-64_0.30.001/total.svg "v2020.02.005_x86-64_0.30.001")](https://github.com/PartialVolume/shredos.2020.02/releases/v2020.02.005_x86-64_0.30.001)
 [![](https://img.shields.io/github/downloads/PartialVolume/shredos.i686/v2020.02.005_i686-0.30.001/total.svg "v2020.02.005_i686-0.30.001")](https://github.com/PartialVolume/shredos.i686/releases/v2020.02.005_i686-0.30.001)
 [![](https://img.shields.io/github/downloads/PartialVolume/shredos.2020.02/v2020.02.004-0.29.006/total.svg "v2020.02.004-0.29.006")](https://github.com/PartialVolume/shredos.2020.02/releases/v2020.02.004-0.29.006)
