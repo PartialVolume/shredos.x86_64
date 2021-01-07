@@ -42,17 +42,20 @@ Download shredos for 64 bit processors from [here](https://github.com/PartialVol
 Download shredos for 32 bit processors (also runs on 64 bit processors) from [here](https://github.com/PartialVolume/shredos.i686/releases/download/v2020.02.005_i686-0.30.001/shredos-20210106.img)
 
 #### Linux (and MAC) users
-```
+
 Check it's not corrupt by running the following command and comparing with the checksum shown in the release notes:
+```
 $ sha1sum shredos.img.tar.gz (shasum instead of sha1sum if your using a MAC)
 (example) sha1 db37ea8526a17898b0fb34a2ec4d254744ef08a1 shredos.img.tar.gz
-
-Note ! Unzip the image file if required, skip gunzip & tar commands if the file extension ends with .img
+```
+If the image file has a .img.tar.gz extension then use the following commands to extract the .img file. If the file extension simply ends with .img and there is no tar.gz then skip this step.
+```
 $ gunzip shredos.img.tar.gz
 $ tar xvf shredos.img.tar
-
-If you are using linux or a MAC write the shredos.img file (also sometimes calledd shredos-2020MMDD.img i.e. shredos-20200418.img etc) to your USB flash drive using the following command:
-dd if=shredos.img of=/dev/sdx (where sdx is the device name of your USB drive, this can be obtained from the results of sudo fdisk -l)
+```
+If you are using linux or a MAC write the shredos.img file (also sometimes called shredos-2020MMDD.img i.e. shredos-20200418.img etc) to your USB flash drive using the following command.  (/dev/sdx is the device name of your USB drive, this can be obtained from the results of sudo fdisk -l)
+```
+dd if=shredos.img of=/dev/sdx
 
 ```
 #### Windows users:
