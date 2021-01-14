@@ -3,9 +3,49 @@
 # trap the ctrl+c signal
 trap "echo" INT
 
+# initialise
+country_code=""
+nwipe_options_string=""
+
+# read the kernel command line for the loadkeys label for setting the correct keyboard layout
+country_code=$(kernel_cmdline_extractor loadkeys)
+if [ $? == 0 ]
+then
+	if [ "$country_code" != "" ]
+	then
+		loadkeys $country_code
+	fi
+fi
+
+# read the kernel command line for nwipe options
+nwipe_options_string=$(kernel_cmdline_extractor nwipe_options)
+if [ $? == 0 ]
+then
+	nwipe_options_flag=1
+else
+	nwipe_options_flag=0	
+fi
+
 # run nwipe with a time stamped log file
 while true
 do
+if [ $nwipe_options_flag == 0 ]
+then
     /usr/bin/nwipe --logfile=nwipe_log_$(date +%Y%m%d-%H%M%S).txt
+else
+    /usr/bin/nwipe --logfile=nwipe_log_$(date +%Y%m%d-%H%M%S).txt $nwipe_options_string
+fi
+printf "Paused, press a key to restart nwipe."
+read -rsn1 input
+sleep 1;
+printf " 4"
+sleep 1
+printf " 3"
+sleep 1;
+printf " 2"
+sleep 1
+printf " 1"
+sleep 1;
+printf " 0"
 done
 
