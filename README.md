@@ -24,6 +24,9 @@ for the 32 bit version of ShredOS that will run on both 32bit and 64bit processo
 1. [How to make a persistent change to keyboard maps](https://github.com/PartialVolume/shredos.2020.02/blob/master/README.md#how-to-make-a-persistent-change-to-keyboard-maps)
 1. [Reading and saving nwipes log files](https://github.com/PartialVolume/shredos.2020.02/blob/master/README.md#reading-and-saving-nwipes-log-files)
 1. [The latest ShredOS now includes the following](https://github.com/PartialVolume/shredos.2020.02/blob/master/README.md#the-latest-shredos-now-includes-the-following)
+   1. [smartmontools[(https://github.com/PartialVolume/shredos.2020.02/blob/master/README.md#smartmontools)
+   1. [hexedit](https://github.com/PartialVolume/shredos.2020.02/blob/master/README.md#hexedit)
+   1. [hdparm](https://github.com/PartialVolume/shredos.2020.02/blob/master/README.md#hdparm)
 1. [Compiling shredos and burning to USB stick, the harder way!](https://github.com/PartialVolume/shredos.2020.02/blob/master/README.md#compiling-shredos-and-burning-to-usb-stick-the-harder-way-)
 1. [Shredos is based on buildroot](https://github.com/PartialVolume/shredos.2020.02/blob/master/README.md#shredos-is-based-on-buildroot)
 
@@ -264,7 +267,7 @@ Nwipes ability to detect serial numbers on USB devices now works on USB bridges 
 #### hexedit
 Use hexedit to examine and modify the contents of a hard disk. Hexedit can be used in the second or third virtual terminal. ALT-F2 and ALT-F3.
 
-### hdparm
+#### hdparm
 hdparm has many uses and is a powerfull tool. Although Nwipe will be adding ATA secure erase capability, i.e using the hard disk own firmware to initiate an erase, nwipe currently wipes drives using the traditional method of writing to every block. If you want to initiate a ATA secure erase using the drives firmware then hdparm will be of use.
 
 
