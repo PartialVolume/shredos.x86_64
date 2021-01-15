@@ -38,7 +38,7 @@ ShredOS supports either 32bit or 64bit processors. You will need to download the
 
 Shredos includes the latest Nwipe master, Smartmontools, a hexeditor [hexedit](https://linux.die.net/man/1/hexedit). Nwipe automatically starts it's GUI in the first virtual terminal (ALT-F1), hdparm, smartmontools and hexeditor can be run in the second virtual terminal, (ALT-F2). Nwipe will erase drives using a user selectable choice of seven methods. hdparm, amongst many of its options can be used for wiping a drive by using the drives internal firmware. The program loadkeys can be used for setting the keyboard type. i.e. loadkeys uk, loadkeys fr etc.
 
-ShredOS boots very quickly and depending upon the host system can boot in as little as 2 seconds (typically 4 to 6 seconds) on modern hardware, while on an old Pentium4 may take 40+ seconds. Nwipe automatically starts in GUI mode and will list the disks present on the host system. Be aware that it can launch so fast that the USB devices have not yet initialised. If you Control-C nwipe will re-start and you should now see any attached USB devices. You can then select the methods by which you want to securely erase the disk/s. Nwipe is able to simultanuosly wipe multiple disks using a threaded software architecture., personally I've tested simultaneously wiping 28 loop devices in tests.
+ShredOS boots very quickly and depending upon the host system can boot in as little as 2 seconds (typically 4 to 6 seconds) on modern hardware, while on an old Pentium4 may take 40+ seconds. Nwipe automatically starts in GUI mode and will list the disks present on the host system. In fact, Nwipe can launch so fast that the USB devices have not yet initialised so the first time nwipe appears it may not show any USB drives. If you then use Control-C to exit and restart nwipe, you should now see any attached USB devices. You can then select the methods by which you want to securely erase the disk/s. Nwipe is able to simultanuosly wipe multiple disks using a threaded software architecture. I have simultaneously wiped 28 loop devices in tests and know of instances where it's been used to wipe upwards of 10 drives on a system.
 
 ## Nwipe's erasure methods
 For an upto date list of supported wipe methods see the [nwipe](https://github.com/martijnvanbrummelen/nwipe) page.
@@ -122,6 +122,7 @@ set timeout="0"
 
 menuentry "shredos" {
 	linux /boot/shredos console=tty3 loglevel=3 nwipe_options="--method=zero --verify=off --noblank --nousb --autopoweroff /dev/sdd /dev/sde"
+}
 ```
 
 For reference and as of nwipe version 0.30, listed below are all the options that you can use with nwipe and can place on the kernel command line in grub.cfg as described in the examples above.
