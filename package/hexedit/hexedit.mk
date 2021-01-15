@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-HEXEDIT_VERSION = 1.4.2 
+HEXEDIT_VERSION = 1.5
 HEXEDIT_SITE = $(call github,pixel,hexedit,$(HEXEDIT_VERSION))
 HEXEDIT_DEPENDENCIES = ncurses parted 
 
