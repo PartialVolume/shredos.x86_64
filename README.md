@@ -98,7 +98,9 @@ cd /;umount store
 
 #### The latest ShredOS now includes the following:
 - smartmontools package, Nwipes ability to detect serial numbers on USB devices now works on USB bridges who's chipset supports that functionality. This also now works in ShredOS 20200405.
-- You can now set the type of keyboard you are using. Type loadkeys uk, loadkeys us, loadkeys fr, loadkeys cf, loadkeys by, loadkeys cf, loadkeys cz etc. See /usr/share/keymaps/i386/ for full list of keymaps.
+
+#### How to set the keyboard map
+- You can set the type of keyboard you are using by typing loadkeys uk, loadkeys us, loadkeys fr, loadkeys cf, loadkeys by, loadkeys cf, loadkeys cz etc. See /usr/share/keymaps/i386/ for full list of keymaps.
 
 Examples are:
 (azerty:) azerty, be-latin1, fr-latin1, fr-latin9, fr-pc, fr, wangbe, wangbe2
