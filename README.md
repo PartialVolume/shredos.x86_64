@@ -13,17 +13,19 @@ for the 32 bit version of ShredOS that will run on both 32bit and 64bit processo
 | v2020.02.0.29rc.001 (64 bit) | v0.29.001 | [![](https://img.shields.io/github/downloads/PartialVolume/shredos.2020.02/v2020.02.0.29rc.001/total.svg "v2020.02.0.29rc.001")](https://github.com/PartialVolume/shredos.2020.02/releases/v2020.02.0.29rc.001) |
 
 1. [What is ShredOS?](https://github.com/PartialVolume/shredos.2020.02/blob/master/README.md#what-is-shredos)
-2. [Nwipe's erasure methods](https://github.com/PartialVolume/shredos.2020.02/blob/master/README.md#nwipes-erasure-methods)
-3. [Obtaining and writing ShredOS to a USB flash drive - The easy way!](https://github.com/PartialVolume/shredos.2020.02/blob/master/README.md#obtaining-and-writing-shredos-to-a-usb-flash-drive-the-easy-way-)
-4. [Virtual terminals](https://github.com/PartialVolume/shredos.2020.02/blob/master/README.md#virtual-terminals)
-5. [How to run nwipe so you can specify nwipe command line options](https://github.com/PartialVolume/shredos.2020.02/blob/master/README.md#how-to-run-nwipe-so-you-can-specify-nwipe-command-line-options)
-6. [How to change the default nwipe options so the change persists between reboots](https://github.com/PartialVolume/shredos.2020.02/blob/master/README.md#how-to-change-the-default-nwipe-options-so-the-change-persists-between-reboots)
-7. [How to set the keyboard map using the loadkeys command (see here for persistent change between reboots](https://github.com/PartialVolume/shredos.2020.02/blob/master/README.md#how-to-set-the-keyboard-map-using-the-loadkeys-command-see-here-for-persistent-change-between-reboots)
-8. [How to make a persistent change to keyboard maps](https://github.com/PartialVolume/shredos.2020.02/blob/master/README.md#how-to-make-a-persistent-change-to-keyboard-maps)
-9. [Reading and saving nwipes log files](https://github.com/PartialVolume/shredos.2020.02/blob/master/README.md#reading-and-saving-nwipes-log-files)
-10. [The latest ShredOS now includes the following](https://github.com/PartialVolume/shredos.2020.02/blob/master/README.md#the-latest-shredos-now-includes-the-following)
-11. [Compiling shredos and burning to USB stick, the harder way!](https://github.com/PartialVolume/shredos.2020.02/blob/master/README.md#compiling-shredos-and-burning-to-usb-stick-the-harder-way-)
-12. [Shredos is based on buildroot](https://github.com/PartialVolume/shredos.2020.02/blob/master/README.md#shredos-is-based-on-buildroot)
+1. [Nwipe's erasure methods](https://github.com/PartialVolume/shredos.2020.02/blob/master/README.md#nwipes-erasure-methods)
+1. [Obtaining and writing ShredOS to a USB flash drive - The easy way!](https://github.com/PartialVolume/shredos.2020.02/blob/master/README.md#obtaining-and-writing-shredos-to-a-usb-flash-drive-the-easy-way-)
+   1. [Linux and MAC users](https://github.com/PartialVolume/shredos.2020.02#linux-and-mac-users)
+   1. [Windows users](https://github.com/PartialVolume/shredos.2020.02#windows-users)
+1. [Virtual terminals](https://github.com/PartialVolume/shredos.2020.02/blob/master/README.md#virtual-terminals)
+1. [How to run nwipe so you can specify nwipe command line options](https://github.com/PartialVolume/shredos.2020.02/blob/master/README.md#how-to-run-nwipe-so-you-can-specify-nwipe-command-line-options)
+1. [How to change the default nwipe options so the change persists between reboots](https://github.com/PartialVolume/shredos.2020.02/blob/master/README.md#how-to-change-the-default-nwipe-options-so-the-change-persists-between-reboots)
+1. [How to set the keyboard map using the loadkeys command (see here for persistent change between reboots](https://github.com/PartialVolume/shredos.2020.02/blob/master/README.md#how-to-set-the-keyboard-map-using-the-loadkeys-command-see-here-for-persistent-change-between-reboots)
+1. [How to make a persistent change to keyboard maps](https://github.com/PartialVolume/shredos.2020.02/blob/master/README.md#how-to-make-a-persistent-change-to-keyboard-maps)
+1. [Reading and saving nwipes log files](https://github.com/PartialVolume/shredos.2020.02/blob/master/README.md#reading-and-saving-nwipes-log-files)
+1. [The latest ShredOS now includes the following](https://github.com/PartialVolume/shredos.2020.02/blob/master/README.md#the-latest-shredos-now-includes-the-following)
+1. [Compiling shredos and burning to USB stick, the harder way!](https://github.com/PartialVolume/shredos.2020.02/blob/master/README.md#compiling-shredos-and-burning-to-usb-stick-the-harder-way-)
+1. [Shredos is based on buildroot](https://github.com/PartialVolume/shredos.2020.02/blob/master/README.md#shredos-is-based-on-buildroot)
 
 ## What is ShredOS?
 ShredOS is a USB bootable (BIOS or UEFI) small linux distribution with the sole purpose of securely erasing the entire contents of your
