@@ -143,7 +143,7 @@ menuentry "shredos" {
 	linux /boot/shredos console=tty3 loglevel=3
 }
 ```
-Add the following options to the kernel command line 'loadkeys=uk'
+Add the following options to the kernel command line, i.e. `loadkeys=uk`, `loadkeys=fr` etc
 ```
 set default="0"
 set timeout="0"
