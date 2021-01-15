@@ -12,6 +12,7 @@ for the 32 bit version of ShredOS that will run on both 32bit and 64bit processo
 | v2020.02.0.29rc.002 (64 bit) | v0.29.002 | [![](https://img.shields.io/github/downloads/PartialVolume/shredos.2020.02/v2020.02.0.29rc.002/total.svg "v2020.02.0.29rc.002")](https://github.com/PartialVolume/shredos.2020.02/releases/v2020.02.0.29rc.002) |
 | v2020.02.0.29rc.001 (64 bit) | v0.29.001 | [![](https://img.shields.io/github/downloads/PartialVolume/shredos.2020.02/v2020.02.0.29rc.001/total.svg "v2020.02.0.29rc.001")](https://github.com/PartialVolume/shredos.2020.02/releases/v2020.02.0.29rc.001) |
 
+## What is ShredOS?
 ShredOS is a USB bootable (BIOS or UEFI) small linux distribution with the sole purpose of securely erasing the entire contents of your
 disks using the program [nwipe](https://github.com/martijnvanbrummelen/nwipe).
 
@@ -21,6 +22,7 @@ Shredos includes the latest Nwipe master, Smartmontools, a hexeditor [hexedit](h
 
 ShredOS boots very quickly and depending upon the host system can boot in as little as 2 seconds (typically 4 to 6 seconds) on modern hardware, while on an old Pentium4 may take 40+ seconds. Nwipe automatically starts in GUI mode and will list the disks present on the host system. Be aware that it can launch so fast that the USB devices have not yet initialised. If you Control-C nwipe will re-start and you should now see any attached USB devices. You can then select the methods by which you want to securely erase the disk/s. Nwipe is able to simultanuosly wipe multiple disks using a threaded software architecture., personally I've tested simultaneously wiping 28 loop devices in tests.
 
+## Nwipe's erasure methods
 For an upto date list of supported wipe methods see the [nwipe](https://github.com/martijnvanbrummelen/nwipe) page.
 * Quick erase        - Fills the device with zeros, one round only.
 * RCMP TSSIT OPS-II  - Royal Candian Mounted Police Technical Security Standard, OPS-II
@@ -64,10 +66,81 @@ dd if=shredos.img of=/dev/sdx
 #### Windows users:
 If you are a windows user, use a program such as [Rufus](https://rufus.ie/) or [etcher](https://www.balena.io/etcher/) to write the image file to a USB stick, remembering that the entire contents of the USB flash drive will be overwritten. [Winzip](https://www.winzip.com/win/en/) be used to extract the shredos.img file from the compressed shredos.img.tar.gz file that you downloaded. [hashtab](http://implbits.com/products/hashtab/) can be downloaded and used to confirm the sha1 checksum.
 
-#### Some things to note:
-- **Virtual Terminals:** ShredOS has three tty terminals, ALT-F1 (Where nwipe is initially launched), ALT-F2 (A virtual terminal), ALT-F3 (console log, login required which is root with no password).
-- **Running nwipe with command line options:** The version of nwipe that runs in the default terminal will automatically restart when you exit it, either at the end of a wipe or using CONTROL-C to abort. So if you want to run nwipe in the traditional way, along with any command line options you require, then use the second terminal ALT-F2, as an example, you could then use the command ```nwipe --nousb --logfile=nwipe.log``` etc. If you do use ALT-F2 to run a second copy of nwipe, please remember that if you already have one copy of nwipe wiping, the second copy of nwipe will hang on starting. Therefore nwipe in the default terminal should be left at the drive selection screen to prevent the second occurence of nwipe from hanging. Alternatively, a second occurrence of nwipe could be started by specifying the drive on the command line as long as that drive is not already being wiped by the first instance of nwipe, i.e.```nwipe /dev/sdc``` etc.
-- **Reading and saving nwipes log files:** The nwipe that is automatically launched in the first virtual terminal ALT-F1, creates a log file that contains the details of the wipe/s and a summary table that shows successfull erasure or failure. The file is time stamped within it's name. A new timestamped log file is created each time nwipe is started. The files can be found in the / directory. A example being nwipe_log_20200418-084910.txt. As currently, shredos does not have persistent storage, if you want to keep these files between reboots of shredos, you will need to manually copy them to the USB stick as follows:
+
+## Virtual Terminals
+ShredOS has three tty terminals, ALT-F1 (Where nwipe is initially launched), ALT-F2 (A virtual terminal), ALT-F3 (console log, login required which is root with no password).
+
+
+## How to run nwipe so you can specify nwipe command line options
+The version of nwipe that runs in the default terminal will automatically restart when you exit it, either at the end of a wipe or using CONTROL-C to abort. So if you want to run nwipe in the traditional way, along with any command line options you require, then use the second terminal ALT-F2, as an example, you could then use the command ```nwipe --nousb --logfile=nwipe.log``` etc. If you do use ALT-F2 to run a second copy of nwipe, please remember that if you already have one copy of nwipe wiping, the second copy of nwipe will hang on starting. Therefore nwipe in the default terminal should be left at the drive selection screen to prevent the second occurence of nwipe from hanging. Alternatively, a second occurrence of nwipe could be started by specifying the drive on the command line as long as that drive is not already being wiped by the first instance of nwipe, i.e.```nwipe /dev/sdc``` etc.
+
+## How to change the default nwipe options so the change persists between reboots
+To change the default settings of nwipe you will need to place the nwipe options required on the kernel command line in /boot/grub/grub.cfg and /EFI/BOOT/grub.cfg
+
+Example of default grub.cfg
+```
+set default="0"
+set timeout="0"
+
+menuentry "shredos" {
+	linux /boot/shredos console=tty3 loglevel=3
+}
+```
+
+Adding nwipe_options="..." to grub.cfg to make the default nwipe start up with zero method, no verification, no blanking, ignore USB devices and automatically power off the computer at the end of the wipe.
+```
+set default="0"
+set timeout="0"
+
+menuentry "shredos" {
+	linux /boot/shredos console=tty3 loglevel=3 nwipe_options="--method=zero --verify=off --noblank --nousb --autopoweroff"
+}
+```
+## How to set the keyboard map using the loadkeys command (see here for persistent change between reboots)
+- You can set the type of keyboard you are using by typing `loadkeys uk`, `loadkeys us`, `loadkeys fr`, `loadkeys cf`, `loadkeys by`, `loadkeys cf`, `loadkeys cz` etc. See /usr/share/keymaps/i386/ for full list of keymaps. However you will need to add an entry to `loadkeys=uk` etc to grub.cfg for a persistent change between reboots.
+
+Examples are:
+(azerty:) azerty, be-latin1, fr-latin1, fr-latin9, fr-pc, fr, wangbe, wangbe2
+
+(bepo:) fr-bepo-latin9, fr-bepo
+
+(carpalx:) carpalx-full, carpalx
+
+(colemak:) en-latin9
+
+(dvorak:) ANSI-dvorak, dvorak-ca-fr, dvorak-es, dvorak-fr, dvorak-l, dvorak-la, dvorak-programmer, dvorak-r, dvorak-ru, dvorak-sv-a1, dvorak-sv-a5, dvorak-uk, dvorak, no
+
+(fgGIod:) tr_f-latin5, trf
+
+(include:) applkey, backspace, ctrl, euro, euro1, euro2, keypad, unicode, windowkeys
+
+(olpc:) es, pt
+
+(qwerty:) bashkir, bg-cp1251, bg-cp855, bg_bds-cp1251, bg_bds-utf8, bg_pho-cp1251, ... by, cf, cz, dk, es, et, fi, gr, il, it, jp106, kazakh, la-latin1, lt, lv, mk, nl, nl2, no, pc110, pl, ro, ru, sk-qwerty, sr-cy, sv-latin1, ua, uk, us (for the full list see /usr/share/keymaps/i386/qwerty)
+
+- hdparm is also available for those that want to do a firmware supported wipe. A firmware wipe is a planned enhancement to nwipe.
+
+## How to make a persistent change to keyboard maps
+The default grub.cfg looks like this
+```
+set default="0"
+set timeout="0"
+
+menuentry "shredos" {
+	linux /boot/shredos console=tty3 loglevel=3
+}
+```
+Add the following options to the kernel command line 'loadkeys=uk'
+```
+set default="0"
+set timeout="0"
+
+menuentry "shredos" {
+	linux /boot/shredos console=tty3 loglevel=3 loadkeys=uk
+}
+```
+## Reading and saving nwipes log files
+The nwipe that is automatically launched in the first virtual terminal ALT-F1, creates a log file that contains the details of the wipe/s and a summary table that shows successfull erasure or failure. The file is time stamped within it's name. A new timestamped log file is created each time nwipe is started. The files can be found in the / directory. A example being nwipe_log_20200418-084910.txt. As currently, shredos does not have persistent storage, if you want to keep these files between reboots of shredos, you will need to manually copy them to the USB stick as follows:
 
 1. Locate the device name of your USB stick from it's model & size. 
 
@@ -96,32 +169,8 @@ cp /nwipe_log* /store/
 cd /;umount store
 ```
 
-#### The latest ShredOS now includes the following:
+## The latest ShredOS now includes the following:
 - smartmontools package, Nwipes ability to detect serial numbers on USB devices now works on USB bridges who's chipset supports that functionality. This also now works in ShredOS 20200405.
-
-#### How to set the keyboard map
-- You can set the type of keyboard you are using by typing loadkeys uk, loadkeys us, loadkeys fr, loadkeys cf, loadkeys by, loadkeys cf, loadkeys cz etc. See /usr/share/keymaps/i386/ for full list of keymaps.
-
-Examples are:
-(azerty:) azerty, be-latin1, fr-latin1, fr-latin9, fr-pc, fr, wangbe, wangbe2
-
-(bepo:) fr-bepo-latin9, fr-bepo
-
-(carpalx:) carpalx-full, carpalx
-
-(colemak:) en-latin9
-
-(dvorak:) ANSI-dvorak, dvorak-ca-fr, dvorak-es, dvorak-fr, dvorak-l, dvorak-la, dvorak-programmer, dvorak-r, dvorak-ru, dvorak-sv-a1, dvorak-sv-a5, dvorak-uk, dvorak, no
-
-(fgGIod:) tr_f-latin5, trf
-
-(include:) applkey, backspace, ctrl, euro, euro1, euro2, keypad, unicode, windowkeys
-
-(olpc:) es, pt
-
-(qwerty:) bashkir, bg-cp1251, bg-cp855, bg_bds-cp1251, bg_bds-utf8, bg_pho-cp1251, ... by, cf, cz, dk, es, et, fi, gr, il, it, jp106, kazakh, la-latin1, lt, lv, mk, nl, nl2, no, pc110, pl, ro, ru, sk-qwerty, sr-cy, sv-latin1, ua, uk, us (for the full list see /usr/share/keymaps/i386/qwerty)
-
-- hdparm is also available for those that want to do a firmware supported wipe. A firmware wipe is a planned enhancement to nwipe.
 
 ## Compiling shredos and burning to USB stick, the harder way !
 
