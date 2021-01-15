@@ -24,7 +24,7 @@ for the 32 bit version of ShredOS that will run on both 32bit and 64bit processo
 1. [How to make a persistent change to keyboard maps](https://github.com/PartialVolume/shredos.2020.02/blob/master/README.md#how-to-make-a-persistent-change-to-keyboard-maps)
 1. [Reading and saving nwipes log files](https://github.com/PartialVolume/shredos.2020.02/blob/master/README.md#reading-and-saving-nwipes-log-files)
 1. [The latest ShredOS now includes the following](https://github.com/PartialVolume/shredos.2020.02/blob/master/README.md#the-latest-shredos-now-includes-the-following)
-   1. [smartmontools[(https://github.com/PartialVolume/shredos.2020.02/blob/master/README.md#smartmontools)
+   1. [smartmontools](https://github.com/PartialVolume/shredos.2020.02/blob/master/README.md#smartmontools)
    1. [hexedit](https://github.com/PartialVolume/shredos.2020.02/blob/master/README.md#hexedit)
    1. [hdparm](https://github.com/PartialVolume/shredos.2020.02/blob/master/README.md#hdparm)
 1. [Compiling shredos and burning to USB stick, the harder way!](https://github.com/PartialVolume/shredos.2020.02/blob/master/README.md#compiling-shredos-and-burning-to-usb-stick-the-harder-way-)
