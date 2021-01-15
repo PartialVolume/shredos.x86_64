@@ -111,6 +111,78 @@ menuentry "shredos" {
 	linux /boot/shredos console=tty3 loglevel=3 nwipe_options="--method=zero --verify=off --noblank --nousb --autopoweroff"
 }
 ```
+For reference and as of nwipe version 0.30, listed below are all the options that you can use with nwipe and can place on the kernel command line in grub.cfg as described above.
+```
+Usage: nwipe [options] [device1] [device2] ...
+Options:
+  -V, --version           Prints the version number
+
+  -v, --verbose           Prints more messages to the log
+
+  -h, --help              Prints this help
+
+      --autonuke          If no devices have been specified on the command line,
+                          starts wiping all devices immediately. If devices have
+                          been specified, starts wiping only those specified
+                          devices immediately.
+
+      --autopoweroff      Power off system on completion of wipe delayed for
+                          for one minute. During this one minute delay you can
+                          abort the shutdown by typing sudo shutdown -c
+
+      --sync=NUM          Will perform a sync after NUM writes (default: 100000)
+                          0 - fdatasync after the disk is completely written
+                              fdatasync errors not detected until completion.
+                              0 is not recommended as disk errors may cause nwipe
+                              to appear to hang
+                          1 - fdatasync after every write
+                              Warning: Lower values will reduce wipe speeds.
+                          1000000 - fdatasync after 1000000 writes etc.)
+
+      --verify=TYPE       Whether to perform verification of erasure
+                          (default: last)
+                          off   - Do not verify
+                          last  - Verify after the last pass
+                          all   - Verify every pass
+
+  -m, --method=METHOD     The wiping method. See man page for more details.
+                          (default: dodshort)
+                          dod522022m / dod       - 7 pass DOD 5220.22-M method
+                          dodshort / dod3pass    - 3 pass DOD method
+                          gutmann                - Peter Gutmann's Algorithm
+                          ops2                   - RCMP TSSIT OPS-II
+                          random / prng / stream - PRNG Stream
+                          zero / quick           - Overwrite with zeros
+                          verify                 - Verifies disk is zero filled
+
+  -l, --logfile=FILE      Filename to log to. Default is STDOUT
+
+  -p, --prng=METHOD       PRNG option (mersenne|twister|isaac)
+
+  -r, --rounds=NUM        Number of times to wipe the device using the selected
+                          method (default: 1)
+
+      --noblank           Do not blank disk after wipe
+                          (default is to complete a final blank pass)
+
+      --nowait            Do not wait for a key before exiting
+                          (default is to wait)
+
+      --nosignals         Do not allow signals to interrupt a wipe
+                          (default is to allow)
+
+      --nogui             Do not show the GUI interface. Automatically invokes
+                          the nowait option. Must be used with the --autonuke
+                          option. Send SIGUSR1 to log current stats
+
+      --nousb             Do show or wipe any USB devices whether in GUI
+                          mode, --nogui or --autonuke modes.
+
+  -e, --exclude=DEVICES   Up to ten comma separated devices to be excluded
+                          --exclude=/dev/sdc
+                          --exclude=/dev/sdc,/dev/sdd
+                          --exclude=/dev/sdc,/dev/sdd,/dev/mapper/cryptswap1
+```
 ## How to set the keyboard map using the loadkeys command (see [here](https://github.com/PartialVolume/shredos.2020.02/blob/master/README.md#how-to-make-a-persistent-change-to-keyboard-maps) for persistent change between reboots)
 - You can set the type of keyboard you are using by typing `loadkeys uk`, `loadkeys us`, `loadkeys fr`, `loadkeys cf`, `loadkeys by`, `loadkeys cf`, `loadkeys cz` etc. See /usr/share/keymaps/i386/ for full list of keymaps. However you will need to add an entry to `loadkeys=uk` etc to grub.cfg for a persistent change between reboots.
 
@@ -184,8 +256,17 @@ cp /nwipe_log* /store/
 cd /;umount store
 ```
 
-## The latest ShredOS now includes the following:
-- smartmontools package, Nwipes ability to detect serial numbers on USB devices now works on USB bridges who's chipset supports that functionality. This also now works in ShredOS 20200405.
+## ShredOS includes the following related programs
+
+#### smartmontools
+Nwipes ability to detect serial numbers on USB devices now works on USB bridges who's chipset supports that functionality.Smartmontools provides nwipe with that capability. Smartmontools can be used in the second or third virtual terminal. ALT-F2 and ALT-F3.
+
+#### hexedit
+Use hexedit to examine and modify the contents of a hard disk. Hexedit can be used in the second or third virtual terminal. ALT-F2 and ALT-F3.
+
+### hdparm
+hdparm has many uses and is a powerfull tool. Although Nwipe will be adding ATA secure erase capability, i.e using the hard disk own firmware to initiate an erase, nwipe currently wipes drives using the traditional method of writing to every block. If you want to initiate a ATA secure erase using the drives firmware then hdparm will be of use.
+
 
 ## Compiling shredos and burning to USB stick, the harder way !
 
@@ -204,7 +285,7 @@ $ cd output/images
 $ dd if=shredos-20200412.img of=/dev/sdx (20200412 will be the day you compiled, sdx is the USB flash drive)
 ```
 
-## shredos is based on buildroot
+## Shredos is based on buildroot
 
 Buildroot is a simple, efficient and easy-to-use tool to generate embedded
 Linux systems through cross-compilation.
