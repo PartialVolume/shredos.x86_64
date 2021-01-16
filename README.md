@@ -12,7 +12,7 @@ for the 32 bit version of ShredOS that will run on both 32bit and 64bit processo
 | v2020.02.0.29rc.002 (64 bit) | v0.29.002 | [![](https://img.shields.io/github/downloads/PartialVolume/shredos.2020.02/v2020.02.0.29rc.002/total.svg "v2020.02.0.29rc.002")](https://github.com/PartialVolume/shredos.2020.02/releases/v2020.02.0.29rc.002) |
 | v2020.02.0.29rc.001 (64 bit) | v0.29.001 | [![](https://img.shields.io/github/downloads/PartialVolume/shredos.2020.02/v2020.02.0.29rc.001/total.svg "v2020.02.0.29rc.001")](https://github.com/PartialVolume/shredos.2020.02/releases/v2020.02.0.29rc.001) |
 
-### Demo imag showing ShredOS having booted straight into Nwipe where you can then select one or more drives to be erased.
+#### Demo video showing ShredOS having booted straight into Nwipe where you can then select one or more drives to be erased.
 
 ![Example wipe](/images/example_wipe.gif)
 
