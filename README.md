@@ -13,6 +13,7 @@ for the 32 bit version of ShredOS that will run on both 32bit and 64bit processo
 | v2020.02.0.29rc.001 (64 bit) | v0.29.001 | [![](https://img.shields.io/github/downloads/PartialVolume/shredos.2020.02/v2020.02.0.29rc.001/total.svg "v2020.02.0.29rc.001")](https://github.com/PartialVolume/shredos.2020.02/releases/v2020.02.0.29rc.001) |
 
 1. [What is ShredOS?](https://github.com/PartialVolume/shredos.2020.02/blob/master/README.md#what-is-shredos)
+1. [What do I do after I've erased everything on my disk? A warning to users that don't really understand what disk erasure is!](https://github.com/PartialVolume/shredos.2020.02/blob/master/README.md#what-do-i-do-after-ive-erased-everything-on-my-disk-a-warning-to-users-that-dont-really-understand-what-disk-erasure-is)
 1. [Nwipe's erasure methods](https://github.com/PartialVolume/shredos.2020.02/blob/master/README.md#nwipes-erasure-methods)
 1. [Obtaining and writing ShredOS to a USB flash drive - The easy way!](https://github.com/PartialVolume/shredos.2020.02/blob/master/README.md#obtaining-and-writing-shredos-to-a-usb-flash-drive-the-easy-way-)
    1. [Linux and MAC users](https://github.com/PartialVolume/shredos.2020.02#linux-and-mac-users)
@@ -32,13 +33,16 @@ for the 32 bit version of ShredOS that will run on both 32bit and 64bit processo
 
 ## What is ShredOS?
 ShredOS is a USB bootable (BIOS or UEFI) small linux distribution with the sole purpose of securely erasing the entire contents of your
-disks using the program [nwipe](https://github.com/martijnvanbrummelen/nwipe).
+disks using the program [nwipe](https://github.com/martijnvanbrummelen/nwipe). If you are familiar with dwipe from DBAN then you will feel right at home with ShredOS and nwipe. What are the advantages of nwipe over dwipe/DBAN? Well as everybody probably knows, DBAN development stopped in 2015 which means it has not received any further bug fixes or support for new hardware since that date. Nwipe originally was a fork of dwipe but has continued to have improvements and bug fixes and is now available in many Linux distros. ShredOS hopefully will always provide the latest nwipe on a up to date Linux kernel so it will support modern hardware.
 
 ShredOS supports either 32bit or 64bit processors. You will need to download the appropriate .img.tar.gz file, depending upon your target processor.
 
 Shredos includes the latest Nwipe master, Smartmontools, a hexeditor [hexedit](https://linux.die.net/man/1/hexedit). Nwipe automatically starts it's GUI in the first virtual terminal (ALT-F1), hdparm, smartmontools and hexeditor can be run in the second virtual terminal, (ALT-F2). Nwipe will erase drives using a user selectable choice of seven methods. hdparm, amongst many of its options can be used for wiping a drive by using the drives internal firmware. The program loadkeys can be used for setting the keyboard type. i.e. loadkeys uk, loadkeys fr etc.
 
-ShredOS boots very quickly and depending upon the host system can boot in as little as 2 seconds (typically 4 to 6 seconds) on modern hardware, while on an old Pentium4 may take 40+ seconds. Nwipe automatically starts in GUI mode and will list the disks present on the host system. Be aware that it can launch so fast that the USB devices have not yet initialised. If you Control-C nwipe will re-start and you should now see any attached USB devices. You can then select the methods by which you want to securely erase the disk/s. Nwipe is able to simultanuosly wipe multiple disks using a threaded software architecture., personally I've tested simultaneously wiping 28 loop devices in tests.
+ShredOS boots very quickly and depending upon the host system can boot in as little as 2 seconds (typically 4 to 6 seconds) on modern hardware, while on an old Pentium4 may take 40+ seconds. Nwipe automatically starts in GUI mode and will list the disks present on the host system. In fact, Nwipe can launch so fast that the USB devices have not yet initialised so the first time nwipe appears it may not show any USB drives. If you then use Control-C to exit and restart nwipe, you should now see any attached USB devices. You can then select the methods by which you want to securely erase the disk/s. Nwipe is able to simultanuosly wipe multiple disks using a threaded software architecture. I have simultaneously wiped 28 loop devices in tests and know of instances where it's been used to wipe upwards of 10 drives on a system.
+
+## What do I do after I've erased everything on my disk? A warning to users that don't really understand what disk erasure is!
+First my apologies to everybody that knows exactly what they are doing when wiping disks. This paragraph is not for you. Now I've seen comments on forums, yes DBAN amongst others, where users are puzzled that their forensically erased disk seems to not be seen by their OS or even worse, won't boot after they have just erased it!... Well that's because DBAN/DWIPE and SHREDOS/NWIPE has removed everything, absolutely everything, the operating system is gone, all your data is gone, the partition table is gone, the file system gone, the MBR and all the files have vanished without a trace and will never ever be recovered from the disk. The only thing left is a whole load of zeros which are good for nothing. If you use software like this you are expected to know how to format a disk with a partition table & filesystem or install a new operating system such as Linux or Windows, unless of course you are just disposing of, or reselling the disk. This is very destructive software in terms of anything that resides on the hard disk that you are about to wipe. This is a message to just let you know how dangerous this software can be when used incorrectly or without an understanding of what needs to be done after you have used it. If you are reasonably happy that you know what you are doing then I hope this software does it's job and is useful to you. Before you press that 'S' key to start the wipe, pause and double check you have selected the correct drive/s, something I always do and never ever wipe discs while under the influence, unless you like living dangerously :') Been there!
 
 ## Nwipe's erasure methods
 For an upto date list of supported wipe methods see the [nwipe](https://github.com/martijnvanbrummelen/nwipe) page.
@@ -115,16 +119,17 @@ menuentry "shredos" {
 }
 ```
 
-You are not only limited to nwipe options, you can use specify devices, as shown in the example below
+You are not only limited to nwipe options, you can also specify devices along with those options. As would be the case when using nwipe from the command line, the devices to be wiped come after the options, as shown in the example below.
 ```
 set default="0"
 set timeout="0"
 
 menuentry "shredos" {
 	linux /boot/shredos console=tty3 loglevel=3 nwipe_options="--method=zero --verify=off --noblank --nousb --autopoweroff /dev/sdd /dev/sde"
+}
 ```
 
-For reference and as of nwipe version 0.30, listed below are all the options that you can use with nwipe and can place on the kernel command line in grub.cfg as described above.
+For reference and as of nwipe version 0.30, listed below are all the options that you can use with nwipe and can place on the kernel command line in grub.cfg as described in the examples above.
 ```
 Usage: nwipe [options] [device1] [device2] ...
 Options:
@@ -197,7 +202,7 @@ Options:
                           --exclude=/dev/sdc,/dev/sdd,/dev/mapper/cryptswap1
 ```
 ## How to set the keyboard map using the loadkeys command (see [here](https://github.com/PartialVolume/shredos.2020.02/blob/master/README.md#how-to-make-a-persistent-change-to-keyboard-maps) for persistent change between reboots)
-- You can set the type of keyboard you are using by typing `loadkeys uk`, `loadkeys us`, `loadkeys fr`, `loadkeys cf`, `loadkeys by`, `loadkeys cf`, `loadkeys cz` etc. See /usr/share/keymaps/i386/ for full list of keymaps. However you will need to add an entry to `loadkeys=uk` etc to grub.cfg for a persistent change between reboots.
+You can set the type of keyboard that you are using by typing, `loadkeys uk`, `loadkeys us`, `loadkeys fr`, `loadkeys cf`, `loadkeys by`, `loadkeys cf`, `loadkeys cz` etc. See /usr/share/keymaps/i386/ for full list of keymaps. However you will need to add an entry to `loadkeys=uk` etc to grub.cfg for a persistent change between reboots.
 
 Examples are:
 (azerty:) azerty, be-latin1, fr-latin1, fr-latin9, fr-pc, fr, wangbe, wangbe2
