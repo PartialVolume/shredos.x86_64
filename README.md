@@ -12,6 +12,9 @@ for the 32 bit version of ShredOS that will run on both 32bit and 64bit processo
 | v2020.02.0.29rc.002 (64 bit) | v0.29.002 | [![](https://img.shields.io/github/downloads/PartialVolume/shredos.2020.02/v2020.02.0.29rc.002/total.svg "v2020.02.0.29rc.002")](https://github.com/PartialVolume/shredos.2020.02/releases/v2020.02.0.29rc.002) |
 | v2020.02.0.29rc.001 (64 bit) | v0.29.001 | [![](https://img.shields.io/github/downloads/PartialVolume/shredos.2020.02/v2020.02.0.29rc.001/total.svg "v2020.02.0.29rc.001")](https://github.com/PartialVolume/shredos.2020.02/releases/v2020.02.0.29rc.001) |
 
+![Example wipe](/images/example_wipe.gif)
+ShredOS boots straight into Nwipe where you can then select one or more drives to be erased.
+
 1. [What is ShredOS?](https://github.com/PartialVolume/shredos.2020.02/blob/master/README.md#what-is-shredos)
 1. [What do I do after I've erased everything on my disk? A warning to users that don't really understand what disk erasure is!](https://github.com/PartialVolume/shredos.2020.02/blob/master/README.md#what-do-i-do-after-ive-erased-everything-on-my-disk-a-warning-to-users-that-dont-really-understand-what-disk-erasure-is)
 1. [Nwipe's erasure methods](https://github.com/PartialVolume/shredos.2020.02/blob/master/README.md#nwipes-erasure-methods)
