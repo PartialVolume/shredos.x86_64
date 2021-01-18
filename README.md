@@ -9,7 +9,7 @@
 
 # ShredOS x86_64
 
-## For all Intel 64bit processors and 64 bit compatible processors 
+## For all Intel and compatible 64 bit processors
 
 #### For the 32 bit version of ShredOS that will run on both 32bit and 64bit processors, see [ShredOS i686](https://github.com/PartialVolume/shredos.i686)
 
