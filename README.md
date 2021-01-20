@@ -75,9 +75,8 @@ For an upto date list of supported wipe methods see the [nwipe](https://github.c
 * HMG IS5 enhanced   - Secure Sanitisation of Protectively Marked Information or Sensitive Information
 
 Nwipe also includes the following pseudo random number generators:
-* mersenne
-* twister
-* isaac
+* Mersenne Twister (mt19937ar-cok)
+* ISAAC (rand.c 20010626)
 
 ## Obtaining and writing shredos to a USB flash drive, the easy way !
 
