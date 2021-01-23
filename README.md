@@ -19,13 +19,6 @@
 | ---------| ---------|---------|
 | Latest x86_64 64 bit version | v0.30.001 | [![](https://img.shields.io/github/downloads/PartialVolume/shredos.2020.02/latest/total.svg "Latest x86_64 64 bit version")](https://github.com/PartialVolume/shredos.2020.02/releases/latest) |
 | Latest i686 32 bit version | v0.30.001 | [![](https://img.shields.io/github/downloads/PartialVolume/shredos.i686/latest/total.svg "Latest i686 32 bit version")](https://github.com/PartialVolume/shredos.i686/releases/latest) |
-| v2020.05.006_x86-64_0.30.001 (64 bit) | v0.30.001 | [![](https://img.shields.io/github/downloads/PartialVolume/shredos.2020.02/v2020.05.006_x86-64_0.30.001/total.svg "v2020.05.006_x86-64_0.30.001")](https://github.com/PartialVolume/shredos.2020.02/releases/v2020.05.006_x86-64_0.30.001) |
-| v2020.02.005_x86-64_0.30.001 (64 bit) | v0.30.001 | [![](https://img.shields.io/github/downloads/PartialVolume/shredos.2020.02/v2020.02.005_x86-64_0.30.001/total.svg "v2020.02.005_x86-64_0.30.001")](https://github.com/PartialVolume/shredos.2020.02/releases/v2020.02.005_x86-64_0.30.001) |
-| v2020.02.005_i686-0.30.001 (32 bit) | v0.30.001 | [![](https://img.shields.io/github/downloads/PartialVolume/shredos.i686/v2020.02.005_i686-0.30.001/total.svg "v2020.02.005_i686-0.30.001")](https://github.com/PartialVolume/shredos.i686/releases/v2020.02.005_i686-0.30.001) |
-| v2020.02.004-0.29.006 (64 bit) | v0.29.006 | [![](https://img.shields.io/github/downloads/PartialVolume/shredos.2020.02/v2020.02.004-0.29.006/total.svg "v2020.02.004-0.29.006")](https://github.com/PartialVolume/shredos.2020.02/releases/v2020.02.004-0.29.006) |
-| v2020.02.0.29rc.003 (64 bit) | v0.29.003 | [![](https://img.shields.io/github/downloads/PartialVolume/shredos.2020.02/v2020.02.0.29rc.003/total.svg "v2020.02.0.29rc.003")](https://github.com/PartialVolume/shredos.2020.02/releases/v2020.02.0.29rc.003) |
-| v2020.02.0.29rc.002 (64 bit) | v0.29.002 | [![](https://img.shields.io/github/downloads/PartialVolume/shredos.2020.02/v2020.02.0.29rc.002/total.svg "v2020.02.0.29rc.002")](https://github.com/PartialVolume/shredos.2020.02/releases/v2020.02.0.29rc.002) |
-| v2020.02.0.29rc.001 (64 bit) | v0.29.001 | [![](https://img.shields.io/github/downloads/PartialVolume/shredos.2020.02/v2020.02.0.29rc.001/total.svg "v2020.02.0.29rc.001")](https://github.com/PartialVolume/shredos.2020.02/releases/v2020.02.0.29rc.001) |
 
 #### Demo video showing ShredOS having booted straight into Nwipe where you can then select one or more drives to be erased.
 
@@ -82,7 +75,7 @@ Nwipe also includes the following pseudo random number generators:
 
 You can of course compile shredos from source but that can take a long time and you can run into all sorts of problems if your not familiar with compiling an operating system. So if you just want to get started with using shredos and nwipe then just download the shredos image file and write it to a USB flash drive. Please note this will over write the existing contents of your USB flash drive.
 
-Download shredos for 64 bit processors from [here](https://github.com/PartialVolume/shredos.2020.02/releases/download/v2020.05.006_x86-64_0.30.001/shredos-2020.05.006_x86_64-0.30.001_20210115.img)
+Download shredos for 64 bit processors from [here](https://github.com/PartialVolume/shredos.x86_64/releases/download/v2020.05.007_x86-64_0.30.001/shredos-2020.05.006_x86_64-0.30.001_20210122.img)
 
 Download shredos for 32 bit processors (also runs on 64 bit processors) from [here](https://github.com/PartialVolume/shredos.i686/releases/download/v2020.02.005_i686-0.30.001/shredos-20210106.img)
 
