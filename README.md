@@ -191,20 +191,20 @@ Options:
   -r, --rounds=NUM        Number of times to wipe the device using the selected
                           method (default: 1)
 
-      --noblank           Do not blank disk after wipe
+      --noblank           Do NOT blank disk after wipe
                           (default is to complete a final blank pass)
 
-      --nowait            Do not wait for a key before exiting
+      --nowait            Do NOT wait for a key before exiting
                           (default is to wait)
 
-      --nosignals         Do not allow signals to interrupt a wipe
+      --nosignals         Do NOT allow signals to interrupt a wipe
                           (default is to allow)
 
-      --nogui             Do not show the GUI interface. Automatically invokes
+      --nogui             Do NOT show the GUI interface. Automatically invokes
                           the nowait option. Must be used with the --autonuke
                           option. Send SIGUSR1 to log current stats
 
-      --nousb             Do show or wipe any USB devices whether in GUI
+      --nousb             Do NOT show or wipe any USB devices whether in GUI
                           mode, --nogui or --autonuke modes.
 
   -e, --exclude=DEVICES   Up to ten comma separated devices to be excluded
