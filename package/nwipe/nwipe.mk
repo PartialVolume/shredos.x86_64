@@ -4,8 +4,8 @@
 #
 ################################################################################
 
-NWIPE_VERSION = v0.30.001
-NWIPE_SITE = $(call github,PartialVolume,nwipe,$(NWIPE_VERSION))
+NWIPE_VERSION = v0.31
+NWIPE_SITE = $(call github,martijnvanbrummelen,nwipe,$(NWIPE_VERSION))
 NWIPE_DEPENDENCIES = ncurses parted dmidecode coreutils
 
 define NWIPE_INITSH
