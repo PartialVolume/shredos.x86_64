@@ -17,7 +17,7 @@
 
 | ShredOS Version | Nwipe Version | Number of Downloads |
 | ---------| ---------|---------|
-| Latest x86_64 64 bit version | v0.30.001 | [![](https://img.shields.io/github/downloads/PartialVolume/shredos.2020.02/latest/total.svg "Latest x86_64 64 bit version")](https://github.com/PartialVolume/shredos.2020.02/releases/latest) |
+| Latest x86_64 64 bit version |  v0.31  | [![](https://img.shields.io/github/downloads/PartialVolume/shredos.x86_64/latest/total.svg "Latest x86_64 64 bit version")](https://github.com/PartialVolume/shredos.2020.02/releases/latest) |
 | Latest i686 32 bit version | v0.30.001 | [![](https://img.shields.io/github/downloads/PartialVolume/shredos.i686/latest/total.svg "Latest i686 32 bit version")](https://github.com/PartialVolume/shredos.i686/releases/latest) |
 
 #### Demo video showing ShredOS having booted straight into Nwipe where you can then select one or more drives to be erased.
