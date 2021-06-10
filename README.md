@@ -300,12 +300,11 @@ hdparm has many uses and is a powerfull tool. Although Nwipe will be adding ATA 
 ## Compiling shredos and burning to USB stick, the harder way !
 
 The ShredOS system is built using buildroot.
-The final system size is about 12MB but due to minimim fat32 partition size, the ending image is about
-37MB and can be burnt onto a USB memory stick with a tool such as dd or Etcher.
+The image (.img) file is 47.4MiB and can be burnt onto a USB memory stick with a tool such as dd or Etcher.
 
 You can build the image by doing:
 ```
-$ git clone https://github.com/PartialVolume/shredos.2020.02.git
+$ git clone https://github.com/PartialVolume/shredos.x86_64.git (or shredos.i686.git for 32bit)
 $ cd shredos
 $ make shredos_defconfig
 $ make
