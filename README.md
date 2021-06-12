@@ -15,10 +15,12 @@
 
 [![](https://img.shields.io/github/downloads/PartialVolume/shredos.2020.02/total?label=Total%20downloads%20x86_64%20all%20releases&style=plastic)](https://github.com/PartialVolume/shredos.2020.02/releases) [![](https://img.shields.io/github/downloads/PartialVolume/shredos.i686/total?label=Total%20downloads%20i686%20all%20releases&style=plastic)](https://github.com/PartialVolume/shredos.i686/releases)
 
-| ShredOS Version | Nwipe Version | Number of Downloads |
-| ---------| ---------|---------|
-| Latest x86_64 64 bit version |  v0.31  | [![](https://img.shields.io/github/downloads/PartialVolume/shredos.x86_64/latest/total.svg "Latest x86_64 64 bit version")](https://github.com/PartialVolume/shredos.2020.02/releases/latest) |
-| Latest i686 32 bit version | v0.30.001 | [![](https://img.shields.io/github/downloads/PartialVolume/shredos.i686/latest/total.svg "Latest i686 32 bit version")](https://github.com/PartialVolume/shredos.i686/releases/latest) |
+## Download .img and .iso files for burning to USB flash drives and CD-R/DVD-R
+
+| ShredOS Version | Nwipe Version | Number of Downloads | .img for USB Flash | .iso for CD-R/DVD-R |
+| ---------| ---------|---------|------------|-------------|
+| Latest x86_64 64 bit version |  v0.31  | [![](https://img.shields.io/github/downloads/PartialVolume/shredos.x86_64/latest/total.svg "Latest x86_64 64 bit version")](https://github.com/PartialVolume/shredos.2020.02/releases/latest) | [.img](https://github.com/PartialVolume/shredos.x86_64/releases/download/v2020.05.012_x86-64_0.31/shredos-2020.05.012_x86-64_0.31_20210607.img) | [.iso legacy boot](https://github.com/PartialVolume/shredos.x86_64/releases/download/v2020.05.012_x86-64_0.31/shredos-2020.05.012_x86-64_0.31_20210612_legacy_bios.iso) |
+| Latest i686 32 bit version | v0.30.001 | [![](https://img.shields.io/github/downloads/PartialVolume/shredos.i686/latest/total.svg "Latest i686 32 bit version")](https://github.com/PartialVolume/shredos.i686/releases/latest) | Not available yet | Not available yet |
 
 #### Demo video showing ShredOS having booted straight into Nwipe where you can then select one or more drives to be erased.
 
