@@ -32,7 +32,7 @@ Note: The .img files for burning to USB flash drives support both bios/UEFI boot
 ![Example wipe](/images/example_wipe.gif)
 
 1. [What is ShredOS?](https://github.com/PartialVolume/shredos.2020.02/blob/master/README.md#what-is-shredos)
-1. [What do I do after I've erased everything on my disk? A warning to users that don't really understand what disk erasure is!](https://github.com/PartialVolume/shredos.2020.02/blob/master/README.md#what-do-i-do-after-ive-erased-everything-on-my-disk-a-warning-to-users-that-dont-really-understand-what-disk-erasure-is)
+1. [What do I do after I've erased everything on my disk? What is actually erased?](https://github.com/PartialVolume/shredos.x86_64#what-do-i-do-after-ive-erased-everything-on-my-disk-what-is-actually-erased)
 1. [Nwipe's erasure methods](https://github.com/PartialVolume/shredos.2020.02/blob/master/README.md#nwipes-erasure-methods)
 1. [Obtaining and writing ShredOS to a USB flash drive - The easy way!](https://github.com/PartialVolume/shredos.2020.02/blob/master/README.md#obtaining-and-writing-shredos-to-a-usb-flash-drive-the-easy-way-)
    1. [Linux and MAC users](https://github.com/PartialVolume/shredos.2020.02#linux-and-mac-users)
