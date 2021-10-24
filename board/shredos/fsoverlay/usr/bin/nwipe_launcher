@@ -6,6 +6,10 @@ trap "echo" INT
 # initialise
 country_code=""
 nwipe_options_string=""
+lftp_command_line=""
+
+\rm lftp.log
+echo "[`date`] lftp log" > lftp.log
 
 # read the kernel command line for the loadkeys label for setting the correct keyboard layout
 country_code=$(kernel_cmdline_extractor loadkeys)
@@ -35,6 +39,29 @@ then
 else
     /usr/bin/nwipe --logfile=nwipe_log_$(date +%Y%m%d-%H%M%S).txt $nwipe_options_string
 fi
+
+# read the kernel command line for a lftp command
+# example lftp command "open 192.168.1.60; user joe joe's_password; cd data; mput nwipe_*.txt
+lftp_command_line=$(kernel_cmdline_extractor lftp)
+if [ $? == 0 ]
+then
+	echo "Found lftp commands on kernel command line, preparing lftp"
+	if [ ! -d "exported" ]; then
+		mkdir exported
+		echo "created exported directory"
+	fi
+	echo "Executing users lftp commands"
+	lftp -c "$lftp_command_line" >> lftp.log
+	if [ $? == 0 ]
+	then
+		echo "lftp completed sucessfully"
+		echo "moving nwipe logs to ../exported"
+		mv nwipe_*.txt exported/
+	else
+		echo "[`date`] lftp command failed, lftp -c \"$lftp_command_line\" See lftp.log for details"
+	fi
+fi
+
 printf "Paused, press a key to restart nwipe."
 read -rsn1 input
 sleep 1;
