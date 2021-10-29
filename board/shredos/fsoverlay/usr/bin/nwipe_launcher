@@ -8,7 +8,6 @@ country_code=""
 nwipe_options_string=""
 lftp_command_line=""
 
-\rm lftp.log
 echo "[`date`] lftp log" > lftp.log
 
 # read the kernel command line for the loadkeys label for setting the correct keyboard layout
@@ -45,23 +44,24 @@ fi
 lftp_command_line=$(kernel_cmdline_extractor lftp)
 if [ $? == 0 ]
 then
-	echo "Found lftp commands on kernel command line, preparing lftp"
+	echo "[`date`] Found lftp commands on kernel command line in grub.cfg"
 	if [ ! -d "exported" ]; then
 		mkdir exported
-		echo "created exported directory"
+		echo "[`date`] created exported directory"
 	fi
-	echo "Executing users lftp commands"
+	echo "[`date`] Executing users lftp commands"
 	lftp -c "$lftp_command_line" >> lftp.log
 	if [ $? == 0 ]
 	then
-		echo "lftp completed sucessfully"
-		echo "moving nwipe logs to ../exported"
+		echo "[`date`] lftp completed sucessfully"
+		echo "[`date`] moving nwipe logs to ../exported"
 		mv nwipe_*.txt exported/
 	else
-		echo "[`date`] lftp command failed, lftp -c \"$lftp_command_line\" See lftp.log for details"
+		echo "[`date`] lftp command failed, See above and lftp.log for details"
 	fi
 fi
 
+printf ""
 printf "Paused, press a key to restart nwipe."
 read -rsn1 input
 sleep 1;
@@ -72,7 +72,5 @@ sleep 1;
 printf " 2"
 sleep 1
 printf " 1"
-sleep 1;
-printf " 0"
 done
 
