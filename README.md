@@ -66,16 +66,18 @@ The vanilla version of ShredOS boots into nwipe's GUI and shows the available di
 This paragraph is for those that are not familiar with wiping discs. if you know what you are doing skip to the next section. So you have erased your disc with ShredOS/nwipe and nwipe reported zero errors and the disc was erased. In it's erased state and depending upon the method you used every block on the drive contains either zero's or meaningless random data. In this state the disc won't be recognised by your operating system except at a very low level or by specialised programs. You won't be able to write files to the disc because nwipe has removed everything, absolutely everything, the operating system is gone, all your data is gone, the partition table is gone, the file system gone, the MBR and all the files have been erased without a trace and will never ever be recovered from the disk. The only thing left is a whole load of zeros or random data. To make the disc usable again you will either need to format the disk, which creates a partition table and directory structure or install a new operating system such as Linux or Windows. Of course, if you are just disposing of or reselling the disk then you don't need to do anything else. So if you are reasonably happy that you know what you are doing and you understand that you will need to format the disc then I hope this software does it's job and is useful to you. Before you press that 'S' key to start the wipe, pause and double check you have selected the correct drive/s, something I always do !
 
 ## Nwipe's erasure methods
-For an upto date list of supported wipe methods see the [nwipe](https://github.com/martijnvanbrummelen/nwipe) page.
-* Quick erase        - Fills the device with zeros, one round only.
-* RCMP TSSIT OPS-II  - Royal Candian Mounted Police Technical Security Standard, OPS-II
-* DoD Short          - The American Department of Defense 5220.22-M short 3 pass wipe. 1,2,& 7.
-* DoD 5220.22M       - The American Department of Defense 5220.22-M full 7 pass wipe. 1-7
-* Gutmann Wipe       - Peter Gutmann's method. (Secure Deletion of Data from Magnetic and Solid-State Memory)
-* PRNG Stream        - Fills the device with a stream from the PRNG.
-* Verify only        - This method only reads the device and checks that it is all zero.
-* HMG IS5 enhanced   - Secure Sanitisation of Protectively Marked Information or Sensitive Information
 
+* Fill With Zeros    - Fills the device with zeros (0x00), one round only.
+* Fill With Ones     - Fills the device with ones  (0xFF), one round only.
+* RCMP TSSIT OPS-II  - Royal Candian Mounted Police Technical Security Standard, OPS-II
+* DoD Short          - The American Department of Defense 5220.22-M short 3 pass wipe (passes 1, 2 & 7).
+* DoD 5220.22M       - The American Department of Defense 5220.22-M full 7 pass wipe.
+* Gutmann Wipe       - Peter Gutmann's method (Secure Deletion of Data from Magnetic and Solid-State Memory).
+* PRNG Stream        - Fills the device with a stream from the PRNG.
+* Verify Zeros       - This method only reads the device and checks that it is filled with zeros (0x00).
+* Verify Ones        - This method only reads the device and checks that it is filled with ones (0xFF).
+* HMG IS5 enhanced   - Secure Sanitisation of Protectively Marked Information or Sensitive Information
+		
 Nwipe also includes the following pseudo random number generators:
 * Mersenne Twister (mt19937ar-cok)
 * ISAAC (rand.c 20010626)
