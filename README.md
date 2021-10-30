@@ -268,9 +268,10 @@ menuentry "shredos" {
 	linux /boot/shredos console=tty3 loglevel=3 loadkeys=uk
 }
 ```
-## Reading and saving nwipes log files
-The nwipe that is automatically launched in the first virtual terminal ALT-F1, creates a log file that contains the details of the wipe/s and a summary table that shows successfull erasure or failure. The file is time stamped within it's name. A new timestamped log file is created each time nwipe is started. The files can be found in the / directory. A example being nwipe_log_20200418-084910.txt. As currently, shredos does not have persistent storage, if you want to keep these files between reboots of shredos, you will need to manually copy them to the USB stick as follows:
+## Reading and saving nwipes log files - via USB (manually) or ftp (manually & automatically)
+The nwipe that is automatically launched in the first virtual terminal ALT-F1, creates a log file that contains the details of the wipe/s and a summary table that shows successfull erasure or failure. The file is time stamped within it's name. A new timestamped log file is created each time nwipe is started. The files can be found in the / directory. A example being nwipe_log_20200418-084910.txt. As currently, shredos does not have persistent storage, if you want to keep these files between reboots of shredos, you will need to manually copy them to the USB stick or send to a ftp server on your local area network. Both methods are described below starting with manually writing to a USB storage device. This is then followed by setting up grub.cfg to auto transfer the nwipe log files to a ftp server.
 
+### Transferring nwipe log files to a USB storage device
 1. Locate the device name of your USB stick from it's model & size. 
 
 For Linux: If the | character isn't displayed properly use loadkeys fr etc to select the correct keyboard if not US qwerty prior to running this pipe command.
@@ -297,7 +298,42 @@ cp /nwipe_log* /store/
 ```
 cd /;umount store
 ```
+### Transferring nwipe log files to a ftp server
+Shredos uses the lftp application to transfer files to a remote server. To automatically transfer the nwipe log files on completion of all the wipes and after you have pressed a key to exit nwipe you will need to edit both grub.cfg files (/boot/grub/grub.cfg and /EFI/BOOT/grub.cfg) on the Shredos USB memory stick. In much the same way you you specify loadkeys or nwipe options which are described above, you edit the linux kernal command line and add the following lftp="open 192.168.1.60; user your-username your-password; cd data; mput nwipe_*.txt", changing the IP, username and password as required. As ftp does not encrypt data you should really only use it to transfer data on your local area network and not over the internet. sftp may be implemented at a future date if users request that feature. You can also manually use lftp on the command line (ALT-F2 or ALT-F3) if you prefer. I use this feature with a chrooted vsftpd ftp server on a Linux PC.
+		
+**IMPORTANT**
+- I would recommend you setup a new user account on the system that hosts your ftp server and only use that new user's account, username and password with Shredos. You don't want to use your own personal user account details as you will be placing those details on the Shredos USB storage device in a plain text format.
+- For security reasons, you should setup your ftp server as chrooted.
+		
+Example grub.cfg with the lftp option appended:
+```
+set default="0"
+set timeout="0"
 
+menuentry "shredos" {
+	linux /boot/shredos console=tty3 loglevel=3 lftp="open 192.168.1.60; user your-username your-password; cd data; mput nwipe_*.txt"
+}
+```
+**vsftpd configuration for a chrooted server**
+
+For those using vsftpd as your ftp server, you will need to change /etc/vsftpd.conf as follows. Some of these entries may already be present but commented out, make a backup of /etc/vsftpd.conf prior to editing and the uncomment or alter as below:
+```
+anon_mkdir_write_enable=YES
+listen=YES
+listen_ipv6=YES
+local_root=/home/yournewftpuser/ftpdata/
+write_enable=YES
+anon_mkdir_write_enable=YES
+chown_uploads=YES
+chown_username=yournewftpuser
+nopriv_user=ftpsecure
+ftpd_banner=Welcome to the Shredos log server.
+chroot_local_user=YES
+chroot_list_enable=NO
+secure_chroot_dir=/home/yournewftpuser/ftpdata
+```
+Disclaimer: The above settings should get you going but may or may not be ideal for your local situation. Refer to the vsftp website and forums if things aren't working as they should. The lftp application that Shredos uses, should also work with any Microsoft Windows based ftp server, as well as Linux and MAC based systems.
+		
 ## ShredOS includes the following related programs
 
 #### smartmontools
