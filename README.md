@@ -151,7 +151,7 @@ menuentry "shredos" {
 }
 ```
 
-For reference and as of nwipe version 0.30, listed below are all the options that you can use with nwipe and can place on the kernel command line in grub.cfg as described in the examples above.
+For reference and as of nwipe version 0.32, listed below are all the options that you can use with nwipe and can place on the kernel command line in grub.cfg as described in the examples above.
 ```
 Usage: nwipe [options] [device1] [device2] ...
 Options:
@@ -171,13 +171,13 @@ Options:
                           abort the shutdown by typing sudo shutdown -c
 
       --sync=NUM          Will perform a sync after NUM writes (default: 100000)
-                          0 - fdatasync after the disk is completely written
-                              fdatasync errors not detected until completion.
-                              0 is not recommended as disk errors may cause nwipe
-                              to appear to hang
-                          1 - fdatasync after every write
-                              Warning: Lower values will reduce wipe speeds.
-                          1000000 - fdatasync after 1000000 writes etc.)
+                          0    - fdatasync after the disk is completely written
+                                 fdatasync errors not detected until completion.
+                                 0 is not recommended as disk errors may cause
+                                 nwipe to appear to hang
+                          1    - fdatasync after every write
+                                 Warning: Lower values will reduce wipe speeds.
+                          1000 - fdatasync after 1000 writes etc.
 
       --verify=TYPE       Whether to perform verification of erasure
                           (default: last)
@@ -193,7 +193,9 @@ Options:
                           ops2                   - RCMP TSSIT OPS-II
                           random / prng / stream - PRNG Stream
                           zero / quick           - Overwrite with zeros
-                          verify                 - Verifies disk is zero filled
+                          one                    - Overwrite with ones (0xFF)
+                          verify_zero            - Verifies disk is zero filled
+                          verify_one             - Verifies disk is 0xFF filled
 
   -l, --logfile=FILE      Filename to log to. Default is STDOUT
 
