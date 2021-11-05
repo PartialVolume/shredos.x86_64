@@ -6,8 +6,8 @@ cp "board/shredos/grub.cfg"                "${BINARIES_DIR}/grub.cfg"    || exit
 cp "board/shredos/bootx64.efi"             "${BINARIES_DIR}/bootx64.efi" || exit 1
 cp "${HOST_DIR}/lib/grub/i386-pc/boot.img" "${BINARIES_DIR}/boot.img"    || exit 1
 
-# copy the ShredOS icon and windows files, if a stick is plugged into a  Windows system
-# it is identified as ShredOS - Dangerous as a warning to users that that know what ShredOS is.
+# copy the ShredOS icon and Windows autorun.inf; if a USB stick is plugged into a Windows system
+# it will be identified as 'ShredOS - Dangerous' as a warning to users unaware what ShredOS is.
 cp "board/shredos/autorun.inf"             "${BINARIES_DIR}/autorun.inf" || exit 1
 cp "board/shredos/README.txt"              "${BINARIES_DIR}/README.txt"  || exit 1
 cp "board/shredos/shredos.ico"             "${BINARIES_DIR}/shredos.ico" || exit 1
