@@ -117,7 +117,11 @@ If you are a windows user, use a program such as [Rufus](https://rufus.ie/) or [
 ShredOS has three tty terminals, ALT-F1 (Where nwipe is initially launched), ALT-F2 (A virtual terminal), ALT-F3 (console log, login required which is root with no password).
 
 ## How to make a persistent change to the terminal resolution
-After you have created the bootable shredos USB flash drive, edit the /boot/grub/grub.cfg or /EFI/BOOT/grub.cfg files by adding the command `gfxpayload=1280x1024x16` prior to the kernel command line.  Change the resolution as required for your hardware/monitor. See the example below:
+After you have created the bootable shredos USB flash drive, you may want to increase the resolution from the default value which is usually quite low, i.e. 640x480 (especially in legacy boot).
+		
+Changing the resolution is optional, you may prefer the lower resolution or maybe you won't, but if you want to make the change then edit either the /boot/grub/grub.cfg or /EFI/BOOT/grub.cfg files or both, depending upon which boot method you require.
+		
+Add the command `gfxpayload=1280x1024x16` prior to the kernel command line, changing the resolution as required for your hardware/monitor. See the example below:
 ```
 set default="0"
 set timeout="0"
