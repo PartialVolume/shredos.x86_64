@@ -120,6 +120,16 @@ ShredOS has three tty terminals, ALT-F1 (Where nwipe is initially launched), ALT
 After you have created the bootable shredos USB flash drive, you may want to increase the resolution from the default value which is usually quite low, i.e. 640x480 (especially in legacy boot).
 		
 Changing the resolution is optional, you may prefer the lower resolution or maybe you won't, but if you want to make the change then edit either the /boot/grub/grub.cfg or /EFI/BOOT/grub.cfg files or both, depending upon which boot method you require.
+
+#### Example resolutions based on screen aspect ratio:
+**4:3 aspect ratio resolutions:**
+		640×480, 800×600, 960×720, 1024×768, 1280×960, 1400×1050, 1440×1080 , 1600×1200, 1856×1392, 1920×1440, and 2048×1536.
+		
+**16:10 aspect ratio resolutions:**
+		1280×800, 1440×900, 1680×1050, 1920×1200 and 2560×1600.
+		
+**16:9 aspect ratio resolutions:**
+		1024×576, 1152×648, 1280×720, 1366×768, 1600×900, 1920×1080, 2560×1440 and 3840×2160.
 		
 Add the command `gfxpayload=1280x1024x16` prior to the kernel command line, changing the resolution as required for your hardware/monitor. See the example below:
 ```
