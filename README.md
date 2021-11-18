@@ -116,6 +116,16 @@ If you are a windows user, use a program such as [Rufus](https://rufus.ie/) or [
 ## Virtual Terminals
 ShredOS has three tty terminals, ALT-F1 (Where nwipe is initially launched), ALT-F2 (A virtual terminal), ALT-F3 (console log, login required which is root with no password).
 
+## How to make a persistent change to the terminal resolution
+After you have created the bootable shredos USB flash drive, edit the /boot/grub/grub.cfg or /EFI/BOOT/grub.cfg files by adding the command `gfxpayload=1280x1024x16` prior to the kernel command line.  Change the resolution as required for your hardware/monitor. See the example below:
+```
+set default="0"
+set timeout="0"
+gfxpayload=1280x1024x16
+menuentry "shredos" {
+	linux /boot/shredos console=tty3 loglevel=3
+}
+```
 
 ## How to run nwipe so you can specify nwipe command line options
 The version of nwipe that runs in the default terminal will automatically restart when you exit it, either at the end of a wipe or using CONTROL-C to abort. So if you want to run nwipe in the traditional way, along with any command line options you require, then use the second terminal ALT-F2, as an example, you could then use the command ```nwipe --nousb --logfile=nwipe.log``` etc. If you do use ALT-F2 to run a second copy of nwipe, please remember that if you already have one copy of nwipe wiping, the second copy of nwipe will hang on starting. Therefore nwipe in the default terminal should be left at the drive selection screen to prevent the second occurence of nwipe from hanging. Alternatively, a second occurrence of nwipe could be started by specifying the drive on the command line as long as that drive is not already being wiped by the first instance of nwipe, i.e.```nwipe /dev/sdc``` etc.
