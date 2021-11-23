@@ -1,0 +1,7 @@
+config BR2_PACKAGE_PYTHON_PARSO
+	bool "python-parso"
+	depends on BR2_PACKAGE_PYTHON3
+	help
+	  A Python Parser.
+
+	  https://github.com/davidhalter/parso

@@ -1,0 +1,5 @@
+# Locally calculated after checking pgp signature at
+# https://www.tcpdump.org/release/tcpdump-4.99.1.tar.gz.sig
+# using key 1F166A5742ABB9E0249A8D30E089DEF1D9C15D0D
+sha256  79b36985fb2703146618d87c4acde3e068b91c553fb93f021a337f175fd10ebe  tcpdump-4.99.1.tar.gz
+sha256  8a54594d257e14a5260ac770f1633516cb51e3fc28c40136ce2697014eda7afd  LICENSE

@@ -1,0 +1,6 @@
+config BR2_PACKAGE_KODI_PVR_WMC
+	bool "kodi-pvr-wmc"
+	help
+	  Kodi's Windows Media Center client addon
+
+	  https://github.com/kodi-pvr/pvr.wmc

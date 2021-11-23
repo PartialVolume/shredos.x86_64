@@ -1,0 +1,7 @@
+config BR2_PACKAGE_LPTY
+	bool "lpty"
+	help
+	  A simple facility for lua to control other programs via
+	  PTYs.
+
+	  http://www.tset.de/lpty/

@@ -1,0 +1,5 @@
+config BR2_PACKAGE_XDRIVER_XF86_INPUT_KEYBOARD
+	bool "xf86-input-keyboard"
+	select BR2_PACKAGE_XORGPROTO
+	help
+	  Keyboard input driver

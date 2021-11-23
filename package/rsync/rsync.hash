@@ -1,0 +1,5 @@
+# Locally calculated after checking pgp signature
+# https://download.samba.org/pub/rsync/src/rsync-3.2.3.tar.gz.asc
+sha256  becc3c504ceea499f4167a260040ccf4d9f2ef9499ad5683c179a697146ce50e  rsync-3.2.3.tar.gz
+# Locally calculated
+sha256  0d33aa97d302cb9df27f99dfa28d58001c2479a02317956f1a7a890f3937a976  COPYING

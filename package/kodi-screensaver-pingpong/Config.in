@@ -1,0 +1,7 @@
+config BR2_PACKAGE_KODI_SCREENSAVER_PINGPONG
+	bool "kodi-screensaver-pingpong"
+	select BR2_PACKAGE_GLM
+	help
+	  Ping-pong screensaver for Kodi
+
+	  https://github.com/xbmc/screensaver.pingpong

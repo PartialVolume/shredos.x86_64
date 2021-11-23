@@ -1,0 +1,5 @@
+# From: https://github.com/SELinuxProject/selinux/wiki/Releases
+sha256 df758ef1d9d4811051dd901ea6b029ae334ffd7c671c128beb16bce1e25ac161 libselinux-3.2.tar.gz
+
+# Hash for license file
+sha256 86657b4c0fe868d7cbd977cb04c63b6c667e08fa51595a7bc846ad4bed8fc364 LICENSE

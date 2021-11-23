@@ -1,0 +1,39 @@
+From 1357df0196806d5697b1f84497ef72aab5faa8a3 Mon Sep 17 00:00:00 2001
+From: Gustavo Zacarias <gustavo@zacarias.com.ar>
+Date: Tue, 9 Aug 2016 11:50:49 +0200
+Subject: [PATCH] iconv: tweak iconv detection
+
+Tweak PHP_SETUP_ICONV from aclocal/build/php.m4 to not
+PHP_ADD_INCLUDE $ICONV_DIR/include since the tests use
+test instead of AC_TRY_LINK to find headers which is bad,
+specially when adding /usr and /usr/local to the mix.
+Do basically the same with ext/iconv/config.m4 by tweaking
+PHP_ICONV_H_PATH which, again, uses test and absolute paths.
+
+Signed-off-by: Gustavo Zacarias <gustavo@zacarias.com.ar>
+[Gustavo: convert to nice m4 instead of patching configure]
+[Gustavo: update for 5.6.10]
+Signed-off-by: Adam Duskett <aduskett@gmail.com>
+[aduskett@gmail.com: Update for 8.0.7]
+Signed-off-by: Bernd Kuhls <bernd.kuhls@t-online.de>
+[Bernd: rebased for 7.4.10 & 7.4.13]
+---
+ build/php.m4 | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/build/php.m4 b/build/php.m4
+index 9586c490..8b3d47ed 100644
+--- a/build/php.m4
++++ b/build/php.m4
+@@ -1937,7 +1937,7 @@ AC_DEFUN([PHP_SETUP_ICONV], [
+   dnl Check external libs for iconv funcs.
+   if test "$found_iconv" = "no"; then
+ 
+-    for i in $PHP_ICONV /usr/local /usr; do
++    for i in $PHP_ICONV; do
+       if test -r $i/include/gnu-libiconv/iconv.h; then
+         ICONV_DIR=$i
+         ICONV_INCLUDE_DIR=$i/include/gnu-libiconv
+-- 
+2.31.1
+

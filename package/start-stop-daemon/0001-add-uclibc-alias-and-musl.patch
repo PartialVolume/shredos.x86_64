@@ -1,0 +1,44 @@
+From 31e4116ec355701e239cddcca720314523512a47 Mon Sep 17 00:00:00 2001
+From: Gustavo Zacarias <gustavo@zacarias.com.ar>
+Date: Sun, 21 Mar 2021 17:59:15 +0100
+Subject: [PATCH] add uclibc alias and musl
+
+Make linux-uclibcgnueabi an alias for linux-uclibceabi since it's
+what we use in buildroot toolchains.
+Slightly tweak musleabi to match the buildroot-used tuple.
+
+Signed-off-by: Gustavo Zacarias <gustavo@zacarias.com.ar>
+[Rebased on 1.20.7.1]
+Signed-off-by: Peter Seiderer <ps.report@gmx.net>
+---
+ data/ostable | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/data/ostable b/data/ostable
+index 99c1f88..087dc6e 100644
+--- a/data/ostable
++++ b/data/ostable
+@@ -14,10 +14,10 @@
+ #   system part of the output of the GNU config.guess script.
+ #
+ # <Debian name>		<GNU name>		<config.guess regex>
+-eabi-uclibc-linux	linux-uclibceabi	linux[^-]*-uclibceabi
++eabi-uclibc-linux	linux-uclibceabi	linux[^-]*-uclibc.*eabi
+ base-uclibc-linux	linux-uclibc		linux[^-]*-uclibc
+ eabihf-musl-linux	linux-musleabihf	linux[^-]*-musleabihf
+-base-musl-linux		linux-musl		linux[^-]*-musl
++base-musl-linux		linux-musl		linux[^-]*-musl[^-]*
+ eabihf-gnu-linux	linux-gnueabihf		linux[^-]*-gnueabihf
+ eabi-gnu-linux		linux-gnueabi		linux[^-]*-gnueabi
+ abin32-gnu-linux	linux-gnuabin32		linux[^-]*-gnuabin32
+@@ -38,6 +38,6 @@ base-bsd-netbsd		netbsd			netbsd[^-]*
+ base-bsd-openbsd	openbsd			openbsd[^-]*
+ base-sysv-aix		aix			aix[^-]*
+ base-sysv-solaris	solaris			solaris[^-]*
+-eabi-uclibc-uclinux	uclinux-uclibceabi	uclinux[^-]*-uclibceabi
++eabi-uclibc-uclinux	uclinux-uclibceabi	uclinux[^-]*-uclibc.*eabi
+ base-uclibc-uclinux	uclinux-uclibc		uclinux[^-]*(-uclibc.*)?
+ base-tos-mint		mint			mint[^-]*
+-- 
+2.30.2
+

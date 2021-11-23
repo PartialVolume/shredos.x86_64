@@ -1,0 +1,30 @@
+From 38b730c00f45abf324caf687b5b00662ff4252c2 Mon Sep 17 00:00:00 2001
+From: Thomas Petazzoni <thomas.petazzoni@free-electrons.com>
+Date: Fri, 2 Dec 2016 23:09:44 +0100
+Subject: [PATCH] Makefile: allow passing CFLAGS/LDFLAGS
+
+This might be needed to pass some custom CFLAGS/LDFLAGS when building
+rpiboot.
+
+Submitted-upstream: https://github.com/raspberrypi/usbboot/pull/2
+Signed-off-by: Thomas Petazzoni <thomas.petazzoni@free-electrons.com>
+[Rebased on 9324fd7]
+Signed-off-by: Peter Seiderer <ps.report@gmx.net>
+---
+ Makefile | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/Makefile b/Makefile
+index 822e714..875e717 100755
+--- a/Makefile
++++ b/Makefile
+@@ -1,5 +1,5 @@
+ rpiboot: main.c msd/bootcode.h msd/start.h msd/bootcode4.h msd/start4.h
+-	$(CC) -Wall -Wextra -g -o $@ $< -lusb-1.0
++	$(CC) -Wall -Wextra -g $(CFLAGS) -o $@ $< -lusb-1.0 $(LDFLAGS)
+ 
+ %.h: %.bin ./bin2c
+ 	./bin2c $< $@
+-- 
+2.31.1
+

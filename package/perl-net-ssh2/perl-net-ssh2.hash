@@ -1,0 +1,6 @@
+# retrieved by scancpan from http://cpan.metacpan.org/
+md5  57aa0f6e2be4020f75888a7195ad5cba  Net-SSH2-0.72.tar.gz
+sha256  867d83070fac6436b9f0971918243002072fbf8d2724a87c254b34250dce0222  Net-SSH2-0.72.tar.gz
+
+# computed by scancpan
+sha256  268afaee7aa88a41959c93cd91853e8124bdbe64a74480d36ff1130e01a1c0ca  README.pod

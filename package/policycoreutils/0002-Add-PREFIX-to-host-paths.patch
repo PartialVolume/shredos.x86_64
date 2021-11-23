@@ -1,0 +1,54 @@
+From a221304344b3f9db7e86d928cf97d77542bcf456 Mon Sep 17 00:00:00 2001
+From: Adam Duskett <aduskett@gmail.com>
+Date: Mon, 9 Oct 2017 16:47:19 -0400
+Subject: [PATCH] Add PREFIX to host paths
+
+Updates the remaining hardcoded host paths used in the build to be
+prefixed with a PREFIX path to allow cross compilation.
+
+Updated to work with version 3.2
+
+Signed-off-by: Clayton Shotwell <clayton.shotwell@rockwellcollins.com>
+Signed-off-by: Niranjan Reddy <niranjan.reddy@rockwellcollins.com>
+Signed-off-by: Fabrice Fontaine <fontaine.fabrice@gmail.com>
+[Update for 2.8]
+Signed-off-by: Adam Duskett <aduskett@gmail.com>
+[Update for 3.2]
+---
+ newrole/Makefile  | 4 ++--
+ run_init/Makefile | 4 ++--
+ 2 files changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/newrole/Makefile b/newrole/Makefile
+index 0e7ebce..3188cec 100644
+--- a/newrole/Makefile
++++ b/newrole/Makefile
+@@ -4,8 +4,8 @@ PREFIX ?= /usr
+ BINDIR ?= $(PREFIX)/bin
+ MANDIR ?= $(PREFIX)/share/man
+ ETCDIR ?= /etc
+-LOCALEDIR = $(DESTDIR)$(PREFIX)/share/locale
+-INCLUDEDIR ?= $(PREFIX)/include
++LOCALEDIR = $(DESTDIR)$(PREFIX)
++INCLUDEDIR ?= $(LOCALEDIR)/include
+ PAMH ?= $(shell test -f $(INCLUDEDIR)/security/pam_appl.h && echo y)
+ AUDITH ?= $(shell test -f $(INCLUDEDIR)/libaudit.h && echo y)
+ # Enable capabilities to permit newrole to generate audit records.
+diff --git a/run_init/Makefile b/run_init/Makefile
+index e86364a..20a64d4 100644
+--- a/run_init/Makefile
++++ b/run_init/Makefile
+@@ -6,8 +6,8 @@ SBINDIR ?= $(PREFIX)/sbin
+ MANDIR ?= $(PREFIX)/share/man
+ ETCDIR ?= /etc
+ LOCALEDIR ?= $(DESTDIR)$(PREFIX)/share/locale
+-PAMH ?= $(shell test -f /usr/include/security/pam_appl.h && echo y)
+-AUDITH ?= $(shell test -f /usr/include/libaudit.h && echo y)
++PAMH ?= $(shell test -f $(DESTDIR)$(PREFIX)/include/security/pam_appl.h && echo y)
++AUDITH ?= $(shell test -f $(DESTDIR)$(PREFIX)/include/libaudit.h && echo y)
+ 
+ CFLAGS ?= -Werror -Wall -W
+ override CFLAGS += -DUSE_NLS -DLOCALEDIR="\"$(LOCALEDIR)\"" -DPACKAGE="\"policycoreutils\""
+-- 
+2.31.1
+

@@ -1,0 +1,5 @@
+# Locally calculated after checking pgp signature
+sha256  b493065f2f83ee429c62e2ec58698a3cf63ef78722e1b20765823152e8582c56  wine-6.0.tar.xz
+# Locally calculated
+sha256  e237fa56668030e928551ddd60f05df5fe957f75eab874bbd017e085ed722e7c  COPYING.LIB
+sha256  111398f1be25b1ae1f124512fe61569e6b4555408e2feb9bc82f9fe57d39b302  LICENSE

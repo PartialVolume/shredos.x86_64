@@ -1,0 +1,47 @@
+config BR2_PACKAGE_UDISKS
+	bool "udisks"
+	depends on BR2_ENABLE_LOCALE # parted
+	depends on BR2_PACKAGE_HAS_UDEV
+	depends on BR2_TOOLCHAIN_GCC_AT_LEAST_7 # polkit -> C++17
+	depends on BR2_TOOLCHAIN_HAS_THREADS # polkit
+	depends on BR2_USE_WCHAR # dbus-glib -> glib2
+	depends on BR2_TOOLCHAIN_HAS_SYNC_4 # libblockdev -> cryptsetup -> json-c
+	depends on !BR2_STATIC_LIBS # polkit -> duktape
+	select BR2_PACKAGE_DBUS
+	select BR2_PACKAGE_DBUS_GLIB
+	select BR2_PACKAGE_LIBATASMART
+	select BR2_PACKAGE_LIBBLOCKDEV
+	select BR2_PACKAGE_LIBBLOCKDEV_CRYPTO
+	select BR2_PACKAGE_LIBBLOCKDEV_FS
+	select BR2_PACKAGE_LIBBLOCKDEV_LOOP
+	select BR2_PACKAGE_LIBBLOCKDEV_MDRAID
+	select BR2_PACKAGE_LIBBLOCKDEV_PART
+	select BR2_PACKAGE_LIBBLOCKDEV_SWAP
+	select BR2_PACKAGE_LIBGUDEV
+	select BR2_PACKAGE_PARTED
+	select BR2_PACKAGE_POLKIT
+	select BR2_PACKAGE_SG3_UTILS
+	select BR2_PACKAGE_UTIL_LINUX
+	select BR2_PACKAGE_UTIL_LINUX_LIBMOUNT
+	help
+	  The udisks project provides
+
+	   o A storage daemon that implements well-defined D-Bus
+	     interfaces that can be used to query and manipulate
+	     storage devices.
+
+	   o a command-line tool, udisks(1), that can be used to query
+	     and use the daemon
+
+	  http://www.freedesktop.org/wiki/Software/udisks
+
+comment "udisks needs udev /dev management"
+	depends on BR2_USE_MMU
+	depends on !BR2_PACKAGE_HAS_UDEV
+
+comment "udisks needs a toolchain with dynamic library, locale, wchar, threads, gcc >= 7"
+	depends on BR2_USE_MMU
+	depends on BR2_TOOLCHAIN_HAS_SYNC_4
+	depends on BR2_STATIC_LIBS || !BR2_ENABLE_LOCALE || \
+		!BR2_USE_WCHAR || !BR2_TOOLCHAIN_HAS_THREADS || \
+		!BR2_TOOLCHAIN_GCC_AT_LEAST_7
