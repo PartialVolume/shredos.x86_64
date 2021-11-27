@@ -22,7 +22,7 @@
 
 | ShredOS Version | Nwipe Version | Number of Downloads | .img for USB Flash | .iso for CD-R/DVD-R |
 | ---------| ---------|---------|------------|-------------|
-| Latest x86_64 64 bit version |  v0.32.003  | [![](https://img.shields.io/github/downloads/PartialVolume/shredos.x86_64/latest/total.svg "Latest x86_64 64 bit version")](https://github.com/PartialVolume/shredos.2020.02/releases/latest) | [.img 64bit](https://github.com/PartialVolume/shredos.x86_64/releases/download/v2020.05.017_x86-64_0.32.003/shredos-2020.05.017_x86-64_0.32.003_20211111.img) | [.iso 64bit](https://github.com/PartialVolume/shredos.x86_64/releases/download/v2020.05.017_x86-64_0.32.003/shredos-2020.05.017_x86-64_0.32.003_20211112.iso) |
+| Latest x86_64 64 bit version |  v0.32.014  | [![](https://img.shields.io/github/downloads/PartialVolume/shredos.x86_64/latest/total.svg "Latest x86_64 64 bit version")](https://github.com/PartialVolume/shredos.2020.02/releases/latest) | [.img 64bit](https://github.com/PartialVolume/shredos.x86_64/releases/download/v2020.05.017_x86-64_0.32.003/shredos-2020.05.017_x86-64_0.32.003_20211111.img) | [.iso 64bit](https://github.com/PartialVolume/shredos.x86_64/releases/download/v2020.05.017_x86-64_0.32.003/shredos-2020.05.017_x86-64_0.32.003_20211112.iso) |
 | Latest i686 32 bit version | v0.30.001 | [![](https://img.shields.io/github/downloads/PartialVolume/shredos.i686/latest/total.svg "Latest i686 32 bit version")](https://github.com/PartialVolume/shredos.i686/releases/latest) | [.img 32bit](https://github.com/PartialVolume/shredos.i686/releases/download/v2020.02.008_i686-0.30.001/shredos-2020.05.008_i686_0.30.001_20210127.img) | Not available yet |
 
 Note: The .img files for burning to USB flash drives support both bios/UEFI booting. The .iso image currently supports legacy bios booting only and not UEFI, however, a bios/UEFI version of the .iso is in development and will be released shortly.
@@ -88,7 +88,7 @@ Nwipe also includes the following pseudo random number generators:
 
 You can of course compile shredos from source but that can take a long time and you can run into all sorts of problems if your not familiar with compiling an operating system. So if you just want to get started with using shredos and nwipe then just download the shredos image file and write it to a USB flash drive. Please note this will over write the existing contents of your USB flash drive.
 
-Download shredos for 64 bit processors from [here](https://github.com/PartialVolume/shredos.x86_64/releases/download/v2020.05.017_x86-64_0.32.003/shredos-2020.05.017_x86-64_0.32.003_20211111.img)
+Download shredos for 64 bit processors from [here](https://github.com/PartialVolume/shredos.x86_64/releases/download/v2020.05.018_x86-64_0.32.014/shredos-2020.05.018_x86-64_0.32.014_20211118.img)
 
 Download shredos for 32 bit processors (also runs on 64 bit processors) from [here](https://github.com/PartialVolume/shredos.i686/releases/download/v2020.02.005_i686-0.30.001/shredos-20210106.img)
 
@@ -116,6 +116,33 @@ If you are a windows user, use a program such as [Rufus](https://rufus.ie/) or [
 ## Virtual Terminals
 ShredOS has three tty terminals, ALT-F1 (Where nwipe is initially launched), ALT-F2 (A virtual terminal), ALT-F3 (console log, login required which is root with no password).
 
+## How to make a persistent change to the terminal resolution
+
+This procedure only applies to setting the resolution of the frame buffer in legacy boot. Using `set gfxpayload=1024x768x16` appears to have no affect on UEFI resolution.
+
+After you have created the bootable shredos USB flash drive, you may want to increase the resolution from the default value which is usually quite low, i.e. 640x480 in legacy boot.
+		
+If you prefer a higher resolution than 640x480, then edit the /boot/grub/grub.cfg file as shown below. However very occasionally it might be necessary to change the resolution. Case in point, a blank screen after booting shredos. Sometimes you may come across a monitor that will not work with 640x480 resolution, such as the HP compaq LA2405X. In which case you should increase the resolution to 1024x768x16 which seems to work with the majority of monitors, even 16:10/16:9 ratio monitors.
+
+#### Example resolutions based on screen aspect ratio:
+**4:3 aspect ratio resolutions:**
+		640×480, 800×600, 960×720, 1024×768, 1280×960, 1400×1050, 1440×1080 , 1600×1200, 1856×1392, 1920×1440, and 2048×1536.
+		
+**16:10 aspect ratio resolutions:**
+		1280×800, 1440×900, 1680×1050, 1920×1200, 2560×1600 and 2880x1800.
+		
+**16:9 aspect ratio resolutions:**
+		1024×576, 1152×648, 1280×720, 1366×768, 1600×900, 1920×1080, 2560×1440 and 3840×2160.
+		
+Add the command `set gfxpayload=1024x768x16` prior to the kernel command line, changing the resolution as required for your hardware/monitor. See the example below:
+```
+set default="0"
+set timeout="0"
+set gfxpayload=1024x768x16
+menuentry "shredos" {
+	linux /boot/shredos console=tty3 loglevel=3
+}
+```
 
 ## How to run nwipe so you can specify nwipe command line options
 The version of nwipe that runs in the default terminal will automatically restart when you exit it, either at the end of a wipe or using CONTROL-C to abort. So if you want to run nwipe in the traditional way, along with any command line options you require, then use the second terminal ALT-F2, as an example, you could then use the command ```nwipe --nousb --logfile=nwipe.log``` etc. If you do use ALT-F2 to run a second copy of nwipe, please remember that if you already have one copy of nwipe wiping, the second copy of nwipe will hang on starting. Therefore nwipe in the default terminal should be left at the drive selection screen to prevent the second occurence of nwipe from hanging. Alternatively, a second occurrence of nwipe could be started by specifying the drive on the command line as long as that drive is not already being wiped by the first instance of nwipe, i.e.```nwipe /dev/sdc``` etc.
