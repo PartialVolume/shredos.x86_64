@@ -118,11 +118,11 @@ ShredOS has three tty terminals, ALT-F1 (Where nwipe is initially launched), ALT
 
 ## How to make a persistent change to the terminal resolution
 
-This procedure only applies to setting the resolution of the frame buffer in legacy boot. Using set gfxpayload=XxY appears to have no affect on UEFI resolution.
+This procedure only applies to setting the resolution of the frame buffer in legacy boot. Using `set gfxpayload=1024x768x16` appears to have no affect on UEFI resolution.
 
 After you have created the bootable shredos USB flash drive, you may want to increase the resolution from the default value which is usually quite low, i.e. 640x480 in legacy boot.
 		
-Changing the resolution is optional, you may prefer the lower resolution or maybe you won't, but if you want to make the change then edit the /boot/grub/grub.cfg  file as shown below:
+If you prefer a higher resolution than 640x480, then edit the /boot/grub/grub.cfg file as shown below. However very occasionally it might be necessary to change the resolution. Case in point, a blank screen after booting shredos. Sometimes you may come across a monitor that will not work with 640x480 resolution, such as the HP compaq LA2405X. In which case you should increase the resolution to 1024x768x16 which seems to work with the majority of monitors, even 16:10/16:9 ratio monitors.
 
 #### Example resolutions based on screen aspect ratio:
 **4:3 aspect ratio resolutions:**
@@ -134,11 +134,11 @@ Changing the resolution is optional, you may prefer the lower resolution or mayb
 **16:9 aspect ratio resolutions:**
 		1024×576, 1152×648, 1280×720, 1366×768, 1600×900, 1920×1080, 2560×1440 and 3840×2160.
 		
-Add the command `gfxpayload=1280x1024x16` prior to the kernel command line, changing the resolution as required for your hardware/monitor. See the example below:
+Add the command `set gfxpayload=1024x768x16` prior to the kernel command line, changing the resolution as required for your hardware/monitor. See the example below:
 ```
 set default="0"
 set timeout="0"
-gfxpayload=1280x1024x16
+set gfxpayload=1024x768x16
 menuentry "shredos" {
 	linux /boot/shredos console=tty3 loglevel=3
 }
