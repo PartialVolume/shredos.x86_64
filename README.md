@@ -10,7 +10,7 @@
 		</p>
 </p>
 
-# ShredOS x86_64
+# ShredOS x86_64 - Disk Eraser
 
 ## For all Intel and compatible 64 bit processors
 
