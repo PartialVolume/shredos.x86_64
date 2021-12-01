@@ -1,3 +1,7 @@
+#
+
+# This is an old version of shredos, looking for the latest & greatest? then you want [ShredOS.x86_64](https://github.com/PartialVolume/shredos.x86_64/)
+
 <!-- ShredOS LOGO -->
 <br />
 <p align="left">
