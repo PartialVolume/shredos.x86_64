@@ -96,9 +96,7 @@ Nwipe also includes the following pseudo random number generators:
 
 You can of course compile shredos from source but that can take a long time and you can run into all sorts of problems if your not familiar with compiling an operating system. So if you just want to get started with using shredos and nwipe then just download the shredos image file and write it to a USB flash drive. Please note this will over write the existing contents of your USB flash drive.
 
-Download shredos for 64 bit processors from [here](https://github.com/PartialVolume/shredos.x86_64/releases/download/v2020.05.018_x86-64_0.32.014/shredos-2020.05.018_x86-64_0.32.014_20211118.img)
-
-Download shredos for 32 bit processors (also runs on 64 bit processors) from [here](https://github.com/PartialVolume/shredos.i686/releases/download/v2020.02.005_i686-0.30.001/shredos-20210106.img)
+Download the latest shredos for either 32bit, 64bit, .img or .iso from [here](https://github.com/PartialVolume/shredos.x86_64#download-img-and-iso-files-for-burning-to-usb-flash-drives-and-cd-rdvd-r)
 
 #### Linux (and MAC) users
 
