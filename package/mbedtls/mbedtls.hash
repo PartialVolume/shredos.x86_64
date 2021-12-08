@@ -1,5 +1,4 @@
-# From https://tls.mbed.org/tech-updates/releases/mbedtls-2.16.5-and-2.7.14-released
-sha1  c36962183e05467aa1dadafcaacf90216a737866  mbedtls-2.16.5-apache.tgz
-sha256  65b4c6cec83e048fd1c675e9a29a394ea30ad0371d37b5742453f74084e7b04d  mbedtls-2.16.5-apache.tgz
+# From https://github.com/ARMmbed/mbedtls/releases/tag/v2.16.11:
+sha256  c18e7e9abf95e69e425260493720470021384a1728417042060a35d0b7b18b41  mbedtls-2.16.11.tar.gz
 # Locally calculated
 sha256  cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30  apache-2.0.txt

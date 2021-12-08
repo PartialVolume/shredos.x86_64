@@ -10,6 +10,7 @@ CLANG_SITE = https://github.com/llvm/llvm-project/releases/download/llvmorg-$(CL
 CLANG_SOURCE = clang-$(CLANG_VERSION).src.tar.xz
 CLANG_LICENSE = Apache-2.0 with exceptions
 CLANG_LICENSE_FILES = LICENSE.TXT
+CLANG_CPE_ID_VENDOR = llvm
 CLANG_SUPPORTS_IN_SOURCE_BUILD = NO
 CLANG_INSTALL_STAGING = YES
 
@@ -33,6 +34,7 @@ CLANG_CONF_OPTS += -DLLVM_TEMPORARILY_ALLOW_OLD_TOOLCHAIN=ON
 # By setting BUILD_SHARED_LIBS to OFF, we generate multiple static
 # libraries (the same way as host's clang build) and finally
 # libclang.so to be installed on the target.
+HOST_CLANG_CONF_OPTS += -DBUILD_SHARED_LIBS=OFF
 CLANG_CONF_OPTS += -DBUILD_SHARED_LIBS=OFF
 
 # Default is Debug build, which requires considerably more disk space

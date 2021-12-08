@@ -1,19 +1,21 @@
 #!/bin/sh
 
 BOARD_DIR="$(dirname $0)"
-GENIMAGE_CFG="${BOARD_DIR}/genimage.cfg"
-GENIMAGE_TMP="${BUILD_DIR}/genimage.tmp"
 
-cp ${BOARD_DIR}/boot.ini ${BINARIES_DIR}/
+${HOST_DIR}/bin/fip_create \
+	--bl30 ${BINARIES_DIR}/bl30.bin \
+	--bl301 ${BINARIES_DIR}/bl301.bin \
+	--bl31 ${BINARIES_DIR}/bl31.bin \
+	--bl33 ${BINARIES_DIR}/u-boot.bin \
+	${BINARIES_DIR}/fip.bin
 
-rm -rf "${GENIMAGE_TMP}"
+${HOST_DIR}/bin/fip_create --dump ${BINARIES_DIR}/fip.bin
 
-genimage                           \
-	--rootpath "${TARGET_DIR}"     \
-	--tmppath "${GENIMAGE_TMP}"    \
-	--inputpath "${BINARIES_DIR}"  \
-	--outputpath "${BINARIES_DIR}" \
-	--config "${GENIMAGE_CFG}"
+cat ${BINARIES_DIR}/bl2.package ${BINARIES_DIR}/fip.bin \
+	> ${BINARIES_DIR}/boot_new.bin
 
-dd if=${BINARIES_DIR}/u-boot.bin of=${BINARIES_DIR}/sdcard.img bs=1 count=442 conv=sync,notrunc
-dd if=${BINARIES_DIR}/u-boot.bin of=${BINARIES_DIR}/sdcard.img bs=512 skip=1 seek=1 conv=fsync,notrunc
+${HOST_DIR}/bin/amlbootsig ${BINARIES_DIR}/boot_new.bin ${BINARIES_DIR}/u-boot.img
+
+dd if=${BINARIES_DIR}/u-boot.img of=${BINARIES_DIR}/uboot-odc2.img bs=512 skip=96
+
+support/scripts/genimage.sh -c ${BOARD_DIR}/genimage.cfg

@@ -2,9 +2,10 @@ config BR2_PACKAGE_RT_TESTS
 	bool "rt-tests"
 	depends on BR2_TOOLCHAIN_HAS_THREADS_NPTL
 	depends on BR2_TOOLCHAIN_HEADERS_AT_LEAST_3_14 # deadline scheduler syscall
-	depends on BR2_USE_MMU # fork()
+	depends on BR2_USE_MMU # fork(), numactl
 	depends on !BR2_STATIC_LIBS # dlopen
 	depends on !BR2_TOOLCHAIN_USES_MUSL # cyclictest
+	select BR2_PACKAGE_NUMACTL
 	help
 	  Set of utilities for testing the real-time behaviour of a
 	  Linux system.
@@ -21,7 +22,7 @@ config BR2_PACKAGE_RT_TESTS
 	  case with uClibc toolchains, since the thread implementation
 	  is configurable).
 
-	  http://rt.wiki.kernel.org
+	  https://wiki.linuxfoundation.org/realtime/documentation/howto/tools/rt-tests
 
 comment "rt-tests may not work on MIPS with an external uClibc toolchain"
 	depends on BR2_PACKAGE_RT_TESTS

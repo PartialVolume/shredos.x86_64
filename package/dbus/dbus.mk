@@ -4,21 +4,25 @@
 #
 ################################################################################
 
-DBUS_VERSION = 1.12.16
+DBUS_VERSION = 1.12.20
 DBUS_SITE = https://dbus.freedesktop.org/releases/dbus
 DBUS_LICENSE = AFL-2.1 or GPL-2.0+ (library, tools), GPL-2.0+ (tools)
 DBUS_LICENSE_FILES = COPYING
+DBUS_CPE_ID_VENDOR = d-bus_project
+DBUS_CPE_ID_PRODUCT = d-bus
 DBUS_INSTALL_STAGING = YES
 
 define DBUS_PERMISSIONS
-	/usr/libexec/dbus-daemon-launch-helper f 4755 0 0 - - - - -
+	/usr/libexec/dbus-daemon-launch-helper f 4750 0 dbus - - - - -
 endef
 
 define DBUS_USERS
-	dbus -1 dbus -1 * /var/run/dbus - dbus DBus messagebus user
+	dbus -1 dbus -1 * /run/dbus - dbus DBus messagebus user
 endef
 
 DBUS_DEPENDENCIES = host-pkgconf expat
+
+DBUS_SELINUX_MODULES = dbus
 
 DBUS_CONF_OPTS = \
 	--with-dbus-user=dbus \
@@ -26,9 +30,8 @@ DBUS_CONF_OPTS = \
 	--disable-asserts \
 	--disable-xml-docs \
 	--disable-doxygen-docs \
-	--with-xml=expat \
-	--with-system-socket=/var/run/dbus/system_bus_socket \
-	--with-system-pid-file=/var/run/messagebus.pid
+	--with-system-socket=/run/dbus/system_bus_socket \
+	--with-system-pid-file=/run/messagebus.pid
 
 ifeq ($(BR2_STATIC_LIBS),y)
 DBUS_CONF_OPTS += LIBS='-pthread'
@@ -107,8 +110,8 @@ HOST_DBUS_CONF_OPTS = \
 	--disable-selinux \
 	--disable-xml-docs \
 	--disable-doxygen-docs \
-	--without-x \
-	--with-xml=expat
+	--disable-systemd \
+	--without-x
 
 # dbus for the host
 DBUS_HOST_INTROSPECT = $(HOST_DBUS_DIR)/introspect.xml

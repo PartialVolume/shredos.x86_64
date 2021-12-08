@@ -1,8 +1,9 @@
 config BR2_PACKAGE_XENOMAI_COBALT_ARCH_SUPPORTS
 	bool
-	default y
-	depends on BR2_i386 || BR2_x86_64 || (BR2_arm && !BR2_ARM_CPU_ARMV7M) || \
-		BR2_powerpc
+	default y if BR2_i386
+	default y if BR2_x86_64
+	default y if BR2_powerpc
+	default y if BR2_arm && !BR2_ARM_CPU_ARMV7M && !BR2_ARM_CPU_ARMV8A
 
 comment "xenomai needs a glibc or uClibc toolchain w/ threads"
 	depends on BR2_USE_MMU
@@ -41,17 +42,43 @@ config BR2_PACKAGE_XENOMAI
 
 if BR2_PACKAGE_XENOMAI
 
-config BR2_PACKAGE_XENOMAI_VERSION
-	string "Custom Xenomai version"
+choice
+	bool "Xenomai version"
 	help
-	  Manually select Xenomai version. If left empty, the default
-	  version will be used.
-
 	  Make sure that the selected version has a patch for your
-	  selected Linux kernel. If it does not, download and select
-	  a patch manually with
-	  BR2_LINUX_KERNEL_EXT_XENOMAI_ADEOS_PATCH, in the Linux
-	  Kernel -> Linux Kernel Extensions menu.
+	  selected Linux kernel. If it does not, download and select a
+	  patch manually with BR2_LINUX_KERNEL_EXT_XENOMAI_ADEOS_PATCH,
+	  in the Linux Kernel -> Linux Kernel Extensions menu.
+
+config BR2_PACKAGE_XENOMAI_LATEST_VERSION
+	bool "Latest version (3.0.10)"
+
+config BR2_PACKAGE_XENOMAI_CUSTOM_VERSION
+	bool "Custom version"
+
+config BR2_PACKAGE_XENOMAI_CUSTOM_TARBALL
+	bool "Custom tarball"
+
+config BR2_PACKAGE_XENOMAI_CUSTOM_GIT
+	bool "Custom Git repository"
+
+endchoice
+
+config BR2_PACKAGE_XENOMAI_REPOSITORY
+	string "URL of custom repository"
+	default "https://gitlab.denx.de/Xenomai/xenomai.git"
+	depends on BR2_PACKAGE_XENOMAI_CUSTOM_GIT
+
+config BR2_PACKAGE_XENOMAI_VERSION
+	string "Custom Xenomai version" if \
+		!BR2_PACKAGE_XENOMAI_LATEST_VERSION && \
+		!BR2_PACKAGE_XENOMAI_CUSTOM_TARBALL
+	default "3.0.10" if BR2_PACKAGE_XENOMAI_LATEST_VERSION
+	default "custom" if BR2_PACKAGE_XENOMAI_CUSTOM_TARBALL
+
+config BR2_PACKAGE_XENOMAI_CUSTOM_TARBALL_URL
+	string "URL of custom tarball"
+	depends on BR2_PACKAGE_XENOMAI_CUSTOM_TARBALL
 
 choice
 	prompt "Xenomai core"
@@ -84,6 +111,8 @@ endchoice
 config BR2_PACKAGE_XENOMAI_ENABLE_SMP
 	bool "Enable SMP support"
 	default y
+	# SMP not supported below armv6
+	depends on !BR2_ARM_CPU_ARMV4 && !BR2_ARM_CPU_ARMV5
 	help
 	  This option enables SMP support in Xenomai userspace.
 

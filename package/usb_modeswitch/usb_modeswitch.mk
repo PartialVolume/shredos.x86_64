@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-USB_MODESWITCH_VERSION = 2.6.0
+USB_MODESWITCH_VERSION = 2.6.1
 USB_MODESWITCH_SOURCE = usb-modeswitch-$(USB_MODESWITCH_VERSION).tar.bz2
 USB_MODESWITCH_SITE = http://www.draisberghof.de/usb_modeswitch
 USB_MODESWITCH_DEPENDENCIES = libusb
@@ -17,12 +17,11 @@ USB_MODESWITCH_BUILD_TARGETS = all
 USB_MODESWITCH_INSTALL_TARGETS = install-script
 else
 USB_MODESWITCH_DEPENDENCIES += jimtcl
+USB_MODESWITCH_INSTALL_TARGETS = install-common
 ifeq ($(BR2_STATIC_LIBS),y)
 USB_MODESWITCH_BUILD_TARGETS = all-with-statlink-dispatcher
-USB_MODESWITCH_INSTALL_TARGETS = install-statlink
 else
 USB_MODESWITCH_BUILD_TARGETS = all-with-dynlink-dispatcher
-USB_MODESWITCH_INSTALL_TARGETS = install-dynlink
 endif
 endif
 

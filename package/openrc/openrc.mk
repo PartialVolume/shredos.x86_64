@@ -4,10 +4,11 @@
 #
 ################################################################################
 
-OPENRC_VERSION = 0.42.1
+OPENRC_VERSION = 0.43.3
 OPENRC_SITE = $(call github,OpenRC,openrc,$(OPENRC_VERSION))
 OPENRC_LICENSE = BSD-2-Clause
 OPENRC_LICENSE_FILES = LICENSE
+OPENRC_CPE_ID_VENDOR = openrc_project
 
 OPENRC_DEPENDENCIES = ncurses
 
@@ -18,7 +19,6 @@ OPENRC_MAKE_OPTS = \
 	LIBNAME=lib \
 	LIBEXECDIR=/usr/libexec/rc \
 	MKPKGCONFIG=no \
-	MKSELINUX=no \
 	MKSYSVINIT=yes \
 	BRANDING="Buildroot $(BR2_VERSION_FULL)" \
 	CC=$(TARGET_CC)
@@ -27,6 +27,13 @@ ifeq ($(BR2_SHARED_LIBS),y)
 OPENRC_MAKE_OPTS += MKSTATICLIBS=no
 else
 OPENRC_MAKE_OPTS += MKSTATICLIBS=yes
+endif
+
+ifeq ($(BR2_PACKAGE_LIBSELINUX),y)
+OPENRC_MAKE_OPTS += MKSELINUX=yes
+OPENRC_DEPENDENCIES += libselinux
+else
+OPENRC_MAKE_OPTS += MKSELINUX=no
 endif
 
 define OPENRC_BUILD_CMDS

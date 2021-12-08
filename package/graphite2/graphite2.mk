@@ -4,12 +4,14 @@
 #
 ################################################################################
 
-GRAPHITE2_VERSION = 1.3.10
+GRAPHITE2_VERSION = 1.3.14
 GRAPHITE2_SOURCE = graphite2-$(GRAPHITE2_VERSION).tgz
-GRAPHITE2_SITE = http://downloads.sourceforge.net/project/silgraphite/graphite2
+GRAPHITE2_SITE = \
+	https://github.com/silnrsi/graphite/releases/download/$(GRAPHITE2_VERSION)
 GRAPHITE2_INSTALL_STAGING = YES
 GRAPHITE2_LICENSE = LGPL-2.1+
 GRAPHITE2_LICENSE_FILES = LICENSE
+GRAPHITE2_CPE_ID_VENDOR = sil
 
 # Avoid building docs and tests to save time
 define GRAPHITE2_DISABLE_TESTS_DOC

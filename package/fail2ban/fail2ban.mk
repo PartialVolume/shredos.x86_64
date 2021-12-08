@@ -4,11 +4,16 @@
 #
 ################################################################################
 
-FAIL2BAN_VERSION = 0.11.1
+FAIL2BAN_VERSION = 0.11.2
 FAIL2BAN_SITE = $(call github,fail2ban,fail2ban,$(FAIL2BAN_VERSION))
 FAIL2BAN_LICENSE = GPL-2.0+
 FAIL2BAN_LICENSE_FILES = COPYING
+FAIL2BAN_CPE_ID_VENDOR = fail2ban
+FAIL2BAN_SELINUX_MODULES = fail2ban
 FAIL2BAN_SETUP_TYPE = distutils
+
+# 0001-fixed-possible-RCE-vulnerability-unset-escape-variable.patch
+FAIL2BAN_IGNORE_CVES += CVE-2021-32749
 
 ifeq ($(BR2_PACKAGE_PYTHON3),y)
 define FAIL2BAN_PYTHON_2TO3
@@ -26,6 +31,13 @@ define FAIL2BAN_FIX_DEFAULT_CONFIG
 	$(SED) '/^dbfile/c\dbfile = None' $(TARGET_DIR)/etc/fail2ban/fail2ban.conf
 endef
 FAIL2BAN_POST_INSTALL_TARGET_HOOKS += FAIL2BAN_FIX_DEFAULT_CONFIG
+
+# fail2ban-python points to host python
+define FAIL2BAN_FIX_FAIL2BAN_PYTHON_SYMLINK
+	ln -snf $(if $(BR2_PACKAGE_PYTHON),python,python3) \
+		$(TARGET_DIR)/usr/bin/fail2ban-python
+endef
+FAIL2BAN_POST_INSTALL_TARGET_HOOKS += FAIL2BAN_FIX_FAIL2BAN_PYTHON_SYMLINK
 
 define FAIL2BAN_INSTALL_INIT_SYSV
 	$(INSTALL) -D -m 755 package/fail2ban/S60fail2ban \

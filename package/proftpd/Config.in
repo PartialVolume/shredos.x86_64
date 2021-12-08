@@ -29,6 +29,7 @@ config BR2_PACKAGE_PROFTPD_MOD_REDIS
 config BR2_PACKAGE_PROFTPD_MOD_SFTP
 	bool "mod_sftp support"
 	select BR2_PACKAGE_OPENSSL
+	select BR2_PACKAGE_LIBOPENSSL_ENABLE_RMD160 if BR2_PACKAGE_LIBOPENSSL
 	help
 	  Compile ProFTPD with mod_sftp support
 
@@ -46,6 +47,13 @@ config BR2_PACKAGE_PROFTPD_MOD_SQL_SQLITE
 	  Compile ProFTPD with mod_sql_sqlite support.
 
 endif
+
+config BR2_PACKAGE_PROFTPD_MOD_SFTP_SQL
+	bool "mod_sftp_sql support"
+	select BR2_PACKAGE_PROFTPD_MOD_SQL
+	select BR2_PACKAGE_PROFTPD_MOD_SFTP
+	help
+	  Compile ProFTPD with mod_sftp_sql support
 
 config BR2_PACKAGE_PROFTPD_MOD_QUOTATAB
 	bool "mod_quotatab support"

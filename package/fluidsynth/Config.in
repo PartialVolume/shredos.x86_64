@@ -3,6 +3,9 @@ config BR2_PACKAGE_FLUIDSYNTH
 	depends on BR2_USE_WCHAR # libglib2
 	depends on BR2_TOOLCHAIN_HAS_THREADS # libglib2
 	depends on BR2_USE_MMU # libglib2
+	# the .pc file installed by fluidsynth does not mention its
+	# indirect dependencies in Libs.private.
+	depends on !BR2_STATIC_LIBS
 	select BR2_PACKAGE_LIBGLIB2
 	help
 	  FluidSynth is a real-time software synthesizer based on the
@@ -86,6 +89,16 @@ comment "pulseaudio support needs a toolchain w/ dynamic library, wchar, threads
 	depends on BR2_PACKAGE_PULSEAUDIO_HAS_ATOMIC
 	depends on BR2_STATIC_LIBS || !BR2_USE_MMU || !BR2_TOOLCHAIN_HAS_THREADS
 
+config BR2_PACKAGE_FLUIDSYNTH_SDL2
+	bool "sdl2"
+	depends on !BR2_STATIC_LIBS
+	select BR2_PACKAGE_SDL2
+	help
+	  Enable SDL2 audio support.
+
+comment "SDL2 audio support needs a toolchain w/ dynamic library"
+	depends on BR2_STATIC_LIBS
+
 comment "Misc options"
 
 config BR2_PACKAGE_FLUIDSYNTH_DBUS
@@ -115,6 +128,7 @@ config BR2_PACKAGE_FLUIDSYNTH_READLINE
 
 endif # BR2_PACKAGE_FLUIDSYNTH
 
-comment "fluidsynth needs a toolchain w/ threads, wchar"
+comment "fluidsynth needs a toolchain w/ threads, wchar, dynamic library"
 	depends on BR2_USE_MMU
-	depends on !BR2_USE_WCHAR || !BR2_TOOLCHAIN_HAS_THREADS
+	depends on !BR2_USE_WCHAR || !BR2_TOOLCHAIN_HAS_THREADS || \
+		BR2_STATIC_LIBS

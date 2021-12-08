@@ -4,14 +4,15 @@
 #
 ################################################################################
 
-ELFUTILS_VERSION = 0.177
+ELFUTILS_VERSION = 0.184
 ELFUTILS_SOURCE = elfutils-$(ELFUTILS_VERSION).tar.bz2
 ELFUTILS_SITE = https://sourceware.org/elfutils/ftp/$(ELFUTILS_VERSION)
 ELFUTILS_INSTALL_STAGING = YES
 ELFUTILS_LICENSE = GPL-2.0+ or LGPL-3.0+ (library)
 ELFUTILS_LICENSE_FILES = COPYING COPYING-GPLV2 COPYING-LGPLV3
-ELFUTILS_DEPENDENCIES = zlib $(TARGET_NLS_DEPENDENCIES)
-HOST_ELFUTILS_DEPENDENCIES = host-zlib host-bzip2 host-xz
+ELFUTILS_CPE_ID_VENDOR = elfutils_project
+ELFUTILS_DEPENDENCIES = host-pkgconf zlib $(TARGET_NLS_DEPENDENCIES)
+HOST_ELFUTILS_DEPENDENCIES = host-pkgconf host-zlib host-bzip2 host-xz
 
 # We patch configure.ac
 ELFUTILS_AUTORECONF = YES
@@ -25,6 +26,7 @@ ELFUTILS_CONF_OPTS += \
 HOST_ELFUTILS_CONF_OPTS = \
 	--with-bzlib \
 	--with-lzma \
+	--without-zstd \
 	--disable-progs
 
 # elfutils gets confused when lfs mode is forced, so don't
@@ -43,10 +45,18 @@ ELFUTILS_CONF_ENV += \
 ELFUTILS_LDFLAGS = $(TARGET_LDFLAGS) \
 	$(TARGET_NLS_LIBS)
 
+ifeq ($(BR2_TOOLCHAIN_HAS_LIBATOMIC),y)
+ELFUTILS_LDFLAGS += -latomic
+endif
+
 ifeq ($(BR2_TOOLCHAIN_USES_GLIBC),)
 ELFUTILS_DEPENDENCIES += musl-fts
 ELFUTILS_LDFLAGS += -lfts
 endif
+
+# disable for now, needs "distro" support
+ELFUTILS_CONF_OPTS += --disable-libdebuginfod --disable-debuginfod
+HOST_ELFUTILS_CONF_OPTS += --disable-libdebuginfod --disable-debuginfod
 
 ELFUTILS_CONF_ENV += \
 	LDFLAGS="$(ELFUTILS_LDFLAGS)"
@@ -68,6 +78,13 @@ ELFUTILS_DEPENDENCIES += xz
 ELFUTILS_CONF_OPTS += --with-lzma
 else
 ELFUTILS_CONF_OPTS += --without-lzma
+endif
+
+ifeq ($(BR2_PACKAGE_ZSTD),y)
+ELFUTILS_DEPENDENCIES += zstd
+ELFUTILS_CONF_OPTS += --with-zstd
+else
+ELFUTILS_CONF_OPTS += --without-zstd
 endif
 
 ifeq ($(BR2_PACKAGE_ELFUTILS_PROGS),y)

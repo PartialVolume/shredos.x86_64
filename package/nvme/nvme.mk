@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-NVME_VERSION = 1.9
+NVME_VERSION = 1.12
 NVME_SITE = $(call github,linux-nvme,nvme-cli,v$(NVME_VERSION))
 NVME_LICENSE = GPL-2.0+
 NVME_LICENSE_FILES = LICENSE
@@ -16,6 +16,15 @@ NVME_DEPENDENCIES += util-linux
 NVME_MAKE_OPTS += LIBUUID=0
 else
 NVME_MAKE_OPTS += LIBUUID=1
+endif
+
+# Yes, HAVE_SYSTEMD=0 means systemd support enabled.
+# HAVE_SYSTEMD=1 means systemd support disabled.
+ifeq ($(BR2_PACKAGE_SYSTEMD),y)
+NVME_DEPENDENCIES += systemd
+NVME_MAKE_OPTS += HAVE_SYSTEMD=0
+else
+NVME_MAKE_OPTS += HAVE_SYSTEMD=1
 endif
 
 define NVME_BUILD_CMDS

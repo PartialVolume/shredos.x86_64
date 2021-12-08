@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-LIBRTLSDR_VERSION = 0.6.0
+LIBRTLSDR_VERSION = ed0317e6a58c098874ac58b769cf2e609c18d9a5
 LIBRTLSDR_SITE = $(call github,steve-m,librtlsdr,$(LIBRTLSDR_VERSION))
 LIBRTLSDR_LICENSE = GPL-2.0+
 LIBRTLSDR_LICENSE_FILES = COPYING
@@ -28,15 +28,10 @@ ifeq ($(BR2_PACKAGE_LIBRTLSDR_DETACH_DRIVER),y)
 LIBRTLSDR_CONF_OPTS += -DDETACH_KERNEL_DRIVER=1
 endif
 
-# In case of static-lib-only builds, CMake's FindThreads.cmake code tries to
-# get the right flags, checking first for -lpthreads, then -lpthread, and lastly
-# for -pthread.
-# The 2 first link checks fail because of undefined symbols: __libc_setup_tls.
-# In the later check, CMake successfully compiles and links the test program,
-# but it also tries to run it, which is wrong when cross-compiling.
-#
-# The following CMake variable only disables the TRY_RUN call in the -pthread
-# test.
-LIBRTLSDR_CONF_OPTS += -DTHREADS_PTHREAD_ARG=OFF
+ifeq ($(BR2_PACKAGE_LIBRTLSDR_ZEROCOPY),y)
+LIBRTLSDR_CONF_OPTS += -DENABLE_ZEROCOPY=ON
+else
+LIBRTLSDR_CONF_OPTS += -DENABLE_ZEROCOPY=OFF
+endif
 
 $(eval $(cmake-package))

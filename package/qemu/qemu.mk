@@ -4,23 +4,23 @@
 #
 ################################################################################
 
-ifeq ($(BR2_csky),y)
-QEMU_VERSION = b517e1dc3125a57555d67a8deed9eac7b42288e2
-QEMU_SITE = $(call github,c-sky,qemu,$(QEMU_VERSION))
-else
-QEMU_VERSION = 4.2.0
+QEMU_VERSION = 6.0.0
 QEMU_SOURCE = qemu-$(QEMU_VERSION).tar.xz
 QEMU_SITE = http://download.qemu.org
-endif
 QEMU_LICENSE = GPL-2.0, LGPL-2.1, MIT, BSD-3-Clause, BSD-2-Clause, Others/BSD-1c
 QEMU_LICENSE_FILES = COPYING COPYING.LIB
 # NOTE: there is no top-level license file for non-(L)GPL licenses;
 #       the non-(L)GPL license texts are specified in the affected
 #       individual source files.
+QEMU_CPE_ID_VENDOR = qemu
 
 #-------------------------------------------------------------
+
+# The build system is now partly based on Meson.
+# However, building is still done with configure and make as in previous versions of QEMU.
+
 # Target-qemu
-QEMU_DEPENDENCIES = host-pkgconf libglib2 zlib pixman host-python3
+QEMU_DEPENDENCIES = host-meson host-pkgconf libglib2 zlib pixman host-python3
 
 # Need the LIBS variable because librt and libm are
 # not automatically pulled. :-(
@@ -56,8 +56,16 @@ endif
 
 endif
 
-# There is no "--enable-slirp"
-ifeq ($(BR2_PACKAGE_QEMU_SLIRP),)
+ifeq ($(BR2_TOOLCHAIN_USES_UCLIBC),y)
+QEMU_OPTS += --disable-vhost-user
+else
+QEMU_OPTS += --enable-vhost-user
+endif
+
+ifeq ($(BR2_PACKAGE_QEMU_SLIRP),y)
+QEMU_OPTS += --enable-slirp=system
+QEMU_DEPENDENCIES += slirp
+else
 QEMU_OPTS += --disable-slirp
 endif
 
@@ -82,6 +90,13 @@ else
 QEMU_OPTS += --disable-tools
 endif
 
+ifeq ($(BR2_PACKAGE_LIBFUSE3),y)
+QEMU_OPTS += --enable-fuse --enable-fuse-lseek
+QEMU_DEPENDENCIES += libfuse3
+else
+QEMU_OPTS += --disable-fuse --disable-fuse-lseek
+endif
+
 ifeq ($(BR2_PACKAGE_LIBSECCOMP),y)
 QEMU_OPTS += --enable-seccomp
 QEMU_DEPENDENCIES += libseccomp
@@ -103,6 +118,27 @@ else
 QEMU_OPTS += --disable-libusb
 endif
 
+ifeq ($(BR2_PACKAGE_LIBVNCSERVER),y)
+QEMU_OPTS += \
+	--enable-vnc \
+	--disable-vnc-sasl
+QEMU_DEPENDENCIES += libvncserver
+ifeq ($(BR2_PACKAGE_LIBPNG),y)
+QEMU_OPTS += --enable-vnc-png
+QEMU_DEPENDENCIES += libpng
+else
+QEMU_OPTS += --disable-vnc-png
+endif
+ifeq ($(BR2_PACKAGE_JPEG),y)
+QEMU_OPTS += --enable-vnc-jpeg
+QEMU_DEPENDENCIES += jpeg
+else
+QEMU_OPTS += --disable-vnc-jpeg
+endif
+else
+QEMU_OPTS += --disable-vnc
+endif
+
 ifeq ($(BR2_PACKAGE_NETTLE),y)
 QEMU_OPTS += --enable-nettle
 QEMU_DEPENDENCIES += nettle
@@ -115,6 +151,20 @@ QEMU_OPTS += --enable-numa
 QEMU_DEPENDENCIES += numactl
 else
 QEMU_OPTS += --disable-numa
+endif
+
+ifeq ($(BR2_PACKAGE_SPICE),y)
+QEMU_OPTS += --enable-spice
+QEMU_DEPENDENCIES += spice
+else
+QEMU_OPTS += --disable-spice
+endif
+
+ifeq ($(BR2_PACKAGE_USBREDIR),y)
+QEMU_OPTS += --enable-usb-redir
+QEMU_DEPENDENCIES += usbredir
+else
+QEMU_OPTS += --disable-usb-redir
 endif
 
 # Override CPP, as it expects to be able to call it like it'd
@@ -131,26 +181,25 @@ define QEMU_CONFIGURE_CMDS
 			--prefix=/usr \
 			--cross-prefix=$(TARGET_CROSS) \
 			--audio-drv-list= \
-			--python=$(HOST_DIR)/bin/python3 \
+			--meson=$(HOST_DIR)/bin/meson \
+			--ninja=$(HOST_DIR)/bin/ninja \
 			--enable-kvm \
 			--enable-attr \
 			--enable-vhost-net \
 			--disable-bsd-user \
+			--disable-containers \
 			--disable-xen \
-			--disable-vnc \
 			--disable-virtfs \
 			--disable-brlapi \
 			--disable-curses \
 			--disable-curl \
-			--disable-bluez \
 			--disable-vde \
 			--disable-linux-aio \
+			--disable-linux-io-uring \
 			--disable-cap-ng \
 			--disable-docs \
-			--disable-spice \
 			--disable-rbd \
 			--disable-libiscsi \
-			--disable-usb-redir \
 			--disable-strip \
 			--disable-sparse \
 			--disable-mpath \
@@ -162,8 +211,11 @@ define QEMU_CONFIGURE_CMDS
 			--disable-vhost-crypto \
 			--disable-libxml2 \
 			--disable-capstone \
-			--disable-git-update \
+			--with-git-submodules=ignore \
 			--disable-opengl \
+			--disable-vhost-user-blk-server \
+			--disable-virtiofsd \
+			--disable-tests \
 			$(QEMU_OPTS)
 endef
 
@@ -182,7 +234,7 @@ $(eval $(generic-package))
 #-------------------------------------------------------------
 # Host-qemu
 
-HOST_QEMU_DEPENDENCIES = host-pkgconf host-zlib host-libglib2 host-pixman host-python3
+HOST_QEMU_DEPENDENCIES = host-meson host-pkgconf host-zlib host-libglib2 host-pixman host-python3
 
 #       BR ARCH         qemu
 #       -------         ----
@@ -199,6 +251,7 @@ HOST_QEMU_DEPENDENCIES = host-pkgconf host-zlib host-libglib2 host-pixman host-p
 #       mips64          mips64
 #       mips64el        mips64el
 #       nios2           nios2
+#       or1k            or1k
 #       powerpc         ppc
 #       powerpc64       ppc64
 #       powerpc64le     ppc64 (system) / ppc64le (usermode)
@@ -237,13 +290,6 @@ endif
 ifeq ($(HOST_QEMU_ARCH),sh4aeb)
 HOST_QEMU_ARCH = sh4eb
 endif
-ifeq ($(HOST_QEMU_ARCH),csky)
-ifeq ($(BR2_ck610),y)
-HOST_QEMU_ARCH = cskyv1
-else
-HOST_QEMU_ARCH = cskyv2
-endif
-endif
 HOST_QEMU_SYS_ARCH ?= $(HOST_QEMU_ARCH)
 
 HOST_QEMU_CFLAGS = $(HOST_CFLAGS)
@@ -275,11 +321,12 @@ HOST_QEMU_OPTS += --enable-vde
 HOST_QEMU_DEPENDENCIES += host-vde2
 endif
 
+# virtfs-proxy-helper is the only user of libcap-ng.
 ifeq ($(BR2_PACKAGE_HOST_QEMU_VIRTFS),y)
-HOST_QEMU_OPTS += --enable-virtfs
-HOST_QEMU_DEPENDENCIES += host-libcap
+HOST_QEMU_OPTS += --enable-virtfs --enable-cap-ng
+HOST_QEMU_DEPENDENCIES += host-libcap-ng
 else
-HOST_QEMU_OPTS += --disable-virtfs
+HOST_QEMU_OPTS += --disable-virtfs --disable-cap-ng
 endif
 
 ifeq ($(BR2_PACKAGE_HOST_QEMU_USB),y)
@@ -302,13 +349,21 @@ define HOST_QEMU_CONFIGURE_CMDS
 		--host-cc="$(HOSTCC)" \
 		--extra-cflags="$(HOST_QEMU_CFLAGS)" \
 		--extra-ldflags="$(HOST_LDFLAGS)" \
-		--python=$(HOST_DIR)/bin/python3 \
+		--meson=$(HOST_DIR)/bin/meson \
+		--ninja=$(HOST_DIR)/bin/ninja \
 		--disable-bzip2 \
+		--disable-containers \
+		--disable-curl \
+		--disable-docs \
 		--disable-libssh \
+		--disable-linux-io-uring \
 		--disable-sdl \
+		--disable-vhost-user-blk-server \
+		--disable-virtiofsd \
 		--disable-vnc-jpeg \
 		--disable-vnc-png \
 		--disable-vnc-sasl \
+		--disable-tests \
 		$(HOST_QEMU_OPTS)
 endef
 

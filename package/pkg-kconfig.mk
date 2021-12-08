@@ -12,12 +12,12 @@
 ################################################################################
 
 # Macro to update back the custom (def)config file
+# Must only be called if $(PKG)_KCONFIG_FILE is set and $(PKG)_KCONFIG_DEFCONFIG)
+# is not set.
 # $(1): file to copy from
 define kconfig-package-update-config
 	@$(if $($(PKG)_KCONFIG_FRAGMENT_FILES), \
 		echo "Unable to perform $(@) when fragment files are set"; exit 1)
-	@$(if $($(PKG)_KCONFIG_DEFCONFIG), \
-		echo "Unable to perform $(@) when using a defconfig rule"; exit 1)
 	$(Q)if [ -d $($(PKG)_KCONFIG_FILE) ]; then \
 		echo "Unable to perform $(@) when $($(PKG)_KCONFIG_FILE) is a directory"; \
 		exit 1; \
@@ -28,12 +28,12 @@ define kconfig-package-update-config
 endef
 
 PKG_KCONFIG_COMMON_OPTS = \
-	HOSTCC=$(HOSTCC_NOCCACHE)
+	HOSTCC="$(HOSTCC_NOCCACHE)"
 
 # Macro to save the defconfig file
 # $(1): the name of the package in upper-case letters
 define kconfig-package-savedefconfig
-	$($(1)_MAKE_ENV) $(MAKE) -C $($(1)_DIR) \
+	$($(1)_MAKE_ENV) $($(1)_MAKE) -C $($(1)_DIR) \
 		$(PKG_KCONFIG_COMMON_OPTS) $($(1)_KCONFIG_OPTS) savedefconfig
 endef
 
@@ -78,22 +78,47 @@ endef
 
 define inner-kconfig-package
 
+# Default values
+$(2)_MAKE ?= $$(MAKE)
+$(2)_KCONFIG_EDITORS ?= menuconfig
+$(2)_KCONFIG_OPTS ?=
+$(2)_KCONFIG_FIXUP_CMDS ?=
+$(2)_KCONFIG_FRAGMENT_FILES ?=
+$(2)_KCONFIG_DOTCONFIG ?= .config
+$(2)_KCONFIG_SUPPORTS_DEFCONFIG ?= YES
+
 # Register the kconfig dependencies as regular dependencies, so that
 # they are also accounted for in the generated graphs.
 $(2)_DEPENDENCIES += $$($(2)_KCONFIG_DEPENDENCIES)
+
+# Generate the kconfig-related help: one entry for each editor.
+# Additionally, if the package is *not* using an in-tree defconfig
+# name, an entry for updating the package configuration file.
+ifndef $(2)_HELP_CMDS
+define $(2)_HELP_CMDS
+	$$(foreach editor, $$($(2)_KCONFIG_EDITORS), \
+		@printf '  %-22s - Run %s %s\n' $(1)-$$(editor) $(1) $$(editor)
+	)
+	$$(if $$($(2)_KCONFIG_DEFCONFIG),,\
+		$$(if $$(filter YES,$$($(2)_KCONFIG_SUPPORTS_DEFCONFIG)),\
+			@printf '  %-22s - Save the %s configuration as a defconfig file\n' \
+				$(1)-update-defconfig $(1)
+			@printf '  %-22s     to %s\n' '' $$($(2)_KCONFIG_FILE)
+			@printf '  %-22s     (or override with %s_KCONFIG_FILE)\n' '' $(2)
+		)
+		@printf '  %-22s - Save the %s configuration as a full .config file\n' \
+			$(1)-update-config $(1)
+		@printf '  %-22s     to %s\n' '' $$($(2)_KCONFIG_FILE)
+		@printf '  %-22s     (or override with %s_KCONFIG_FILE)\n' '' $(2)
+	)
+endef
+endif
 
 # Call the generic package infrastructure to generate the necessary
 # make targets.
 # Note: this must be done _before_ attempting to use $$($(2)_DIR) in a
 # dependency expression
 $(call inner-generic-package,$(1),$(2),$(3),$(4))
-
-# Default values
-$(2)_KCONFIG_EDITORS ?= menuconfig
-$(2)_KCONFIG_OPTS ?=
-$(2)_KCONFIG_FIXUP_CMDS ?=
-$(2)_KCONFIG_FRAGMENT_FILES ?=
-$(2)_KCONFIG_DOTCONFIG ?= .config
 
 # Do not use $(2)_KCONFIG_DOTCONFIG as stamp file, because the package
 # buildsystem (e.g. linux >= 4.19) may touch it, thus rendering our
@@ -116,13 +141,13 @@ $(2)_KCONFIG_STAMP_DOTCONFIG = .stamp_dotconfig
 $$($(2)_KCONFIG_FILE) $$($(2)_KCONFIG_FRAGMENT_FILES): | $(1)-patch
 	for f in $$($(2)_KCONFIG_FILE) $$($(2)_KCONFIG_FRAGMENT_FILES); do \
 		if [ ! -f "$$$${f}" ]; then \
-			printf "Kconfig fragment '%s' for '%s' does not exist\n" "$$$${f}" "$(1)"; \
+			printf "Kconfig file or fragment '%s' for '%s' does not exist\n" "$$$${f}" "$(1)"; \
 			exit 1; \
 		fi; \
 	done
 
 $(2)_KCONFIG_MAKE = \
-	$$($(2)_MAKE_ENV) $$(MAKE) -C $$($(2)_DIR) \
+	$$($(2)_MAKE_ENV) $$($(2)_MAKE) -C $$($(2)_DIR) \
 		$$(PKG_KCONFIG_COMMON_OPTS) $$($(2)_KCONFIG_OPTS)
 
 # $(2)_KCONFIG_MAKE may already rely on shell expansion. As the $() syntax
@@ -166,6 +191,7 @@ define $(2)_FIXUP_DOT_CONFIG
 	$$(Q)touch $$($(2)_DIR)/.stamp_kconfig_fixup_done
 endef
 
+$$($(2)_DIR)/.stamp_kconfig_fixup_done: PKG=$(2)
 $$($(2)_DIR)/.stamp_kconfig_fixup_done: $$($(2)_DIR)/$$($(2)_KCONFIG_STAMP_DOTCONFIG)
 	$$($(2)_FIXUP_DOT_CONFIG)
 
@@ -223,8 +249,9 @@ $(2)_CONFIGURATOR_MAKE_ENV = \
 # end up having a valid @D.
 #
 $$(addprefix $(1)-,$$($(2)_KCONFIG_EDITORS)): $(1)-%: $$($(2)_DIR)/.kconfig_editor_%
+$$($(2)_DIR)/.kconfig_editor_%: PKG=$(2)
 $$($(2)_DIR)/.kconfig_editor_%: $$($(2)_DIR)/.stamp_kconfig_fixup_done
-	$$($(2)_CONFIGURATOR_MAKE_ENV) $$(MAKE) -C $$($(2)_DIR) \
+	$$($(2)_CONFIGURATOR_MAKE_ENV) $$($(2)_MAKE) -C $$($(2)_DIR) \
 		$$(PKG_KCONFIG_COMMON_OPTS) $$($(2)_KCONFIG_OPTS) $$(*)
 	rm -f $$($(2)_DIR)/.stamp_{kconfig_fixup_done,configured,built}
 	rm -f $$($(2)_DIR)/.stamp_{target,staging,images}_installed
@@ -252,23 +279,33 @@ $(1)-check-configuration-done:
 		exit 1; \
 	fi
 
+ifeq ($$($(2)_KCONFIG_SUPPORTS_DEFCONFIG),YES)
+.PHONY: $(1)-savedefconfig
 $(1)-savedefconfig: $(1)-check-configuration-done
 	$$(call kconfig-package-savedefconfig,$(2))
+endif
 
+ifeq ($$($(2)_KCONFIG_DEFCONFIG),)
 # Target to copy back the configuration to the source configuration file
 # Even though we could use 'cp --preserve-timestamps' here, the separate
 # cp and 'touch --reference' is used for symmetry with $(1)-update-defconfig.
+.PHONY: $(1)-update-config
 $(1)-update-config: PKG=$(2)
 $(1)-update-config: $(1)-check-configuration-done
 	$$(call kconfig-package-update-config,$$($(2)_KCONFIG_DOTCONFIG))
 
+ifeq ($$($(2)_KCONFIG_SUPPORTS_DEFCONFIG),YES)
 # Note: make sure the timestamp of the stored configuration is not newer than
 # the .config to avoid a useless rebuild. Note that, contrary to
 # $(1)-update-config, the reference for 'touch' is _not_ the file from which
 # we copy.
+.PHONY: $(1)-update-defconfig
 $(1)-update-defconfig: PKG=$(2)
 $(1)-update-defconfig: $(1)-savedefconfig
 	$$(call kconfig-package-update-config,defconfig)
+endif
+
+endif
 
 # Target to output differences between the configuration obtained via the
 # defconfig + fragments (if any) and the current configuration.
@@ -287,10 +324,7 @@ $(1)-diff-config: $(1)-check-configuration-done
 endif # package enabled
 
 .PHONY: \
-	$(1)-update-config \
-	$(1)-update-defconfig \
 	$(1)-diff-config \
-	$(1)-savedefconfig \
 	$(1)-check-configuration-done \
 	$$($(2)_DIR)/.kconfig_editor_% \
 	$$(addprefix $(1)-,$$($(2)_KCONFIG_EDITORS))

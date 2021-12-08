@@ -4,11 +4,13 @@
 #
 ################################################################################
 
-OPENLDAP_VERSION = 2.4.48
+OPENLDAP_VERSION = 2.4.59
 OPENLDAP_SOURCE = openldap-$(OPENLDAP_VERSION).tgz
-OPENLDAP_SITE = http://www.openldap.org/software/download/OpenLDAP/openldap-release
+OPENLDAP_SITE = https://www.openldap.org/software/download/OpenLDAP/openldap-release
 OPENLDAP_LICENSE = OpenLDAP Public License
 OPENLDAP_LICENSE_FILES = LICENSE
+OPENLDAP_CPE_ID_VENDOR = openldap
+OPENLDAP_SELINUX_MODULES = ldap
 OPENLDAP_INSTALL_STAGING = YES
 OPENLDAP_DEPENDENCIES = host-pkgconf
 

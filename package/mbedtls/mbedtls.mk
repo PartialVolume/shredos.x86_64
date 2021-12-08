@@ -4,15 +4,16 @@
 #
 ################################################################################
 
-MBEDTLS_SITE = https://tls.mbed.org/code/releases
-MBEDTLS_VERSION = 2.16.5
-MBEDTLS_SOURCE = mbedtls-$(MBEDTLS_VERSION)-apache.tgz
+MBEDTLS_VERSION = 2.16.11
+MBEDTLS_SITE = $(call github,ARMmbed,mbedtls,v$(MBEDTLS_VERSION))
 MBEDTLS_CONF_OPTS = \
 	-DENABLE_PROGRAMS=$(if $(BR2_PACKAGE_MBEDTLS_PROGRAMS),ON,OFF) \
 	-DENABLE_TESTING=OFF
 MBEDTLS_INSTALL_STAGING = YES
 MBEDTLS_LICENSE = Apache-2.0
 MBEDTLS_LICENSE_FILES = apache-2.0.txt
+MBEDTLS_CPE_ID_VENDOR = arm
+MBEDTLS_CPE_ID_PRODUCT = mbed_tls
 
 # This is mandatory for hiawatha
 ifeq ($(BR2_TOOLCHAIN_HAS_THREADS),y)

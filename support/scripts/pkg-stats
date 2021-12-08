@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 # Copyright (C) 2009 by Thomas Petazzoni <thomas.petazzoni@free-electrons.com>
 #
@@ -16,31 +16,23 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 
+import aiohttp
 import argparse
+import asyncio
 import datetime
 import fnmatch
 import os
 from collections import defaultdict
 import re
 import subprocess
-import requests  # URL checking
 import json
-import ijson
-import certifi
-import distutils.version
-import time
-import gzip
 import sys
-from urllib3 import HTTPSConnectionPool
-from urllib3.exceptions import HTTPError
-from multiprocessing import Pool
 
-sys.path.append('utils/')
+brpath = os.path.normpath(os.path.join(os.path.dirname(__file__), "..", ".."))
+
+sys.path.append(os.path.join(brpath, "utils"))
 from getdeveloperlib import parse_developers  # noqa: E402
-
-NVD_START_YEAR = 2002
-NVD_JSON_VERSION = "1.0"
-NVD_BASE_URL = "https://nvd.nist.gov/feeds/json/cve/" + NVD_JSON_VERSION
+from cpedb import CPEDB  # noqa: E402
 
 INFRA_RE = re.compile(r"\$\(eval \$\(([a-z-]*)-package\)\)")
 URL_RE = re.compile(r"\s*https?://\S*\s*$")
@@ -49,10 +41,6 @@ RM_API_STATUS_ERROR = 1
 RM_API_STATUS_FOUND_BY_DISTRO = 2
 RM_API_STATUS_FOUND_BY_PATTERN = 3
 RM_API_STATUS_NOT_FOUND = 4
-
-# Used to make multiple requests to the same host. It is global
-# because it's used by sub-processes.
-http_pool = None
 
 
 class Defconfig:
@@ -79,7 +67,7 @@ def get_defconfig_list():
     """
     return [
         Defconfig(name[:-len('_defconfig')], os.path.join('configs', name))
-        for name in os.listdir('configs')
+        for name in os.listdir(os.path.join(brpath, 'configs'))
         if name.endswith('_defconfig')
     ]
 
@@ -89,6 +77,7 @@ class Package:
     all_license_files = list()
     all_versions = dict()
     all_ignored_cves = dict()
+    all_cpeids = dict()
     # This is the list of all possible checks. Add new checks to this list so
     # a tool that post-processeds the json output knows the checks before
     # iterating over the packages.
@@ -109,7 +98,9 @@ class Package:
         self.current_version = None
         self.url = None
         self.url_worker = None
+        self.cpeid = None
         self.cves = list()
+        self.ignored_cves = list()
         self.latest_version = {'status': RM_API_STATUS_ERROR, 'version': None, 'id': None}
         self.status = {}
 
@@ -121,9 +112,10 @@ class Package:
         Fills in the .url field
         """
         self.status['url'] = ("warning", "no Config.in")
-        for filename in os.listdir(os.path.dirname(self.path)):
+        pkgdir = os.path.dirname(os.path.join(brpath, self.path))
+        for filename in os.listdir(pkgdir):
             if fnmatch.fnmatch(filename, 'Config.*'):
-                fp = open(os.path.join(os.path.dirname(self.path), filename), "r")
+                fp = open(os.path.join(pkgdir, filename), "r")
                 for config_line in fp:
                     if URL_RE.match(config_line):
                         self.url = config_line.strip()
@@ -139,7 +131,15 @@ class Package:
 
     @property
     def has_valid_infra(self):
+        if self.infras is None:
+            return False
+        return len(self.infras) > 0
+
+    @property
+    def is_actual_package(self):
         try:
+            if not self.has_valid_infra:
+                return False
             if self.infras[0][1] == 'virtual':
                 return False
         except IndexError:
@@ -151,10 +151,10 @@ class Package:
         Fills in the .infras field
         """
         self.infras = list()
-        with open(self.path, 'r') as f:
+        with open(os.path.join(brpath, self.path), 'r') as f:
             lines = f.readlines()
-            for l in lines:
-                match = INFRA_RE.match(l)
+            for line in lines:
+                match = INFRA_RE.match(line)
                 if not match:
                     continue
                 infra = match.group(1)
@@ -167,7 +167,7 @@ class Package:
         """
         Fills in the .status['license'] and .status['license-files'] fields
         """
-        if not self.has_valid_infra:
+        if not self.is_actual_package:
             self.status['license'] = ("na", "no valid package infra")
             self.status['license-files'] = ("na", "no valid package infra")
             return
@@ -185,13 +185,13 @@ class Package:
         """
         Fills in the .status['hash'] field
         """
-        if not self.has_valid_infra:
+        if not self.is_actual_package:
             self.status['hash'] = ("na", "no valid package infra")
             self.status['hash-license'] = ("na", "no valid package infra")
             return
 
         hashpath = self.path.replace(".mk", ".hash")
-        if os.path.exists(hashpath):
+        if os.path.exists(os.path.join(brpath, hashpath)):
             self.status['hash'] = ("ok", "found")
         else:
             self.status['hash'] = ("error", "missing")
@@ -200,11 +200,11 @@ class Package:
         """
         Fills in the .patch_count, .patch_files and .status['patches'] fields
         """
-        if not self.has_valid_infra:
+        if not self.is_actual_package:
             self.status['patches'] = ("na", "no valid package infra")
             return
 
-        pkgdir = os.path.dirname(self.path)
+        pkgdir = os.path.dirname(os.path.join(brpath, self.path))
         for subdir, _, _ in os.walk(pkgdir):
             self.patch_files = fnmatch.filter(os.listdir(subdir), '*.patch')
 
@@ -223,12 +223,31 @@ class Package:
         if var in self.all_versions:
             self.current_version = self.all_versions[var]
 
+    def set_cpeid(self):
+        """
+        Fills in the .cpeid field
+        """
+        var = self.pkgvar()
+        if not self.is_actual_package:
+            self.status['cpe'] = ("na", "N/A - virtual pkg")
+            return
+        if not self.current_version:
+            self.status['cpe'] = ("na", "no version information available")
+            return
+
+        if var in self.all_cpeids:
+            self.cpeid = self.all_cpeids[var]
+            # Set a preliminary status, it might be overridden by check_package_cpes()
+            self.status['cpe'] = ("warning", "not checked against CPE dictionnary")
+        else:
+            self.status['cpe'] = ("error", "no verified CPE identifier")
+
     def set_check_package_warnings(self):
         """
         Fills in the .warnings and .status['pkg-check'] fields
         """
-        cmd = ["./utils/check-package"]
-        pkgdir = os.path.dirname(self.path)
+        cmd = [os.path.join(brpath, "utils/check-package")]
+        pkgdir = os.path.dirname(os.path.join(brpath, self.path))
         self.status['pkg-check'] = ("error", "Missing")
         for root, dirs, files in os.walk(pkgdir):
             for f in files:
@@ -246,11 +265,11 @@ class Package:
                     self.status['pkg-check'] = ("error", "{} warnings".format(self.warnings))
                 return
 
-    def is_cve_ignored(self, cve):
+    def set_ignored_cves(self):
         """
-        Tells if the CVE is ignored by the package
+        Give the list of CVEs ignored by the package
         """
-        return cve in self.all_ignored_cves.get(self.pkgvar(), [])
+        self.ignored_cves = list(self.all_ignored_cves.get(self.pkgvar(), []))
 
     def set_developers(self, developers):
         """
@@ -268,7 +287,13 @@ class Package:
             self.status['developers'] = ("warning", "no developers")
 
     def is_status_ok(self, name):
-        return self.status[name][0] == 'ok'
+        return name in self.status and self.status[name][0] == 'ok'
+
+    def is_status_error(self, name):
+        return name in self.status and self.status[name][0] == 'error'
+
+    def is_status_na(self, name):
+        return name in self.status and self.status[name][0] == 'na'
 
     def __eq__(self, other):
         return self.path == other.path
@@ -280,113 +305,6 @@ class Package:
         return "%s (path='%s', license='%s', license_files='%s', hash='%s', patches=%d)" % \
             (self.name, self.path, self.is_status_ok('license'),
              self.is_status_ok('license-files'), self.status['hash'], self.patch_count)
-
-
-class CVE:
-    """An accessor class for CVE Items in NVD files"""
-    def __init__(self, nvd_cve):
-        """Initialize a CVE from its NVD JSON representation"""
-        self.nvd_cve = nvd_cve
-
-    @staticmethod
-    def download_nvd_year(nvd_path, year):
-        metaf = "nvdcve-%s-%s.meta" % (NVD_JSON_VERSION, year)
-        path_metaf = os.path.join(nvd_path, metaf)
-        jsonf_gz = "nvdcve-%s-%s.json.gz" % (NVD_JSON_VERSION, year)
-        path_jsonf_gz = os.path.join(nvd_path, jsonf_gz)
-
-        # If the database file is less than a day old, we assume the NVD data
-        # locally available is recent enough.
-        if os.path.exists(path_jsonf_gz) and os.stat(path_jsonf_gz).st_mtime >= time.time() - 86400:
-            return path_jsonf_gz
-
-        # If not, we download the meta file
-        url = "%s/%s" % (NVD_BASE_URL, metaf)
-        print("Getting %s" % url)
-        page_meta = requests.get(url)
-        page_meta.raise_for_status()
-
-        # If the meta file already existed, we compare the existing
-        # one with the data newly downloaded. If they are different,
-        # we need to re-download the database.
-        # If the database does not exist locally, we need to redownload it in
-        # any case.
-        if os.path.exists(path_metaf) and os.path.exists(path_jsonf_gz):
-            meta_known = open(path_metaf, "r").read()
-            if page_meta.text == meta_known:
-                return path_jsonf_gz
-
-        # Grab the compressed JSON NVD, and write files to disk
-        url = "%s/%s" % (NVD_BASE_URL, jsonf_gz)
-        print("Getting %s" % url)
-        page_json = requests.get(url)
-        page_json.raise_for_status()
-        open(path_jsonf_gz, "wb").write(page_json.content)
-        open(path_metaf, "w").write(page_meta.text)
-        return path_jsonf_gz
-
-    @classmethod
-    def read_nvd_dir(cls, nvd_dir):
-        """
-        Iterate over all the CVEs contained in NIST Vulnerability Database
-        feeds since NVD_START_YEAR. If the files are missing or outdated in
-        nvd_dir, a fresh copy will be downloaded, and kept in .json.gz
-        """
-        for year in range(NVD_START_YEAR, datetime.datetime.now().year + 1):
-            filename = CVE.download_nvd_year(nvd_dir, year)
-            try:
-                content = ijson.items(gzip.GzipFile(filename), 'CVE_Items.item')
-            except:  # noqa: E722
-                print("ERROR: cannot read %s. Please remove the file then rerun this script" % filename)
-                raise
-            for cve in content:
-                yield cls(cve['cve'])
-
-    def each_product(self):
-        """Iterate over each product section of this cve"""
-        for vendor in self.nvd_cve['affects']['vendor']['vendor_data']:
-            for product in vendor['product']['product_data']:
-                yield product
-
-    @property
-    def identifier(self):
-        """The CVE unique identifier"""
-        return self.nvd_cve['CVE_data_meta']['ID']
-
-    @property
-    def pkg_names(self):
-        """The set of package names referred by this CVE definition"""
-        return set(p['product_name'] for p in self.each_product())
-
-    def affects(self, br_pkg):
-        """
-        True if the Buildroot Package object passed as argument is affected
-        by this CVE.
-        """
-        if br_pkg.is_cve_ignored(self.identifier):
-            return False
-
-        for product in self.each_product():
-            if product['product_name'] != br_pkg.name:
-                continue
-
-            for v in product['version']['version_data']:
-                if v["version_affected"] == "=":
-                    if br_pkg.current_version == v["version_value"]:
-                        return True
-                elif v["version_affected"] == "<=":
-                    pkg_version = distutils.version.LooseVersion(br_pkg.current_version)
-                    if not hasattr(pkg_version, "version"):
-                        print("Cannot parse package '%s' version '%s'" % (br_pkg.name, br_pkg.current_version))
-                        continue
-                    cve_affected_version = distutils.version.LooseVersion(v["version_value"])
-                    if not hasattr(cve_affected_version, "version"):
-                        print("Cannot parse CVE affected version '%s'" % v["version_value"])
-                        continue
-                    return pkg_version <= cve_affected_version
-                else:
-                    print("version_affected: %s" % v['version_affected'])
-        return False
 
 
 def get_pkglist(npackages, package_list):
@@ -412,7 +330,6 @@ def get_pkglist(npackages, package_list):
                      "package/x11r7/x11r7.mk",
                      "package/doc-asciidoc.mk",
                      "package/pkg-.*.mk",
-                     "package/nvidia-tegra23/nvidia-tegra23.mk",
                      "toolchain/toolchain-external/pkg-toolchain-external.mk",
                      "toolchain/toolchain-external/toolchain-external.mk",
                      "toolchain/toolchain.mk",
@@ -420,11 +337,12 @@ def get_pkglist(npackages, package_list):
                      "toolchain/toolchain-wrapper.mk"]
     packages = list()
     count = 0
-    for root, dirs, files in os.walk("."):
+    for root, dirs, files in os.walk(brpath):
+        root = os.path.relpath(root, brpath)
         rootdir = root.split("/")
-        if len(rootdir) < 2:
+        if len(rootdir) < 1:
             continue
-        if rootdir[1] not in WALK_USEFUL_SUBDIRS:
+        if rootdir[0] not in WALK_USEFUL_SUBDIRS:
             continue
         for f in files:
             if not f.endswith(".mk"):
@@ -436,8 +354,7 @@ def get_pkglist(npackages, package_list):
             pkgpath = os.path.join(root, f)
             skip = False
             for exclude in WALK_EXCLUDES:
-                # pkgpath[2:] strips the initial './'
-                if re.match(exclude, pkgpath[2:]):
+                if re.match(exclude, pkgpath):
                     skip = True
                     continue
             if skip:
@@ -450,10 +367,16 @@ def get_pkglist(npackages, package_list):
     return packages
 
 
+def get_config_packages():
+    cmd = ["make", "--no-print-directory", "show-info"]
+    js = json.loads(subprocess.check_output(cmd))
+    return set([v["name"] for v in js.values()])
+
+
 def package_init_make_info():
     # Fetch all variables at once
     variables = subprocess.check_output(["make", "BR2_HAVE_DOT_CONFIG=y", "-s", "printvars",
-                                         "VARS=%_LICENSE %_LICENSE_FILES %_VERSION %_IGNORE_CVES"])
+                                         "VARS=%_LICENSE %_LICENSE_FILES %_VERSION %_IGNORE_CVES %_CPE_ID"])
     variable_list = variables.decode().splitlines()
 
     # We process first the host package VERSION, and then the target
@@ -463,9 +386,9 @@ def package_init_make_info():
     variable_list = [x[5:] for x in variable_list if x.startswith("HOST_")] + \
                     [x for x in variable_list if not x.startswith("HOST_")]
 
-    for l in variable_list:
+    for item in variable_list:
         # Get variable name and value
-        pkgvar, value = l.split("=")
+        pkgvar, value = item.split("=")
 
         # Strip the suffix according to the variable
         if pkgvar.endswith("_LICENSE"):
@@ -491,77 +414,140 @@ def package_init_make_info():
             pkgvar = pkgvar[:-12]
             Package.all_ignored_cves[pkgvar] = value.split()
 
-
-def check_url_status_worker(url, url_status):
-    if url_status[0] == 'ok':
-        try:
-            url_status_code = requests.head(url, timeout=30).status_code
-            if url_status_code >= 400:
-                return ("error", "invalid {}".format(url_status_code))
-        except requests.exceptions.RequestException:
-            return ("error", "invalid (err)")
-        return ("ok", "valid")
-    return url_status
+        elif pkgvar.endswith("_CPE_ID"):
+            pkgvar = pkgvar[:-7]
+            Package.all_cpeids[pkgvar] = value
 
 
-def check_package_urls(packages):
-    pool = Pool(processes=64)
-    for pkg in packages:
-        pkg.url_worker = pool.apply_async(check_url_status_worker, (pkg.url, pkg.status['url']))
-    for pkg in packages:
-        pkg.status['url'] = pkg.url_worker.get(timeout=3600)
-        del pkg.url_worker
-    pool.terminate()
+check_url_count = 0
 
 
-def release_monitoring_get_latest_version_by_distro(pool, name):
+async def check_url_status(session, pkg, npkgs, retry=True):
+    global check_url_count
+
     try:
-        req = pool.request('GET', "/api/project/Buildroot/%s" % name)
-    except HTTPError:
-        return (RM_API_STATUS_ERROR, None, None)
+        async with session.get(pkg.url) as resp:
+            if resp.status >= 400:
+                pkg.status['url'] = ("error", "invalid {}".format(resp.status))
+                check_url_count += 1
+                print("[%04d/%04d] %s" % (check_url_count, npkgs, pkg.name))
+                return
+    except (aiohttp.ClientError, asyncio.TimeoutError):
+        if retry:
+            return await check_url_status(session, pkg, npkgs, retry=False)
+        else:
+            pkg.status['url'] = ("error", "invalid (err)")
+            check_url_count += 1
+            print("[%04d/%04d] %s" % (check_url_count, npkgs, pkg.name))
+            return
 
-    if req.status != 200:
-        return (RM_API_STATUS_NOT_FOUND, None, None)
+    pkg.status['url'] = ("ok", "valid")
+    check_url_count += 1
+    print("[%04d/%04d] %s" % (check_url_count, npkgs, pkg.name))
 
-    data = json.loads(req.data)
 
-    if 'version' in data:
-        return (RM_API_STATUS_FOUND_BY_DISTRO, data['version'], data['id'])
+async def check_package_urls(packages):
+    tasks = []
+    connector = aiohttp.TCPConnector(limit_per_host=5)
+    async with aiohttp.ClientSession(connector=connector, trust_env=True) as sess:
+        packages = [p for p in packages if p.status['url'][0] == 'ok']
+        for pkg in packages:
+            tasks.append(asyncio.ensure_future(check_url_status(sess, pkg, len(packages))))
+        await asyncio.wait(tasks)
+
+
+def check_package_latest_version_set_status(pkg, status, version, identifier):
+    pkg.latest_version = {
+        "status": status,
+        "version": version,
+        "id": identifier,
+    }
+
+    if pkg.latest_version['status'] == RM_API_STATUS_ERROR:
+        pkg.status['version'] = ('warning', "Release Monitoring API error")
+    elif pkg.latest_version['status'] == RM_API_STATUS_NOT_FOUND:
+        pkg.status['version'] = ('warning', "Package not found on Release Monitoring")
+
+    if pkg.latest_version['version'] is None:
+        pkg.status['version'] = ('warning', "No upstream version available on Release Monitoring")
+    elif pkg.latest_version['version'] != pkg.current_version:
+        pkg.status['version'] = ('error', "The newer version {} is available upstream".format(pkg.latest_version['version']))
     else:
-        return (RM_API_STATUS_FOUND_BY_DISTRO, None, data['id'])
+        pkg.status['version'] = ('ok', 'up-to-date')
 
 
-def release_monitoring_get_latest_version_by_guess(pool, name):
+async def check_package_get_latest_version_by_distro(session, pkg, retry=True):
+    url = "https://release-monitoring.org//api/project/Buildroot/%s" % pkg.name
     try:
-        req = pool.request('GET', "/api/projects/?pattern=%s" % name)
-    except HTTPError:
-        return (RM_API_STATUS_ERROR, None, None)
+        async with session.get(url) as resp:
+            if resp.status != 200:
+                return False
 
-    if req.status != 200:
-        return (RM_API_STATUS_NOT_FOUND, None, None)
+            data = await resp.json()
+            version = data['stable_versions'][0] if 'stable_versions' in data else data['version'] if 'version' in data else None
+            check_package_latest_version_set_status(pkg,
+                                                    RM_API_STATUS_FOUND_BY_DISTRO,
+                                                    version,
+                                                    data['id'])
+            return True
 
-    data = json.loads(req.data)
-
-    projects = data['projects']
-    projects.sort(key=lambda x: x['id'])
-
-    for p in projects:
-        if p['name'] == name and 'version' in p:
-            return (RM_API_STATUS_FOUND_BY_PATTERN, p['version'], p['id'])
-
-    return (RM_API_STATUS_NOT_FOUND, None, None)
-
-
-def check_package_latest_version_worker(name):
-    """Wrapper to try both by name then by guess"""
-    print(name)
-    res = release_monitoring_get_latest_version_by_distro(http_pool, name)
-    if res[0] == RM_API_STATUS_NOT_FOUND:
-        res = release_monitoring_get_latest_version_by_guess(http_pool, name)
-    return res
+    except (aiohttp.ClientError, asyncio.TimeoutError):
+        if retry:
+            return await check_package_get_latest_version_by_distro(session, pkg, retry=False)
+        else:
+            return False
 
 
-def check_package_latest_version(packages):
+async def check_package_get_latest_version_by_guess(session, pkg, retry=True):
+    url = "https://release-monitoring.org/api/projects/?pattern=%s" % pkg.name
+    try:
+        async with session.get(url) as resp:
+            if resp.status != 200:
+                return False
+
+            data = await resp.json()
+            # filter projects that have the right name and a version defined
+            projects = [p for p in data['projects'] if p['name'] == pkg.name and 'stable_versions' in p]
+            projects.sort(key=lambda x: x['id'])
+
+            if len(projects) > 0:
+                check_package_latest_version_set_status(pkg,
+                                                        RM_API_STATUS_FOUND_BY_PATTERN,
+                                                        projects[0]['stable_versions'][0],
+                                                        projects[0]['id'])
+                return True
+
+    except (aiohttp.ClientError, asyncio.TimeoutError):
+        if retry:
+            return await check_package_get_latest_version_by_guess(session, pkg, retry=False)
+        else:
+            return False
+
+
+check_latest_count = 0
+
+
+async def check_package_latest_version_get(session, pkg, npkgs):
+    global check_latest_count
+
+    if await check_package_get_latest_version_by_distro(session, pkg):
+        check_latest_count += 1
+        print("[%04d/%04d] %s" % (check_latest_count, npkgs, pkg.name))
+        return
+
+    if await check_package_get_latest_version_by_guess(session, pkg):
+        check_latest_count += 1
+        print("[%04d/%04d] %s" % (check_latest_count, npkgs, pkg.name))
+        return
+
+    check_package_latest_version_set_status(pkg,
+                                            RM_API_STATUS_NOT_FOUND,
+                                            None, None)
+    check_latest_count += 1
+    print("[%04d/%04d] %s" % (check_latest_count, npkgs, pkg.name))
+
+
+async def check_package_latest_version(packages):
     """
     Fills in the .latest_version field of all Package objects
 
@@ -575,43 +561,67 @@ def check_package_latest_version(packages):
     - id: string containing the id of the project corresponding to this
       package, as known by release-monitoring.org
     """
-    global http_pool
-    http_pool = HTTPSConnectionPool('release-monitoring.org', port=443,
-                                    cert_reqs='CERT_REQUIRED', ca_certs=certifi.where(),
-                                    timeout=30)
-    worker_pool = Pool(processes=64)
-    results = worker_pool.map(check_package_latest_version_worker, (pkg.name for pkg in packages))
-    for pkg, r in zip(packages, results):
-        pkg.latest_version = dict(zip(['status', 'version', 'id'], r))
 
-        if not pkg.has_valid_infra:
-            pkg.status['version'] = ("na", "no valid package infra")
+    for pkg in [p for p in packages if not p.is_actual_package]:
+        pkg.status['version'] = ("na", "no valid package infra")
+
+    tasks = []
+    connector = aiohttp.TCPConnector(limit_per_host=5)
+    async with aiohttp.ClientSession(connector=connector, trust_env=True) as sess:
+        packages = [p for p in packages if p.is_actual_package]
+        for pkg in packages:
+            tasks.append(asyncio.ensure_future(check_package_latest_version_get(sess, pkg, len(packages))))
+        await asyncio.wait(tasks)
+
+
+def check_package_cve_affects(cve, cpe_product_pkgs):
+    for product in cve.affected_products:
+        if product not in cpe_product_pkgs:
             continue
-
-        if pkg.latest_version['status'] == RM_API_STATUS_ERROR:
-            pkg.status['version'] = ('warning', "Release Monitoring API error")
-        elif pkg.latest_version['status'] == RM_API_STATUS_NOT_FOUND:
-            pkg.status['version'] = ('warning', "Package not found on Release Monitoring")
-
-        if pkg.latest_version['version'] is None:
-            pkg.status['version'] = ('warning', "No upstream version available on Release Monitoring")
-        elif pkg.latest_version['version'] != pkg.current_version:
-            pkg.status['version'] = ('error', "The newer version {} is available upstream".format(pkg.latest_version['version']))
-        else:
-            pkg.status['version'] = ('ok', 'up-to-date')
-
-    worker_pool.terminate()
-    del http_pool
+        for pkg in cpe_product_pkgs[product]:
+            if cve.affects(pkg.name, pkg.current_version, pkg.ignored_cves, pkg.cpeid) == cve.CVE_AFFECTS:
+                pkg.cves.append(cve.identifier)
 
 
 def check_package_cves(nvd_path, packages):
     if not os.path.isdir(nvd_path):
         os.makedirs(nvd_path)
 
-    for cve in CVE.read_nvd_dir(nvd_path):
-        for pkg_name in cve.pkg_names:
-            if pkg_name in packages and cve.affects(packages[pkg_name]):
-                packages[pkg_name].cves.append(cve.identifier)
+    cpe_product_pkgs = defaultdict(list)
+    for pkg in packages:
+        if not pkg.is_actual_package:
+            pkg.status['cve'] = ("na", "N/A")
+            continue
+        if not pkg.current_version:
+            pkg.status['cve'] = ("na", "no version information available")
+            continue
+        if pkg.cpeid:
+            cpe_product = cvecheck.cpe_product(pkg.cpeid)
+            cpe_product_pkgs[cpe_product].append(pkg)
+        else:
+            cpe_product_pkgs[pkg.name].append(pkg)
+
+    for cve in cvecheck.CVE.read_nvd_dir(nvd_path):
+        check_package_cve_affects(cve, cpe_product_pkgs)
+
+    for pkg in packages:
+        if 'cve' not in pkg.status:
+            if pkg.cves:
+                pkg.status['cve'] = ("error", "affected by CVEs")
+            else:
+                pkg.status['cve'] = ("ok", "not affected by CVEs")
+
+
+def check_package_cpes(nvd_path, packages):
+    cpedb = CPEDB(nvd_path)
+    cpedb.get_xml_dict()
+    for p in packages:
+        if not p.cpeid:
+            continue
+        if cpedb.find(p.cpeid):
+            p.status['cpe'] = ("ok", "verified CPE identifier")
+        else:
+            p.status['cpe'] = ("error", "CPE version unknown in CPE database")
 
 
 def calculate_stats(packages):
@@ -653,6 +663,10 @@ def calculate_stats(packages):
         stats["total-cves"] += len(pkg.cves)
         if len(pkg.cves) != 0:
             stats["pkg-cves"] += 1
+        if pkg.cpeid:
+            stats["cpe-id"] += 1
+        else:
+            stats["no-cpe-id"] += 1
     return stats
 
 
@@ -708,6 +722,34 @@ td.version-error {
  background: #ccc;
 }
 
+td.cpe-ok {
+  background: #d2ffc4;
+}
+
+td.cpe-nok {
+  background: #ff9a69;
+}
+
+td.cpe-unknown {
+ background: #ffd870;
+}
+
+td.cve-ok {
+  background: #d2ffc4;
+}
+
+td.cve-nok {
+  background: #ff9a69;
+}
+
+td.cve-unknown {
+ background: #ffd870;
+}
+
+td.cve_ignored {
+ background: #ccc;
+}
+
 </style>
 <title>Statistics of Buildroot packages</title>
 </head>
@@ -753,7 +795,7 @@ def boolean_str(b):
 
 def dump_html_pkg(f, pkg):
     f.write(" <tr>\n")
-    f.write("  <td>%s</td>\n" % pkg.path[2:])
+    f.write("  <td>%s</td>\n" % pkg.path)
 
     # Patch count
     td_class = ["centered"]
@@ -866,13 +908,57 @@ def dump_html_pkg(f, pkg):
 
     # CVEs
     td_class = ["centered"]
-    if len(pkg.cves) == 0:
-        td_class.append("correct")
+    if pkg.is_status_ok("cve"):
+        td_class.append("cve-ok")
+    elif pkg.is_status_error("cve"):
+        td_class.append("cve-nok")
+    elif pkg.is_status_na("cve") and not pkg.is_actual_package:
+        td_class.append("cve-ok")
     else:
-        td_class.append("wrong")
+        td_class.append("cve-unknown")
     f.write("  <td class=\"%s\">\n" % " ".join(td_class))
-    for cve in pkg.cves:
-        f.write("   <a href=\"https://security-tracker.debian.org/tracker/%s\">%s<br/>\n" % (cve, cve))
+    if pkg.is_status_error("cve"):
+        for cve in pkg.cves:
+            f.write("   <a href=\"https://security-tracker.debian.org/tracker/%s\">%s<br/>\n" % (cve, cve))
+    elif pkg.is_status_na("cve"):
+        f.write("    %s" % pkg.status['cve'][1])
+    else:
+        f.write("    N/A\n")
+    f.write("  </td>\n")
+
+    # CVEs Ignored
+    td_class = ["centered"]
+    if pkg.ignored_cves:
+        td_class.append("cve_ignored")
+    f.write("  <td class=\"%s\">\n" % " ".join(td_class))
+    for ignored_cve in pkg.ignored_cves:
+        f.write("    <a href=\"https://security-tracker.debian.org/tracker/%s\">%s<br/>\n" % (ignored_cve, ignored_cve))
+    f.write("  </td>\n")
+
+    # CPE ID
+    td_class = ["left"]
+    if pkg.is_status_ok("cpe"):
+        td_class.append("cpe-ok")
+    elif pkg.is_status_error("cpe"):
+        td_class.append("cpe-nok")
+    elif pkg.is_status_na("cpe") and not pkg.is_actual_package:
+        td_class.append("cpe-ok")
+    else:
+        td_class.append("cpe-unknown")
+    f.write("  <td class=\"%s\">\n" % " ".join(td_class))
+    if pkg.cpeid:
+        f.write("  <code>%s</code>\n" % pkg.cpeid)
+    if not pkg.is_status_ok("cpe"):
+        if pkg.is_actual_package and pkg.current_version:
+            if pkg.cpeid:
+                f.write("  <br/>%s <a href=\"https://nvd.nist.gov/products/cpe/search/results?namingFormat=2.3&keyword=%s\">(Search)</a>\n" %  # noqa: E501
+                        (pkg.status['cpe'][1], ":".join(pkg.cpeid.split(":")[0:5])))
+            else:
+                f.write("  %s <a href=\"https://nvd.nist.gov/products/cpe/search/results?namingFormat=2.3&keyword=%s\">(Search)</a>\n" %  # noqa: E501
+                        (pkg.status['cpe'][1], pkg.name))
+        else:
+            f.write("  %s\n" % pkg.status['cpe'][1])
+
     f.write("  </td>\n")
 
     f.write(" </tr>\n")
@@ -893,6 +979,8 @@ def dump_html_all_pkgs(f, packages):
 <td class=\"centered\">Warnings</td>
 <td class=\"centered\">Upstream URL</td>
 <td class=\"centered\">CVEs</td>
+<td class=\"centered\">CVEs Ignored</td>
+<td class=\"centered\">CPE ID</td>
 </tr>
 """)
     for pkg in sorted(packages):
@@ -935,6 +1023,10 @@ def dump_html_stats(f, stats):
             stats["pkg-cves"])
     f.write("<tr><td>Total number of CVEs affecting all packages</td><td>%s</td></tr>\n" %
             stats["total-cves"])
+    f.write("<tr><td>Packages with CPE ID</td><td>%s</td></tr>\n" %
+            stats["cpe-id"])
+    f.write("<tr><td>Packages without CPE ID</td><td>%s</td></tr>\n" %
+            stats["no-cpe-id"])
     f.write("</table>\n")
 
 
@@ -989,20 +1081,26 @@ def dump_json(packages, defconfigs, stats, date, commit, output):
         f.write('\n')
 
 
+def resolvepath(path):
+    return os.path.abspath(os.path.expanduser(path))
+
+
 def parse_args():
     parser = argparse.ArgumentParser()
     output = parser.add_argument_group('output', 'Output file(s)')
-    output.add_argument('--html', dest='html', action='store',
+    output.add_argument('--html', dest='html', type=resolvepath,
                         help='HTML output file')
-    output.add_argument('--json', dest='json', action='store',
+    output.add_argument('--json', dest='json', type=resolvepath,
                         help='JSON output file')
     packages = parser.add_mutually_exclusive_group()
+    packages.add_argument('-c', dest='configpackages', action='store_true',
+                          help='Apply to packages enabled in current configuration')
     packages.add_argument('-n', dest='npackages', type=int, action='store',
                           help='Number of packages')
     packages.add_argument('-p', dest='packages', action='store',
                           help='List of packages (comma separated)')
     parser.add_argument('--nvd-path', dest='nvd_path',
-                        help='Path to the local NVD database')
+                        help='Path to the local NVD database', type=resolvepath)
     args = parser.parse_args()
     if not args.html and not args.json:
         parser.error('at least one of --html or --json (or both) is required')
@@ -1010,13 +1108,22 @@ def parse_args():
 
 
 def __main__():
+    global cvecheck
+
     args = parse_args()
+
+    if args.nvd_path:
+        import cve as cvecheck
+
     if args.packages:
         package_list = args.packages.split(",")
+    elif args.configpackages:
+        package_list = get_config_packages()
     else:
         package_list = None
     date = datetime.datetime.utcnow()
-    commit = subprocess.check_output(['git', 'rev-parse',
+    commit = subprocess.check_output(['git', '-C', brpath,
+                                      'rev-parse',
                                       'HEAD']).splitlines()[0].decode()
     print("Build package list ...")
     packages = get_pkglist(args.npackages, package_list)
@@ -1036,15 +1143,20 @@ def __main__():
         pkg.set_patch_count()
         pkg.set_check_package_warnings()
         pkg.set_current_version()
+        pkg.set_cpeid()
         pkg.set_url()
+        pkg.set_ignored_cves()
         pkg.set_developers(developers)
     print("Checking URL status")
-    check_package_urls(packages)
+    loop = asyncio.get_event_loop()
+    loop.run_until_complete(check_package_urls(packages))
     print("Getting latest versions ...")
-    check_package_latest_version(packages)
+    loop = asyncio.get_event_loop()
+    loop.run_until_complete(check_package_latest_version(packages))
     if args.nvd_path:
         print("Checking packages CVEs")
-        check_package_cves(args.nvd_path, {p.name: p for p in packages})
+        check_package_cves(args.nvd_path, packages)
+        check_package_cpes(args.nvd_path, packages)
     print("Calculate stats")
     stats = calculate_stats(packages)
     if args.html:

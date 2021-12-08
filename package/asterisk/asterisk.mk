@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-ASTERISK_VERSION = 16.6.2
+ASTERISK_VERSION = 16.21.1
 # Use the github mirror: it's an official mirror maintained by Digium, and
 # provides tarballs, which the main Asterisk git tree (behind Gerrit) does not.
 ASTERISK_SITE = $(call github,asterisk,asterisk,$(ASTERISK_VERSION))
@@ -20,6 +20,10 @@ ASTERISK_LICENSE_FILES = \
 	main/sha1.c \
 	codecs/speex/speex_resampler.h \
 	utils/db1-ast/include/db.h
+
+ASTERISK_CPE_ID_VENDOR = asterisk
+ASTERISK_CPE_ID_PRODUCT = open_source
+ASTERISK_SELINUX_MODULES = asterisk
 
 # For patches 0002, 0003 and 0005
 ASTERISK_AUTORECONF = YES
@@ -106,6 +110,9 @@ ASTERISK_CONF_OPTS = \
 # been installed in this location since early 2007 (~10 years ago at
 # the time of this writing).
 ASTERISK_CONF_OPTS += --without-avcodec
+
+# asterisk is not compatible with freeswitch spandsp
+ASTERISK_CONF_OPTS += --without-spandsp
 
 ASTERISK_CONF_ENV = \
 	ac_cv_file_bridges_bridge_softmix_include_hrirs_h=true \
@@ -232,13 +239,6 @@ else
 ASTERISK_CONF_OPTS += --without-ssl
 endif
 
-ifeq ($(BR2_PACKAGE_SPANDSP),y)
-ASTERISK_DEPENDENCIES += spandsp
-ASTERISK_CONF_OPTS += --with-spandsp
-else
-ASTERISK_CONF_OPTS += --without-spandsp
-endif
-
 ifeq ($(BR2_PACKAGE_SPEEX)$(BR2_PACKAGE_SPEEXDSP),yy)
 ASTERISK_DEPENDENCIES += speex
 ASTERISK_CONF_OPTS += --with-speex --with-speexdsp
@@ -280,6 +280,17 @@ ASTERISK_MAKE_OPTS = $(ASTERISK_DIRS)
 ifeq ($(BR2_TOOLCHAIN_HAS_LIBATOMIC),y)
 ASTERISK_MAKE_OPTS += ASTLDFLAGS="-latomic"
 endif
+
+# Remove default -O3 optimization flag
+ASTERISK_MAKE_OPTS += OPTIMIZE=""
+
+ASTERISK_CFLAGS = $(TARGET_CFLAGS)
+
+ifeq ($(BR2_TOOLCHAIN_HAS_GCC_BUG_93847),y)
+ASTERISK_CFLAGS += -O0
+endif
+
+ASTERISK_CONF_OPTS += CFLAGS="$(ASTERISK_CFLAGS)"
 
 # We want to install sample configuration files, too.
 ASTERISK_INSTALL_TARGET_OPTS = \

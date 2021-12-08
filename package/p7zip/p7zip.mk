@@ -4,11 +4,11 @@
 #
 ################################################################################
 
-P7ZIP_VERSION = 16.02
-P7ZIP_SOURCE = p7zip_$(P7ZIP_VERSION)_src_all.tar.bz2
-P7ZIP_SITE = http://downloads.sourceforge.net/project/p7zip/p7zip/$(P7ZIP_VERSION)
+P7ZIP_VERSION = 17.04
+P7ZIP_SITE = $(call github,jinfeihan57,p7zip,v$(P7ZIP_VERSION))
 P7ZIP_LICENSE = LGPL-2.1+ with unRAR restriction
 P7ZIP_LICENSE_FILES = DOC/License.txt
+P7ZIP_CPE_ID_VENDOR = 7-zip
 
 # p7zip buildsystem is a mess: it plays dirty tricks with CFLAGS and
 # CXXFLAGS, so we can't pass them. Instead, it accepts ALLFLAGS_C

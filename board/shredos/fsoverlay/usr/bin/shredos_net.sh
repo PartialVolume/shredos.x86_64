@@ -5,7 +5,7 @@
 # with those devices set up as DHCP hot plug. We then monitor the link
 # state (whether the ethernet cable is connected).
 #
-version=1.0-211023-2337
+version=1.1-211123-1901
 #
 # Forcefully shutdown all network interfaces if any are up
 ifdown -f -a
@@ -29,8 +29,8 @@ active_device="none"
 # Populate /etc/network/interfaces with each network device if ethernet or wifi
 for device in $net_devices
 do
-	# We're only interested in ethernet (enxxxx) and wifi (wlxxxx) devices
-	if [[ $device == en* ]];
+	# We are only interested in ethernet enxxxx or ethxx devices
+	if [[ "$device" == en* ]] || [[ "$device" == et* ]]
 	then
 		echo "auto $device" >> /etc/network/interfaces
 		echo "iface $device inet dhcp" >> /etc/network/interfaces
@@ -40,8 +40,8 @@ done
 # Check for existing active ethernet devices and set active_device variable
 for device in $net_devices
 do
-	# We're only interested in ethernet (enxxxx) devices
-	if [[ $device == en* ]];
+	# We're only interested in ethernet enxxxx or ethxx devices
+	if [[ "$device" == en* ]] || [[ "$device" == et* ]]
 	then
 		# initial creation of device operstate and status variables for
 		# each network device, indirectly referenced so you won't see
@@ -94,8 +94,8 @@ do
 	for device in $net_devices
 	do
 
-		# We're only interested in ethernet (enxxxx) devices
-        	if [[ $device == en* ]];
+		# We're only interested in ethernet enxxxx or ethxx devices
+        	if [[ "$device" == en* ]] || [[ "$device" == eth* ]]
         	then
 
 			# and we are only interested in one device being active at any one time

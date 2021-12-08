@@ -1,9 +1,7 @@
-# From https://downloads.mariadb.org/mariadb/10.3.22
-md5 f712a5e6fde038d0c9c6d2a2cd88b84e  mariadb-10.3.22.tar.gz
-sha1 f92f517fc2ea893ffb3d599ade219bf0a0045265  mariadb-10.3.22.tar.gz
-sha256 3200055dbdc27746981b3bb4bc182e2cb79dcf28ea88014b641a5b81280ccec7  mariadb-10.3.22.tar.gz
-sha512 57a6551b8939f54742963202d50a537e69e8ab9b2dca42ce3d2a09c0f7af368fded71f36af26f6cbd956d54fe43853981ba8fe28b7a3ba97c7d52ea4a0d233f6  mariadb-10.3.22.tar.gz
+# From https://downloads.mariadb.org/mariadb/10.3.30
+sha256  bd8735c65bdb7ebcd5d779fb9d3de3f2fcd319ad6482278d73dfe7301ad4ae1b  mariadb-10.3.30.tar.gz
+sha512  742c30b3ebc0b6d36b98d4e7a7fb511098142e72d8f42cbfa73a0bdea2059be17e790fbda4732329bbd99e4b50b13cf18e8122964a473e0b62170ab869eca8fc  mariadb-10.3.30.tar.gz
 
 # Hash for license files
-sha256 a4665c1189fe31e0bbc27e9b55439df7dad6e99805407fe58d78da7aabe678f8  README.md
-sha256 240a15a1d0f34d3abca462cdb7e5fb89470967563f16b0e71169e51c1e74cf2b  COPYING
+sha256  a4665c1189fe31e0bbc27e9b55439df7dad6e99805407fe58d78da7aabe678f8  README.md
+sha256  240a15a1d0f34d3abca462cdb7e5fb89470967563f16b0e71169e51c1e74cf2b  COPYING

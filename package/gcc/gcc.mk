@@ -32,14 +32,6 @@ endef
 # Apply patches
 #
 
-ifeq ($(ARCH),powerpc)
-ifneq ($(BR2_SOFT_FLOAT),)
-define HOST_GCC_APPLY_POWERPC_PATCH
-	$(APPLY_PATCHES) $(@D) package/gcc/$(GCC_VERSION) 1000-powerpc-link-with-math-lib.patch.conditional
-endef
-endif
-endif
-
 # gcc is a special package, not named gcc, but gcc-initial and
 # gcc-final, but patches are nonetheless stored in package/gcc in the
 # tree, and potentially in BR2_GLOBAL_PATCH_DIR directories as well.
@@ -90,7 +82,8 @@ HOST_GCC_COMMON_CONF_OPTS = \
 	--with-mpc=$(HOST_DIR) \
 	--with-mpfr=$(HOST_DIR) \
 	--with-pkgversion="Buildroot $(BR2_VERSION_FULL)" \
-	--with-bugurl="http://bugs.buildroot.net/"
+	--with-bugurl="http://bugs.buildroot.net/" \
+	--without-zstd
 
 # Don't build documentation. It takes up extra space / build time,
 # and sometimes needs specific makeinfo versions to work
@@ -100,9 +93,15 @@ HOST_GCC_COMMON_CONF_ENV = \
 GCC_COMMON_TARGET_CFLAGS = $(TARGET_CFLAGS)
 GCC_COMMON_TARGET_CXXFLAGS = $(TARGET_CXXFLAGS)
 
-# used to fix ../../../../libsanitizer/libbacktrace/../../libbacktrace/elf.c:772:21: error: ‘st.st_mode’ may be used uninitialized in this function [-Werror=maybe-uninitialized]
+# used to fix ../../../../libsanitizer/libbacktrace/../../libbacktrace/elf.c:772:21: error: 'st.st_mode' may be used uninitialized in this function [-Werror=maybe-uninitialized]
 ifeq ($(BR2_ENABLE_DEBUG),y)
 GCC_COMMON_TARGET_CFLAGS += -Wno-error
+endif
+
+# Make sure libgcc & libstdc++ always get built with -matomic on ARC700
+ifeq ($(GCC_TARGET_CPU):$(BR2_ARC_ATOMIC_EXT),arc700:y)
+GCC_COMMON_TARGET_CFLAGS += -matomic
+GCC_COMMON_TARGET_CXXFLAGS += -matomic
 endif
 
 # Propagate options used for target software building to GCC target libs
@@ -123,7 +122,7 @@ endif
 ifeq ($(BR2_USE_WCHAR)$(BR2_TOOLCHAIN_HAS_LIBQUADMATH),yy)
 HOST_GCC_COMMON_CONF_OPTS += --enable-libquadmath
 else
-HOST_GCC_COMMON_CONF_OPTS += --disable-libquadmath
+HOST_GCC_COMMON_CONF_OPTS += --disable-libquadmath --disable-libquadmath-support
 endif
 
 # libsanitizer requires wordexp, not in default uClibc config. Also
@@ -136,6 +135,14 @@ endif
 # https://bugs.busybox.net/show_bug.cgi?id=7951
 ifeq ($(BR2_sparc)$(BR2_sparc64),y)
 HOST_GCC_COMMON_CONF_OPTS += --disable-libsanitizer
+endif
+
+# The logic in libbacktrace/configure.ac to detect if __sync builtins
+# are available assumes they are as soon as target_subdir is not
+# empty, i.e when cross-compiling. However, some platforms do not have
+# __sync builtins, so help the configure script a bit.
+ifeq ($(BR2_TOOLCHAIN_HAS_SYNC_4),)
+HOST_GCC_COMMON_CONF_ENV += target_configargs="libbacktrace_cv_sys_sync=no"
 endif
 
 # TLS support is not needed on uClibc/no-thread and
@@ -216,8 +223,16 @@ endif
 # Enable proper double/long double for SPE ABI
 ifeq ($(BR2_powerpc_SPE),y)
 HOST_GCC_COMMON_CONF_OPTS += \
+	--enable-obsolete \
 	--enable-e500_double \
 	--with-long-double-128
+endif
+
+# Set default to Secure-PLT to prevent run-time
+# generation of PLT stubs (supports RELRO and
+# SELinux non-exemem capabilities)
+ifeq ($(BR2_powerpc)$(BR2_powerpc64),y)
+HOST_GCC_COMMON_CONF_OPTS += --enable-secureplt
 endif
 
 # PowerPC64 big endian by default uses the elfv1 ABI, and PowerPC 64
@@ -234,6 +249,11 @@ endif
 # requires at least gcc 6.2.
 # See sysdeps/powerpc/powerpc64le/configure.ac
 ifeq ($(BR2_TOOLCHAIN_USES_GLIBC)$(BR2_TOOLCHAIN_GCC_AT_LEAST_6)$(BR2_powerpc64le),yyy)
+HOST_GCC_COMMON_CONF_OPTS += \
+	--with-long-double-128
+endif
+
+ifeq ($(BR2_s390x),y)
 HOST_GCC_COMMON_CONF_OPTS += \
 	--with-long-double-128
 endif
@@ -267,11 +287,6 @@ HOST_GCC_COMMON_CCACHE_HASH_FILES += \
 		$(addsuffix /gcc/*.patch,$(call qstrip,$(BR2_GLOBAL_PATCH_DIR)))))
 ifeq ($(BR2_xtensa),y)
 HOST_GCC_COMMON_CCACHE_HASH_FILES += $(ARCH_XTENSA_OVERLAY_TAR)
-endif
-ifeq ($(ARCH),powerpc)
-ifneq ($(BR2_SOFT_FLOAT),)
-HOST_GCC_COMMON_CCACHE_HASH_FILES += package/gcc/$(GCC_VERSION)/1000-powerpc-link-with-math-lib.patch.conditional
-endif
 endif
 
 # _CONF_OPTS contains some references to the absolute path of $(HOST_DIR)

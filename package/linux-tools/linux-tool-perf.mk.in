@@ -21,7 +21,6 @@ PERF_MAKE_FLAGS = \
 	DESTDIR=$(TARGET_DIR) \
 	prefix=/usr \
 	WERROR=0 \
-	NO_LIBAUDIT=1 \
 	NO_GTK2=1 \
 	NO_LIBPERL=1 \
 	NO_LIBPYTHON=1 \
@@ -62,6 +61,16 @@ ifeq ($(BR2_PACKAGE_LINUX_TOOLS_PERF_TUI),y)
 PERF_DEPENDENCIES += slang
 else
 PERF_MAKE_FLAGS += NO_NEWT=1 NO_SLANG=1
+endif
+
+ifeq ($(BR2_PACKAGE_AUDIT),y)
+PERF_DEPENDENCIES += audit
+else
+PERF_MAKE_FLAGS += NO_LIBAUDIT=1
+endif
+
+ifeq ($(BR2_PACKAGE_ZSTD),y)
+PERF_DEPENDENCIES += zstd
 endif
 
 ifeq ($(BR2_PACKAGE_LIBUNWIND),y)
@@ -157,4 +166,8 @@ define PERF_INSTALL_TARGET_CMDS
 		-C $(LINUX_DIR)/tools/perf O=$(LINUX_DIR)/tools/perf/ install
 	$(RM) -rf $(TARGET_DIR)/usr/libexec/perf-core/scripts/
 	$(RM) -rf $(TARGET_DIR)/usr/libexec/perf-core/tests/
+endef
+
+define PERF_LINUX_CONFIG_FIXUPS
+	$(call KCONFIG_ENABLE_OPT,CONFIG_PERF_EVENTS)
 endef

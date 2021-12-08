@@ -4,11 +4,15 @@
 #
 ################################################################################
 
-BOTAN_VERSION = 2.13.0
+BOTAN_VERSION = 2.17.3
 BOTAN_SOURCE = Botan-$(BOTAN_VERSION).tar.xz
 BOTAN_SITE = http://botan.randombit.net/releases
 BOTAN_LICENSE = BSD-2-Clause
 BOTAN_LICENSE_FILES = license.txt
+BOTAN_CPE_ID_VENDOR = botan_project
+
+# 0001-Avoid-using-short-exponents-with-ElGamal.patch
+BOTAN_IGNORE_CVES += CVE-2021-40529
 
 BOTAN_INSTALL_STAGING = YES
 
@@ -17,14 +21,11 @@ BOTAN_CONF_OPTS = \
 	--os=linux \
 	--cc=gcc \
 	--cc-bin="$(TARGET_CXX)" \
-	--ldflags="$(BOTAN_LDFLAGS)" \
 	--prefix=/usr \
 	--without-documentation
 
-BOTAN_LDFLAGS = $(TARGET_LDFLAGS)
-
 ifeq ($(BR2_TOOLCHAIN_HAS_LIBATOMIC),y)
-BOTAN_LDFLAGS += -latomic
+BOTAN_CONF_OPTS += --extra-libs=atomic
 endif
 
 ifeq ($(BR2_SHARED_LIBS),y)
@@ -52,7 +53,7 @@ ifeq ($(BR2_TOOLCHAIN_USES_UCLIBC),y)
 BOTAN_CONF_OPTS += --without-os-feature=getauxval
 endif
 
-ifeq ($(BR2_PACKAGE_BOOST),y)
+ifeq ($(BR2_PACKAGE_BOOST_FILESYSTEM)$(BR2_PACKAGE_BOOST_SYSTEM),yy)
 BOTAN_DEPENDENCIES += boost
 BOTAN_CONF_OPTS += --with-boost
 endif

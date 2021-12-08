@@ -4,11 +4,12 @@
 #
 ################################################################################
 
-FREERDP_VERSION = 2.0.0-rc4
-FREERDP_SITE = $(call github,FreeRDP,FreeRDP,$(FREERDP_VERSION))
+FREERDP_VERSION = 2.4.1
+FREERDP_SITE = https://pub.freerdp.com/releases
 FREERDP_DEPENDENCIES = libglib2 openssl zlib
 FREERDP_LICENSE = Apache-2.0
 FREERDP_LICENSE_FILES = LICENSE
+FREERDP_CPE_ID_VENDOR = freerdp
 
 FREERDP_INSTALL_STAGING = YES
 
@@ -40,6 +41,13 @@ FREERDP_CONF_OPTS += -DWITH_ALSA=ON
 FREERDP_DEPENDENCIES += alsa-lib
 else
 FREERDP_CONF_OPTS += -DWITH_ALSA=OFF
+endif
+
+ifeq ($(BR2_PACKAGE_LIBUSB),y)
+FREERDP_CONF_OPTS += -DCHANNEL_URBDRC=ON
+FREERDP_DEPENDENCIES += libusb
+else
+FREERDP_CONF_OPTS += -DCHANNEL_URBDRC=OFF
 endif
 
 ifeq ($(BR2_PACKAGE_PULSEAUDIO),y)

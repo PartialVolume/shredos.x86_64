@@ -8,6 +8,7 @@ CAIRO_VERSION = 1.16.0
 CAIRO_SOURCE = cairo-$(CAIRO_VERSION).tar.xz
 CAIRO_LICENSE = LGPL-2.1 or MPL-1.1 (library)
 CAIRO_LICENSE_FILES = COPYING COPYING-LGPL-2.1 COPYING-MPL-1.1
+CAIRO_CPE_ID_VENDOR = cairographics
 CAIRO_SITE = http://cairographics.org/releases
 CAIRO_INSTALL_STAGING = YES
 
@@ -41,7 +42,7 @@ HOST_CAIRO_CONF_OPTS = \
 	--enable-interpreter=no \
 	--disable-directfb \
 	--enable-ft \
-	--disable-gobject \
+	--enable-gobject \
 	--disable-glesv2 \
 	--disable-vg \
 	--disable-xlib \
@@ -51,13 +52,14 @@ HOST_CAIRO_CONF_OPTS = \
 	--disable-ps \
 	--disable-pdf \
 	--enable-png \
-	--disable-script \
+	--enable-script \
 	--disable-svg \
 	--disable-tee \
 	--disable-xml
 HOST_CAIRO_DEPENDENCIES = \
 	host-freetype \
 	host-fontconfig \
+	host-libglib2 \
 	host-libpng \
 	host-pixman \
 	host-pkgconf

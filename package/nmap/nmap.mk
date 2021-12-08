@@ -4,14 +4,16 @@
 #
 ################################################################################
 
-NMAP_VERSION = 7.80
+NMAP_VERSION = 7.91
 NMAP_SITE = https://nmap.org/dist
 NMAP_SOURCE = nmap-$(NMAP_VERSION).tar.bz2
 NMAP_DEPENDENCIES = liblinear libpcap
 NMAP_CONF_OPTS = --without-liblua --without-zenmap \
 	--with-libdnet=included
 NMAP_LICENSE = nmap license
-NMAP_LICENSE_FILES = COPYING
+NMAP_LICENSE_FILES = LICENSE
+NMAP_CPE_ID_VENDOR = nmap
+NMAP_SELINUX_MODULES = netutils
 
 # needed by libpcap
 NMAP_LIBS_FOR_STATIC_LINK += `$(STAGING_DIR)/usr/bin/pcap-config --static --additional-libs`
@@ -40,6 +42,13 @@ NMAP_DEPENDENCIES += host-pkgconf openssl
 NMAP_LIBS_FOR_STATIC_LINK += `$(PKG_CONFIG_HOST_BINARY) --libs openssl`
 else
 NMAP_CONF_OPTS += --without-openssl
+endif
+
+ifeq ($(BR2_PACKAGE_ZLIB),y)
+NMAP_CONF_OPTS += --with-libz="$(STAGING_DIR)/usr"
+NMAP_DEPENDENCIES += zlib
+else
+NMAP_CONF_OPTS += --without-libz
 endif
 
 NMAP_INSTALL_TARGET_OPTS = DESTDIR=$(TARGET_DIR)

@@ -4,11 +4,12 @@
 #
 ################################################################################
 
-BROTLI_VERSION = 1.0.7
+BROTLI_VERSION = 1.0.9
 BROTLI_SOURCE = v$(BROTLI_VERSION).tar.gz
 BROTLI_SITE = https://github.com/google/brotli/archive
 BROTLI_LICENSE = MIT
 BROTLI_LICENSE_FILES = LICENSE
+BROTLI_CPE_ID_VENDOR = google
 BROTLI_INSTALL_STAGING = YES
 BROTLI_CONF_OPTS = \
 	-DBROTLI_DISABLE_TESTS=ON \

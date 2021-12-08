@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-BRLTTY_VERSION = 6.0
+BRLTTY_VERSION = 6.3
 BRLTTY_SOURCE = brltty-$(BRLTTY_VERSION).tar.xz
 BRLTTY_SITE = http://brltty.com/archive
 BRLTTY_INSTALL_STAGING_OPTS = INSTALL_ROOT=$(STAGING_DIR) install
@@ -12,7 +12,11 @@ BRLTTY_INSTALL_TARGET_OPTS = INSTALL_ROOT=$(TARGET_DIR) install
 BRLTTY_LICENSE = LGPL-2.1+
 BRLTTY_LICENSE_FILES = LICENSE-LGPL README
 
-BRLTTY_DEPENDENCIES = $(TARGET_NLS_DEPENDENCIES) host-autoconf host-pkgconf \
+BRLTTY_DEPENDENCIES = \
+	$(TARGET_NLS_DEPENDENCIES) \
+	host-autoconf \
+	host-gawk \
+	host-pkgconf \
 	$(if $(BR2_PACKAGE_AT_SPI2_CORE),at-spi2-core)
 
 BRLTTY_CONF_ENV = \
@@ -90,6 +94,13 @@ BRLTTY_DEPENDENCIES += pcre
 BRLTTY_CONF_OPTS += --with-rgx-package
 else
 BRLTTY_CONF_OPTS += --without-rgx-package
+endif
+
+ifeq ($(BR2_PACKAGE_POLKIT),y)
+BRLTTY_DEPENDENCIES += polkit
+BRLTTY_CONF_OPTS += --enable-polkit
+else
+BRLTTY_CONF_OPTS += --disable-polkit
 endif
 
 ifeq ($(BR2_PACKAGE_SYSTEMD),y)

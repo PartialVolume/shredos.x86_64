@@ -10,6 +10,7 @@ si2::sysinit:/bin/mkdir -p /dev/pts
 si3::sysinit:/bin/mkdir -p /dev/shm
 si4::sysinit:/bin/mount -a
 si5::sysinit:/bin/hostname -F /etc/hostname
+si6::sysinit:/usr/bin/nwipe_process_disable
 rcS:12345:wait:/etc/init.d/rcS
 
 sole::respawn:/sbin/getty -L  console 0 vt100 # GENERIC_SERIAL

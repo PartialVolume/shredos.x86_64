@@ -4,11 +4,12 @@
 #
 ################################################################################
 
-SPICE_VERSION = 0.14.2
+SPICE_VERSION = 0.15.0
 SPICE_SOURCE = spice-$(SPICE_VERSION).tar.bz2
 SPICE_SITE = http://www.spice-space.org/download/releases/spice-server
 SPICE_LICENSE = LGPL-2.1+
 SPICE_LICENSE_FILES = COPYING
+SPICE_CPE_ID_VENDOR = spice_project
 SPICE_INSTALL_STAGING = YES
 SPICE_DEPENDENCIES = \
 	host-pkgconf \
@@ -17,8 +18,6 @@ SPICE_DEPENDENCIES = \
 	openssl \
 	pixman \
 	spice-protocol
-# We're patching subprojects/spice-common/configure.ac
-SPICE_AUTORECONF = YES
 
 # We disable everything for now, because the dependency tree can become
 # quite deep if we try to enable some features, and I have not tested that.
@@ -44,11 +43,6 @@ SPICE_CONF_OPTS += --enable-opus
 SPICE_DEPENDENCIES += opus
 else
 SPICE_CONF_OPTS += --disable-opus
-endif
-
-# no enable/disable, detected using pkg-config
-ifeq ($(BR2_PACKAGE_OPUS),y)
-SPICE_DEPENDENCIES += opus
 endif
 
 # We need to tweak spice.pc because it /forgets/ (for static linking) that

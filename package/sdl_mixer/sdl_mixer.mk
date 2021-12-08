@@ -4,9 +4,12 @@
 #
 ################################################################################
 
-SDL_MIXER_VERSION = 1.2.12
-SDL_MIXER_SOURCE = SDL_mixer-$(SDL_MIXER_VERSION).tar.gz
-SDL_MIXER_SITE = http://www.libsdl.org/projects/SDL_mixer/release
+# The latest officially released version of SDL_mixer is 1.2.12, released in 2012.
+# Since then, there have been many bugfixes on master.
+#
+# This commit points to the SDL-1.2 branch from 15 Mar 2021.
+SDL_MIXER_VERSION = d1725fcb7c4e987aeb7ecdc94cb8b6375b702170
+SDL_MIXER_SITE = $(call github,libsdl-org,SDL_mixer,$(SDL_MIXER_VERSION))
 SDL_MIXER_LICENSE = Zlib
 SDL_MIXER_LICENSE_FILES = COPYING
 
@@ -20,12 +23,29 @@ SDL_MIXER_DEPENDENCIES = sdl
 SDL_MIXER_AUTORECONF = YES
 
 SDL_MIXER_CONF_OPTS = \
-	--without-x \
 	--with-sdl-prefix=$(STAGING_DIR)/usr \
-	--disable-music-midi \
 	--disable-music-mod \
 	--disable-music-mp3 \
 	--disable-music-flac # configure script fails when cross compiling
+
+ifeq ($(BR2_PACKAGE_FLUIDSYNTH),y)
+SDL_MIXER_DEPENDENCIES += fluidsynth
+SDL_MIXER_CONF_OPTS += \
+	--enable-music-midi \
+	--enable-music-fluidsynth-midi
+SDL_MIXER_HAS_MIDI = YES
+endif
+
+ifeq ($(BR2_PACKAGE_SDL_MIXER_MIDI_TIMIDITY),y)
+SDL_MIXER_CONF_OPTS += \
+	--enable-music-midi \
+	--enable-music-timidity-midi
+SDL_MIXER_HAS_MIDI = YES
+endif
+
+ifneq ($(SDL_MIXER_HAS_MIDI),YES)
+SDL_MIXER_CONF_OPTS += --disable-music-midi
+endif
 
 ifeq ($(BR2_PACKAGE_LIBMAD),y)
 SDL_MIXER_CONF_OPTS += --enable-music-mp3-mad-gpl

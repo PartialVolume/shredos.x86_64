@@ -4,13 +4,14 @@
 #
 ################################################################################
 
-GD_VERSION = 2.2.5
+GD_VERSION = 2.3.3
 GD_SOURCE = libgd-$(GD_VERSION).tar.xz
 GD_SITE = https://github.com/libgd/libgd/releases/download/gd-$(GD_VERSION)
 GD_INSTALL_STAGING = YES
 GD_LICENSE = GD license
 GD_LICENSE_FILES = COPYING
-GD_CONFIG_SCRIPTS = gdlib-config
+GD_CPE_ID_VENDOR = libgd
+GD_CPE_ID_PRODUCT = libgd
 GD_CONF_OPTS = --without-x --disable-rpath --disable-werror
 GD_DEPENDENCIES = host-pkgconf
 
@@ -34,9 +35,8 @@ endif
 
 ifeq ($(BR2_PACKAGE_LIBICONV),y)
 GD_DEPENDENCIES += libiconv
-# not strictly needed for gd, but ensures -liconv ends up in
-# gdlib-config --libs output
-GD_CONF_ENV += LIBS="-liconv"
+# not strictly needed for gd, but ensures -liconv ends up in gdlib.pc
+GD_CONF_ENV += LIBS_PRIVATES="-liconv"
 endif
 
 ifeq ($(BR2_PACKAGE_JPEG),y)

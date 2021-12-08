@@ -4,23 +4,27 @@
 #
 ################################################################################
 
-ZZIPLIB_VERSION = 0.13.69
+ZZIPLIB_VERSION = 0.13.72
 ZZIPLIB_SITE = $(call github,gdraheim,zziplib,v$(ZZIPLIB_VERSION))
 ZZIPLIB_LICENSE = LGPL-2.0+ or MPL-1.1
 ZZIPLIB_LICENSE_FILES = docs/COPYING.LIB docs/COPYING.MPL docs/copying.htm
+ZZIPLIB_CPE_ID_VENDOR = zziplib_project
 ZZIPLIB_INSTALL_STAGING = YES
+ZZIPLIB_CONF_OPTS += \
+	-DZZIPDOCS=OFF \
+	-DZZIPTEST=OFF
+ZZIPLIB_DEPENDENCIES = host-pkgconf zlib
 
-# 0001-Avoid-memory-leak-from-__zzip_parse_root_directory.patch
-# 0002-Avoid-memory-leak-from-__zzip_parse_root_directory-2.patch
-# 0003-One-more-free-to-avoid-memory-leak.patch
-ZZIPLIB_IGNORE_CVES += CVE-2018-16548
+define ZZIPLIB_POST_EXTRACT_FIXUP
+	rm $(@D)/GNUmakefile
+endef
+ZZIPLIB_POST_EXTRACT_HOOKS += ZZIPLIB_POST_EXTRACT_FIXUP
 
-# 0004-Fix-issue-62-Remove-any-components-from-pathnames-of-extracte.patch
-ZZIPLIB_IGNORE_CVES += CVE-2018-17828
+ifeq ($(BR2_PACKAGE_SDL2),y)
+ZZIPLIB_CONF_OPTS += -DZZIPSDL=ON
+ZZIPLIB_DEPENDENCIES += sdl2
+else
+ZZIPLIB_CONF_OPTS += -DZZIPSDL=OFF
+endif
 
-ZZIPLIB_DEPENDENCIES = host-pkgconf host-python zlib
-
-# zziplib is not python3 friendly, so force the python interpreter
-ZZIPLIB_CONF_OPTS = ac_cv_path_PYTHON=$(HOST_DIR)/bin/python2
-
-$(eval $(autotools-package))
+$(eval $(cmake-package))

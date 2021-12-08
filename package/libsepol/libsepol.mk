@@ -4,10 +4,11 @@
 #
 ################################################################################
 
-LIBSEPOL_VERSION = 2.9
-LIBSEPOL_SITE = https://github.com/SELinuxProject/selinux/releases/download/20190315
+LIBSEPOL_VERSION = 3.2
+LIBSEPOL_SITE = https://github.com/SELinuxProject/selinux/releases/download/$(LIBSEPOL_VERSION)
 LIBSEPOL_LICENSE = LGPL-2.1+
 LIBSEPOL_LICENSE_FILES = COPYING
+LIBSEPOL_CPE_ID_VENDOR = selinuxproject
 
 LIBSEPOL_INSTALL_STAGING = YES
 LIBSEPOL_DEPENDENCIES = host-flex
