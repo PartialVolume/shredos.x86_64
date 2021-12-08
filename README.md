@@ -15,17 +15,19 @@
 ## For all Intel and compatible 64 bit processors
 
 #### For the 32 bit version of ShredOS that will run on both 32bit and 64bit processors, see [ShredOS i686](https://github.com/PartialVolume/shredos.i686)
-
-[![](https://img.shields.io/github/downloads/PartialVolume/shredos.2020.02/total?label=Total%20downloads%20x86_64%20all%20releases&style=plastic)](https://github.com/PartialVolume/shredos.2020.02/releases) [![](https://img.shields.io/github/downloads/PartialVolume/shredos.i686/total?label=Total%20downloads%20i686%20all%20releases&style=plastic)](https://github.com/PartialVolume/shredos.i686/releases)
+[![](https://img.shields.io/github/downloads/PartialVolume/shredos.x86_64/total?label=Total%20downloads%20x86_64_2021.08.2%20all%20releases&style=plastic)](https://github.com/PartialVolume/shredos.x86_64/releases)
+[![](https://img.shields.io/github/downloads/PartialVolume/shredos.2020.02/total?label=Total%20downloads%20x86_64_2020.05%20all%20releases&style=plastic)](https://github.com/PartialVolume/shredos.2020.02/releases) [![](https://img.shields.io/github/downloads/PartialVolume/shredos.i686/total?label=Total%20downloads%20i686%20all%20releases&style=plastic)](https://github.com/PartialVolume/shredos.i686/releases)
 
 ## Download .img and .iso files for burning to USB flash drives and CD-R/DVD-R
 
-| ShredOS Version | Nwipe Version | Number of Downloads | .img for USB Flash | .iso for CD-R/DVD-R |
+| Latest ShredOS Version | Nwipe Version | Number of Downloads | .img for USB Flash | .iso for CD-R/DVD-R |
 | ---------| ---------|---------|------------|-------------|
-| Latest x86_64 64 bit version |  v0.32.003  | [![](https://img.shields.io/github/downloads/PartialVolume/shredos.x86_64/latest/total.svg "Latest x86_64 64 bit version")](https://github.com/PartialVolume/shredos.2020.02/releases/latest) | [.img 64bit](https://github.com/PartialVolume/shredos.x86_64/releases/download/v2020.05.017_x86-64_0.32.003/shredos-2020.05.017_x86-64_0.32.003_20211111.img) | [.iso 64bit](https://github.com/PartialVolume/shredos.x86_64/releases/download/v2020.05.017_x86-64_0.32.003/shredos-2020.05.017_x86-64_0.32.003_20211112.iso) |
-| Latest i686 32 bit version | v0.30.001 | [![](https://img.shields.io/github/downloads/PartialVolume/shredos.i686/latest/total.svg "Latest i686 32 bit version")](https://github.com/PartialVolume/shredos.i686/releases/latest) | [.img 32bit](https://github.com/PartialVolume/shredos.i686/releases/download/v2020.02.008_i686-0.30.001/shredos-2020.05.008_i686_0.30.001_20210127.img) | Not available yet |
+| [v2021.08.2_20_x86-64_0.32.014](https://github.com/PartialVolume/shredos.x86_64/releases/tag/v2021.08.2_20_x86-64_0.32.014) |  v0.32.014  | [![](https://img.shields.io/github/downloads/PartialVolume/shredos.x86_64/latest/total.svg "Latest x86_64 64 bit version")](https://github.com/PartialVolume/shredos.x86_64/releases/latest) | [.img 64bit](https://github.com/PartialVolume/shredos.x86_64/releases/download/v2021.08.2_20_x86-64_0.32.014/shredos-2021.08.2_20_x86-64_0.32.014_20211129.img) | [.iso 64bit](https://github.com/PartialVolume/shredos.x86_64/releases/download/v2021.08.2_20_x86-64_0.32.014/shredos-2021.08.2_20_x86-64_0.32.014_20211130.iso) |
+| [v2020.02.008_i686-0.30.001](https://github.com/PartialVolume/shredos.i686/releases/tag/v2020.02.008_i686-0.30.001) | v0.30.001 | [![](https://img.shields.io/github/downloads/PartialVolume/shredos.i686/latest/total.svg "Latest i686 32 bit version")](https://github.com/PartialVolume/shredos.i686/releases/latest) | [.img 32bit](https://github.com/PartialVolume/shredos.i686/releases/download/v2020.02.008_i686-0.30.001/shredos-2020.05.008_i686_0.30.001_20210127.img) | Not available yet |
 
 Note: The .img files for burning to USB flash drives support both bios/UEFI booting. The .iso image currently supports legacy bios booting only and not UEFI, however, a bios/UEFI version of the .iso is in development and will be released shortly.
+		
+### [Older releases](https://github.com/PartialVolume/shredos.x86_64/blob/main/README.md#older-releases) of Shredos based on past versions of buildroot & the Linux kernel.
 
 #### Demo video showing ShredOS having booted straight into Nwipe where you can then select one or more drives to be erased.
 
@@ -45,18 +47,24 @@ Note: The .img files for burning to USB flash drives support both bios/UEFI boot
 1. [Reading and saving nwipes log files - via USB (manually) or ftp (manually & automatically)](https://github.com/PartialVolume/shredos.x86_64/blob/master/README.md#reading-and-saving-nwipes-log-files---via-usb-manually-or-ftp-manually--automatically)
    1. [Transferring nwipe log files to a USB storage device](https://github.com/PartialVolume/shredos.x86_64#transferring-nwipe-log-files-to-a-usb-storage-device)
    1. [Transferring nwipe log files to a ftp server](https://github.com/PartialVolume/shredos.x86_64#transferring-nwipe-log-files-to-a-ftp-server)
+1. [How to wipe drives on headless systems or systems with faulty display hardware. (For use on secure LANs only)](https://github.com/PartialVolume/shredos.2021.08.2_19-1/blob/main/README.md#how-to-wipe-drives-on-headless-systems-or-systems-with-faulty-display-hardware-for-use-on-secure-lans-only)
 1. [The latest ShredOS now includes the following](https://github.com/PartialVolume/shredos.2020.02/blob/master/README.md#the-latest-shredos-now-includes-the-following)
    1. [smartmontools](https://github.com/PartialVolume/shredos.2020.02/blob/master/README.md#smartmontools)
    1. [hexedit](https://github.com/PartialVolume/shredos.2020.02/blob/master/README.md#hexedit)
    1. [hdparm](https://github.com/PartialVolume/shredos.2020.02/blob/master/README.md#hdparm)
 1. [Compiling shredos and burning to USB stick, the harder way!](https://github.com/PartialVolume/shredos.2020.02/blob/master/README.md#compiling-shredos-and-burning-to-usb-stick-the-harder-way-)
 1. [Shredos is based on buildroot](https://github.com/PartialVolume/shredos.2020.02/blob/master/README.md#shredos-is-based-on-buildroot)
+1. [Older Releases](https://github.com/PartialVolume/shredos.2021.08.2_19-1/blob/main/README.md#earlier-releases)
 
 ## What is ShredOS?
 ShredOS is a USB bootable (BIOS or UEFI) small linux distribution with the sole purpose of securely erasing the entire contents of your
 disks using the program [nwipe](https://github.com/martijnvanbrummelen/nwipe). If you are familiar with dwipe from DBAN then you will feel right at home with ShredOS and nwipe. What are the advantages of nwipe over dwipe/DBAN? Well as everybody probably knows, DBAN development stopped in 2015 which means it has not received any further bug fixes or support for new hardware since that date. Nwipe originally was a fork of dwipe but has continued to have improvements and bug fixes and is now available in many Linux distros. ShredOS hopefully will always provide the latest nwipe on a up to date Linux kernel so it will support modern hardware.
 
 ShredOS supports either 32bit or 64bit processors. You will need to download the appropriate 64bit or 32bit .img or .iso file, depending upon your target processor and whether you want to burn ShredOS to a USB memory stick, in which case you would download the .img file. Alternatively, if you wanted to burn ShredOS to CD/DVD, then you would download the .iso file.
+
+ShredOS can be used as a software image and booted from PXE capable systems from a PXE server.
+		
+You can also use shredos on headless systems or systems with faulty display hardware as it includes a user enabled telnet server. Further details can be found here. [How to wipe drives on headless systems or systems with faulty or missing display hardware or keyboards](https://github.com/PartialVolume/shredos.x86_64#how-to-wipe-drives-on-headless-systems-or-systems-with-faulty-display-hardware-for-use-on-secure-lans-only)
 
 ShredOS includes the latest Nwipe official release, but in addition includes other disc related utilities such as Smartmontools, hdparm, a hexeditor [hexedit](https://linux.die.net/man/1/hexedit), and, the program loadkeys which can be used for [setting the keyboard layout](https://github.com/PartialVolume/shredos.2020.02/blob/master/README.md#how-to-set-the-keyboard-map-using-the-loadkeys-command-see-here-for-persistent-change-between-reboots). Nwipe automatically starts it's GUI in the first virtual terminal (ALT-F1), hdparm, smartmontools and hexeditor can be run in the second virtual terminal, (ALT-F2). Nwipe will erase drives using a user selectable choice of seven methods. hdparm - amongst many of its options - can be used for wiping a drive by [issueing ATA erase commands to the drive's internal firmware](https://ata.wiki.kernel.org/index.php/ATA_Secure_Erase). This is a planned feature addition to nwipe.
 
@@ -180,7 +188,7 @@ menuentry "shredos" {
 }
 ```
 
-For reference and as of nwipe version 0.32, listed below are all the options that you can use with nwipe and can place on the kernel command line in grub.cfg as described in the examples above.
+For reference and as of nwipe version 0.32.014, listed below are all the options that you can use with nwipe and can place on the kernel command line in grub.cfg as described in the examples above.
 ```
 Usage: nwipe [options] [device1] [device2] ...
 Options:
@@ -224,11 +232,15 @@ Options:
                           zero / quick           - Overwrite with zeros
                           one                    - Overwrite with ones (0xFF)
                           verify_zero            - Verifies disk is zero filled
+
                           verify_one             - Verifies disk is 0xFF filled
 
   -l, --logfile=FILE      Filename to log to. Default is STDOUT
 
   -p, --prng=METHOD       PRNG option (mersenne|twister|isaac)
+
+  -q, --quiet             Anonymize logs/GUI by removing serial numbers
+                          XXXXXX = S/N exists, ????? = S/N not obtainable 
 
   -r, --rounds=NUM        Number of times to wipe the device using the selected
                           method (default: 1)
@@ -360,6 +372,60 @@ chroot_list_enable=NO
 secure_chroot_dir=/home/yournewftpuser/ftpdata
 ```
 Disclaimer: The above settings should get you going but may or may not be ideal for your local situation. Refer to the vsftp website and forums if things aren't working as they should. The lftp application that Shredos uses, should also work with any Microsoft Windows based ftp server, as well as Linux and MAC based systems.
+
+## How to wipe drives on headless systems or systems with faulty display hardware. (For use on secure LANs only)
+ShredOS includes a user enabled telnet server. The downloadable .img images are supplied with telnet disabled as default.
+		
+To enable the telnet server, edit /boot/grub/grub.cfg or/and /EFI/BOOT/grub.cfg and on the USB flash drive, add `telnetd=enable` to the kernel command line.
+
+Example:
+```
+set default="0"
+set timeout="0"
+
+menuentry "shredos" {
+	linux /boot/shredos console=tty3 loglevel=3 telnetd=enable
+}
+```
+		
+Assuming the headless systems are configured to boot via USB and if UEFI that secure boot is disabled, just plug a USB stick containing ShredOS v2021.08.2_20_0.32.014 or higher into the system. Power cycle the system and then after giving ShredOS sufficient time to boot (4 to 60 seconds depending on the hardware) you can then, from another PC/laptop on the same network, use nmap as shown below to list all IP addresses that have open telnet ports on your local LAN:
+
+```
+nmap -p23 192.168.1.0/24 --open
+$ nmap -p23 192.168.1.0/24 --open
+Starting Nmap 7.80 ( https://nmap.org ) at 2021-11-29 20:54 GMT
+Nmap scan report for 192.168.1.30
+Host is up (0.071s latency).
+
+PORT   STATE SERVICE
+23/tcp open  telnet
+
+Nmap scan report for 192.168.1.100
+Host is up (0.050s latency).
+
+PORT   STATE SERVICE
+23/tcp open  telnet
+
+Nmap done: 256 IP addresses (19 hosts up) scanned in 14.53 seconds
+		
+```
+
+Telnet into the appropriate IP address `telnet 192.168.1.100`. Shredos will respond with:
+
+```
+telnet 192.168.1.100
+Trying 192.168.1.100...
+Connected to 192.168.1.100.
+Escape character is '^]'.
+
+shredos login: root
+		{ no password }
+
+sh-5.1# nwipe
+```
+Type `nwipe` as shown above and the nwipe GUI will be displayed and you can proceed with wiping the discs. On some terminals, i.e retro, nwipe doesn't display properly. If you find this then use a different terminal to launch nwipe. Terminals that do work ok are KDE's Konsole, terminator, guake, tmux, xfce terminal and xterm. Terminals that don't seem to work properly via a telnet session with nwipe are cool retro term and qterminal. Putty works but doesn't have the correct box characters but is usable. Putty may work perfectly if you can set the correct character encoding. These are my observations using KDE Neon, they may differ on your systems. If you find a workaround for those terminals that don't display nwipe perfectly over telnet, then please let me know. 
+		
+**WARNING:** Due to the insecure nature of telnet as opposed to ssh, it goes without saying that this method of accessing shredos & nwipe should only be carried out on a trusted local area network and never over the internet unless via a VPN or SSH tunnel. ssh access may be provided at a future date if it's requested.
 		
 ## ShredOS includes the following related programs
 
@@ -417,3 +483,9 @@ You can also find us on #buildroot on Freenode IRC.
 
 If you would like to contribute patches, please read
 https://buildroot.org/manual.html#submitting-patches
+		
+## Older Releases
+| Revision | 32bit .img | 64bit .img | 32bit .iso | 64bit .iso |
+| -- | -- | -- | -- | -- |
+| [v2020.05.017_x86-64_0.32.003](https://github.com/PartialVolume/shredos.x86_64_2020.05/releases/tag/v2020.05.017_x86-64_0.32.003) | N/A | [64bit .img](https://github.com/PartialVolume/shredos.x86_64_2020.05/releases/download/v2020.05.017_x86-64_0.32.003/shredos-2020.05.017_x86-64_0.32.003_20211111.img) | N/A | [64bit .iso](https://github.com/PartialVolume/shredos.x86_64_2020.05/releases/download/v2020.05.017_x86-64_0.32.003/shredos-2020.05.017_x86-64_0.32.003_20211112.iso) |
+		
