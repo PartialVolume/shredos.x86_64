@@ -26,8 +26,6 @@
 | [v2020.02.008_i686-0.30.001](https://github.com/PartialVolume/shredos.i686/releases/tag/v2020.02.008_i686-0.30.001) | v0.30.001 | [![](https://img.shields.io/github/downloads/PartialVolume/shredos.i686/latest/total.svg "Latest i686 32 bit version")](https://github.com/PartialVolume/shredos.i686/releases/latest) | [.img 32bit](https://github.com/PartialVolume/shredos.i686/releases/download/v2020.02.008_i686-0.30.001/shredos-2020.05.008_i686_0.30.001_20210127.img) | Not available yet |
 
 Note: The .img files for burning to USB flash drives support both bios/UEFI booting. The .iso image currently supports legacy bios booting only and not UEFI, however, a bios/UEFI version of the .iso is in development and will be released shortly.
-		
-### [Older releases](https://github.com/PartialVolume/shredos.x86_64/blob/main/README.md#older-releases) of Shredos based on past versions of buildroot & the Linux kernel.
 
 #### Demo video showing ShredOS having booted straight into Nwipe where you can then select one or more drives to be erased.
 
