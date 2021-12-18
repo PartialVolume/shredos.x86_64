@@ -20,11 +20,16 @@
 
 ## Download .img and .iso files for burning to USB flash drives and CD-R/DVD-R
 
-| Latest ShredOS Version | Nwipe Version | Number of Downloads | .img for USB Flash | .iso for CD-R/DVD-R |
-| ---------| ---------|---------|------------|-------------|
-| [v2021.08.2_20_x86-64_0.32.014](https://github.com/PartialVolume/shredos.x86_64/releases/tag/v2021.08.2_20_x86-64_0.32.014) |  v0.32.014  | [![](https://img.shields.io/github/downloads/PartialVolume/shredos.x86_64/latest/total.svg "Latest x86_64 64 bit version")](https://github.com/PartialVolume/shredos.x86_64/releases/latest) | [.img 64bit](https://github.com/PartialVolume/shredos.x86_64/releases/download/v2021.08.2_20_x86-64_0.32.014/shredos-2021.08.2_20_x86-64_0.32.014_20211129.img) | [.iso 64bit](https://github.com/PartialVolume/shredos.x86_64/releases/download/v2021.08.2_20_x86-64_0.32.014/shredos-2021.08.2_20_x86-64_0.32.014_20211130.iso) |
-| [v2020.02.008_i686-0.30.001](https://github.com/PartialVolume/shredos.i686/releases/tag/v2020.02.008_i686-0.30.001) | v0.30.001 | [![](https://img.shields.io/github/downloads/PartialVolume/shredos.i686/latest/total.svg "Latest i686 32 bit version")](https://github.com/PartialVolume/shredos.i686/releases/latest) | [.img 32bit](https://github.com/PartialVolume/shredos.i686/releases/download/v2020.02.008_i686-0.30.001/shredos-2020.05.008_i686_0.30.001_20210127.img) | Not available yet |
+| Latest ShredOS Version | Nwipe Version | .img for USB Flash | .iso for CD-R/DVD-R |
+| -- | -- | -- | -- |
+| [![GitHub release (by tag)](https://img.shields.io/github/downloads/PartialVolume/shredos.x86_64/v2021.08.2_20_x86-64_0.32.014/total "Latest x86_64 64bit version")](https://github.com/PartialVolume/shredos.x86_64/releases/tag/v2021.08.2_20_x86-64_0.32.014) | v0.32.014 | [.img 64bit](https://github.com/PartialVolume/shredos.x86_64/releases/download/v2021.08.2_20_x86-64_0.32.014/shredos-2021.08.2_20_x86-64_0.32.014_20211129.img) | [.iso 64bit](https://github.com/PartialVolume/shredos.x86_64/releases/download/v2021.08.2_20_x86-64_0.32.014/shredos-2021.08.2_20_x86-64_0.32.014_20211130.iso) |
+| [![GitHub release (by tag)](https://img.shields.io/github/downloads/PartialVolume/shredos.i686/v2020.02.008_i686-0.30.001/total "Latest i686 32bit version")](https://github.com/PartialVolume/shredos.i686/releases/tag/v2020.02.008_i686-0.30.001) | v0.30.001 | [.img 32bit](https://github.com/PartialVolume/shredos.i686/releases/download/v2020.02.008_i686-0.30.001/shredos-2020.05.008_i686_0.30.001_20210127.img) | Not available yet |
 
+| Previous ShredOS Version | Nwipe Version | .img for USB Flash | .iso for CD-R/DVD-R |
+| -- | -- | -- | -- |
+| [![GitHub release (by tag)](https://img.shields.io/github/downloads/PartialVolume/shredos.x86_64/v2020.05.017_x86-64_0.32.003/total "Previous x86_64 64bit version")](https://github.com/PartialVolume/shredos.x86_64/releases/tag/v2020.05.017_x86-64_0.32.003) | v0.32.003 | [.img 64bit](https://github.com/PartialVolume/shredos.x86_64/releases/download/v2020.05.017_x86-64_0.32.003/shredos-2020.05.017_x86-64_0.32.003_20211111.img) | [.iso 64bit](https://github.com/PartialVolume/shredos.x86_64/releases/download/v2020.05.017_x86-64_0.32.003/shredos-2020.05.017_x86-64_0.32.003_20211112.iso) |
+| [![GitHub release (by tag)](https://img.shields.io/github/downloads/PartialVolume/shredos.i686/v2020.02.005_i686-0.30.001/total "Previous i686 32bit version")](https://github.com/PartialVolume/shredos.i686/releases/tag/v2020.02.005_i686-0.30.001) | v0.30.001 | [.img 32bit](https://github.com/PartialVolume/shredos.i686/releases/download/v2020.02.005_i686-0.30.001/shredos-20210106.img) | Not available yet |
+		
 Note: The .img files for burning to USB flash drives support both bios/UEFI booting. The .iso image currently supports legacy bios booting only and not UEFI, however, a bios/UEFI version of the .iso is in development and will be released shortly.
 		
 #### Demo video showing ShredOS having booted straight into Nwipe where you can then select one or more drives to be erased.
