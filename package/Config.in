@@ -1992,6 +1992,7 @@ endif
 	source "package/qlibc/Config.in"
 	source "package/riemann-c-client/Config.in"
 	source "package/shapelib/Config.in"
+	source "package/shredos/Config.in"
 	source "package/skalibs/Config.in"
 	source "package/sphinxbase/Config.in"
 	source "package/startup-notification/Config.in"
