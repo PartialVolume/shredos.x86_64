@@ -438,16 +438,48 @@ hdparm has many uses and is a powerfull tool. Although Nwipe will be adding ATA 
 The ShredOS system is built using buildroot.
 The image (.img) file is 47.4MiB and can be burnt onto a USB memory stick with a tool such as dd or Etcher.
 
-You can build the image by doing:
+### You can build shredos using the following commands. This build was compiled on KDE Neon (Ubuntu 20.04).
+
+#### Install the following prerequisite software first. Without this software `make` will fail.
+```
+$ sudo apt install git
+$ sudo apt install build-essential   pkg-config   automake   libncurses5-dev   autotools-dev   libparted-dev   dmidecode   coreutils   smartmontools
+$ sudo apt-get install libssl-dev
+$ sudo apt-get install libelf-dev
+$ sudo apt-get install mtools
+```
+
+#### Download the ShredOS source using the git command and build ShredOS
 ```
 $ git clone https://github.com/PartialVolume/shredos.x86_64.git (or shredos.i686.git for 32bit)
 $ cd shredos
+$ mkdir package/shredos
+$ touch package/shredos/Config.in
+$ make clean
 $ make shredos_defconfig
 $ make
 $ ls output/images/shredos*.img
 $ cd output/images
 $ dd if=shredos-20200412.img of=/dev/sdx (20200412 will be the day you compiled, sdx is the USB flash drive)
 ```
+### Commands to configure buildroot, you will only need to use these if you are making changes to ShredOS
+
+#### Change build configuration, install software then save the buildroot config changes to shredos_defconfig, defined in the buildroot config) ALWAYS RUN 'make savedefconfig' AFTER CHANGES to were made in menuconfig.
+```		
+$ make menuconfig
+$ make savedefconfig #Saves buildroot config to shredos_defconfig
+```
+#### Edit the linux kernel configuration, install kernel drivers .. then save the configuration.
+```
+$ make linux-menuconfig
+$ make linux-update-defconfig
+```
+#### Edit the busybox selection of software and save the configuration.
+```
+make busybox-menuconfig
+make busybox-update-config
+```
+
 
 ## ShredOS is based on buildroot
 
