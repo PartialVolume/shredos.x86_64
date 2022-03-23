@@ -60,7 +60,6 @@ Note: The .img files for burning to USB flash drives support both bios/UEFI boot
 	1. [../board/shredos/fsoverlay/](https://github.com/PartialVolume/shredos.x86_64/blob/master/README.md#boardshredosfsoverlay)
 	1. [../board/shredos/fsoverlay/etc/init.d/S40network](https://github.com/PartialVolume/shredos.x86_64/blob/master/README.md#boardshredosfsoverlayetcinitds40network)
 	1. [../board/shredos/fsoverlay/usr/bin/nwipe_launcher](https://github.com/PartialVolume/shredos.x86_64/blob/master/README.md#boardshredosfsoverlayusrbinnwipe_launcher)
-1. [Shredos is based on buildroot](https://github.com/PartialVolume/shredos.x86_64#shredos-is-based-on-buildroot)
 
 ## What is ShredOS?
 ShredOS is a USB bootable (BIOS or UEFI) small linux distribution with the sole purpose of securely erasing the entire contents of your
@@ -506,32 +505,3 @@ S40network is responsible for starting the network & obtaining a IP address via 
 nwipe_launcher starts the nwipe program in tty1, see ../board/shredos/fsoverlay/etc/inittab which is where nwipe_launcher is called from. nwipe_launcher, apart from starting nwipe in tty1 also is responsible for calling lftp to transfer log files to a remote ftp server on your local area network. It also contains the 4,3,2,1 countdown and nwipe restart code.
 		
 #### More file details to follow..
-		
-## ShredOS is based on buildroot
-
-Buildroot is a simple, efficient and easy-to-use tool to generate embedded
-Linux systems through cross-compilation.
-
-The documentation can be found in docs/manual. You can generate a text
-document with 'make manual-text' and read output/docs/manual/manual.text.
-Online documentation can be found at http://buildroot.org/docs.html
-
-To build and use the buildroot stuff, do the following:
-
-1) run 'make menuconfig'
-2) select the target architecture and the packages you wish to compile
-3) run 'make'
-4) wait while it compiles
-5) find the kernel, bootloader, root filesystem, etc. in output/images
-
-You do not need to be root to build or run buildroot.  Have fun!
-
-Buildroot comes with a basic configuration for a number of boards. Run
-'make list-defconfigs' to view the list of provided configurations.
-
-Please feed suggestions, bug reports, insults, and bribes back to the
-buildroot mailing list: buildroot@buildroot.org
-You can also find us on #buildroot on Freenode IRC.
-
-If you would like to contribute patches, please read
-https://buildroot.org/manual.html#submitting-patches
