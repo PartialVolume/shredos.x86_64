@@ -51,6 +51,7 @@ Note: The .img files for burning to USB flash drives support both bios/UEFI boot
    1. [hexedit](https://github.com/PartialVolume/shredos.x86_64#hexedit)
    1. [hdparm](https://github.com/PartialVolume/shredos.x86_64#hdparm)
 1. [Compiling shredos and burning to USB stick, the harder way!](https://github.com/PartialVolume/shredos.x86_64#compiling-shredos-and-burning-to-usb-stick-the-harder-way-)
+   1. [
 1. [Shredos is based on buildroot](https://github.com/PartialVolume/shredos.x86_64#shredos-is-based-on-buildroot)
 
 ## What is ShredOS?
@@ -440,7 +441,7 @@ The image (.img) file is 47.4MiB and can be burnt onto a USB memory stick with a
 
 ### You can build shredos using the following commands. This build was compiled on KDE Neon (Ubuntu 20.04).
 
-#### Install the following prerequisite software first. Without this software `make` will fail.
+#### Install the following prerequisite software first. Without this software, the make command will fail
 ```
 $ sudo apt install git
 $ sudo apt install build-essential   pkg-config   automake   libncurses5-dev   autotools-dev   libparted-dev   dmidecode   coreutils   smartmontools
@@ -479,8 +480,25 @@ $ make linux-update-defconfig
 make busybox-menuconfig
 make busybox-update-config
 ```
+### Important ShredOS files and folders
 
-
+#### ../board/shredos/doimg.sh
+doimg.sh is a bash script, the main purpose of which, is to generate the .img file located in output/images/. However it is also used to copy the pre-compiled .efi file and other files such as the shredos.ico, autorun.inf for Windows, README.txt. The contents of board/shredos/version.txt is also used to rename rename the .img file with version info and current date and time.
+		
+#### ../board/shredos/version.txt
+This file contains the version information as seen in the title on nwipe's title bar, i.e. '2021.08.2_22_x86-64_0.32.023'. This version ingformation is also used when naming the .img file in ../output/images/ /board/shredos/version.txt is manually updated for each new release of ShredOS.
+		
+#### ../board/shredos/fsoverlay/
+This fsoverlay directory contains files and folders that are directly copied into the root filesystem of ShredOS. An example of this is ../board/shredos/fsoverlay/etc/inittab file where the tty1 and tty2 virtual terminals are setup. This is where you will find /usr/bin/nwipe_launcher that automatically starts in tty1. If you want to place or overwrite a specific file in the root filesystem the ../board/shredos/fsoverlay/ directory is one way of inserting your own files.
+		
+#### ../board/shredos/fsoverlay/etc/init.d/S40network
+S40network is responsible for starting the network & obtaining a IP address via DHCP by starting a ShredOS script called /usr/bin/shredos_net.sh The shredos_net.sh script can also be found in the fsoverlay directory ../board/shredos/fsoverlay/usr/bin/shredos_net.sh which then ends up in /usr/bin/ of the ShredOS filesystem.
+		
+#### ../board/shredos/fsoverlay/usr/bin/nwipe_launcher
+nwipe_launcher starts the nwipe program in tty1, see ../board/shredos/fsoverlay/etc/inittab which is where nwipe_launcher is called from. nwipe_launcher, apart from starting nwipe in tty1 also is responsible for calling lftp to transfer log files to a remote ftp server on your local area network. It also contains the 4,3,2,1 countdown and nwipe restart code.
+		
+#### More file details to follow..
+		
 ## ShredOS is based on buildroot
 
 Buildroot is a simple, efficient and easy-to-use tool to generate embedded
