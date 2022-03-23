@@ -51,7 +51,15 @@ Note: The .img files for burning to USB flash drives support both bios/UEFI boot
    1. [hexedit](https://github.com/PartialVolume/shredos.x86_64#hexedit)
    1. [hdparm](https://github.com/PartialVolume/shredos.x86_64#hdparm)
 1. [Compiling shredos and burning to USB stick, the harder way!](https://github.com/PartialVolume/shredos.x86_64#compiling-shredos-and-burning-to-usb-stick-the-harder-way-)
-   1. [
+   1. [Install the following prerequisite software first. Without this software, the make command will fail](https://github.com/PartialVolume/shredos.x86_64/blob/master/README.md#install-the-following-prerequisite-software-first-without-this-software-the-make-command-will-fail)
+   1. [Download the ShredOS source using the git command and build ShredOS](https://github.com/PartialVolume/shredos.x86_64/blob/master/README.md#download-the-shredos-source-using-the-git-command-and-build-shredos)
+   1. [Commands to configure buildroot, you will only need to use these if you are making changes to ShredOS](https://github.com/PartialVolume/shredos.x86_64/blob/master/README.md#commands-to-configure-buildroot-you-will-only-need-to-use-these-if-you-are-making-changes-to-shredos)
+1. [Important ShredOS files and folders when building from source](https://github.com/PartialVolume/shredos.x86_64/blob/master/README.md#important-shredos-files-and-folders-when-building-from-source)
+	1. [../board/shredos/doimg.sh](https://github.com/PartialVolume/shredos.x86_64/blob/master/README.md#boardshredosdoimgsh)
+	1. [../board/shredos/version.txt](https://github.com/PartialVolume/shredos.x86_64/blob/master/README.md#boardshredosversiontxt)
+	1. [../board/shredos/fsoverlay/](https://github.com/PartialVolume/shredos.x86_64/blob/master/README.md#boardshredosfsoverlay)
+	1. [../board/shredos/fsoverlay/etc/init.d/S40network](https://github.com/PartialVolume/shredos.x86_64/blob/master/README.md#boardshredosfsoverlayetcinitds40network)
+	1. [../board/shredos/fsoverlay/usr/bin/nwipe_launcher](https://github.com/PartialVolume/shredos.x86_64/blob/master/README.md#boardshredosfsoverlayusrbinnwipe_launcher)
 1. [Shredos is based on buildroot](https://github.com/PartialVolume/shredos.x86_64#shredos-is-based-on-buildroot)
 
 ## What is ShredOS?
@@ -480,10 +488,10 @@ $ make linux-update-defconfig
 make busybox-menuconfig
 make busybox-update-config
 ```
-### Important ShredOS files and folders
+### Important ShredOS files and folders when building from source
 
 #### ../board/shredos/doimg.sh
-doimg.sh is a bash script, the main purpose of which, is to generate the .img file located in output/images/. However it is also used to copy the pre-compiled .efi file and other files such as the shredos.ico, autorun.inf for Windows, README.txt. The contents of board/shredos/version.txt is also used to rename rename the .img file with version info and current date and time.
+doimg.sh is a bash script, the main purpose of which, is to generate the .img file located in output/images/. However it is also used to copy the pre-compiled .efi file and other files such as the shredos.ico, autorun.inf for Windows, README.txt. The contents of board/shredos/version.txt is also used to rename the .img file with version info and current date and time.
 		
 #### ../board/shredos/version.txt
 This file contains the version information as seen in the title on nwipe's title bar, i.e. '2021.08.2_22_x86-64_0.32.023'. This version ingformation is also used when naming the .img file in ../output/images/ /board/shredos/version.txt is manually updated for each new release of ShredOS.
