@@ -515,5 +515,8 @@ This file contains the sha1 hash for the nwipe tar file, i.e. nwipe-v0.32.023.ta
 		
 #### ../package/nwipe/Config.in
 This is a buildroot file that exists in each package. The only time it would be manually edited is if nwipe's dependendencies changed.
+		
+#### ../package/nwipe/002-nwipe-banner-patch.sh
+This script contains the changes that are made to nwipe's version.c
 
 #### END OF README.md
