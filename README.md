@@ -60,6 +60,11 @@ Note: The .img files for burning to USB flash drives support both bios/UEFI boot
 	1. [../board/shredos/fsoverlay/](https://github.com/PartialVolume/shredos.x86_64/blob/master/README.md#boardshredosfsoverlay)
 	1. [../board/shredos/fsoverlay/etc/init.d/S40network](https://github.com/PartialVolume/shredos.x86_64/blob/master/README.md#boardshredosfsoverlayetcinitds40network)
 	1. [../board/shredos/fsoverlay/usr/bin/nwipe_launcher](https://github.com/PartialVolume/shredos.x86_64/blob/master/README.md#boardshredosfsoverlayusrbinnwipe_launcher)
+	1. [../package/nwipe/](https://github.com/PartialVolume/shredos.x86_64#packagenwipe)
+	1. [../package/nwipe/nwipe.mk](https://github.com/PartialVolume/shredos.x86_64#packagenwipenwipemk)
+	1. [../package/nwipe/nwipe.hash](https://github.com/PartialVolume/shredos.x86_64#packagenwipenwipehash)
+	1. [../package/nwipe/Config.in](https://github.com/PartialVolume/shredos.x86_64#packagenwipeconfigin)
+	1. [../package/nwipe/002-nwipe-banner-patch.sh](https://github.com/PartialVolume/shredos.x86_64#packagenwipe002-nwipe-banner-patchsh)
 
 ## What is ShredOS?
 ShredOS is a USB bootable (BIOS or UEFI) small linux distribution with the sole purpose of securely erasing the entire contents of your
