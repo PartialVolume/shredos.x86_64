@@ -60,6 +60,11 @@ Note: The .img files for burning to USB flash drives support both bios/UEFI boot
 	1. [../board/shredos/fsoverlay/](https://github.com/PartialVolume/shredos.x86_64/blob/master/README.md#boardshredosfsoverlay)
 	1. [../board/shredos/fsoverlay/etc/init.d/S40network](https://github.com/PartialVolume/shredos.x86_64/blob/master/README.md#boardshredosfsoverlayetcinitds40network)
 	1. [../board/shredos/fsoverlay/usr/bin/nwipe_launcher](https://github.com/PartialVolume/shredos.x86_64/blob/master/README.md#boardshredosfsoverlayusrbinnwipe_launcher)
+	1. [../package/nwipe/](https://github.com/PartialVolume/shredos.x86_64#packagenwipe)
+	1. [../package/nwipe/nwipe.mk](https://github.com/PartialVolume/shredos.x86_64#packagenwipenwipemk)
+	1. [../package/nwipe/nwipe.hash](https://github.com/PartialVolume/shredos.x86_64#packagenwipenwipehash)
+	1. [../package/nwipe/Config.in](https://github.com/PartialVolume/shredos.x86_64#packagenwipeconfigin)
+	1. [../package/nwipe/002-nwipe-banner-patch.sh](https://github.com/PartialVolume/shredos.x86_64#packagenwipe002-nwipe-banner-patchsh)
 
 ## What is ShredOS?
 ShredOS is a USB bootable (BIOS or UEFI) small linux distribution with the sole purpose of securely erasing the entire contents of your
@@ -78,6 +83,9 @@ ShredOS boots very quickly and depending upon the host system can boot in as lit
 The vanilla version of ShredOS boots into nwipe's GUI and shows the available discs that can then be selected for wiping. It does not autonuke your discs at launch, however it is capable of doing that, if you edit the grub.cfg file and specify the appropriate nwipe command line option. Details of configuring nwipe's launch behaviour is shown below [How to run nwipe so you can specify nwipe command line options](https://github.com/PartialVolume/shredos.2020.02/blob/master/README.md#how-to-run-nwipe-so-you-can-specify-nwipe-command-line-options)
 
 ## What do I do after I've erased everything on my disk? What is actually erased?
+> **Warning**
+> Nwipe & therefore ShredOS does not automatically detect HDA (hidden disc areas) i.e the disc reporting a smaller size than it actually is. You should always run hdparm to detect for a HDA (and correct if necessary) before running a wipe. HDA detection will be added in nwipe at a future date.
+		
 This paragraph is for those that are not familiar with wiping discs. if you know what you are doing skip to the next section. So you have erased your disc with ShredOS/nwipe and nwipe reported zero errors and the disc was erased. In it's erased state and depending upon the method you used every block on the drive contains either zero's or meaningless random data. In this state the disc won't be recognised by your operating system except at a very low level or by specialised programs. You won't be able to write files to the disc because nwipe has removed everything, absolutely everything, the operating system is gone, all your data is gone, the partition table is gone, the file system gone, the MBR and all the files have been erased without a trace and will never ever be recovered from the disk. The only thing left is a whole load of zeros or random data. To make the disc usable again you will either need to format the disk, which creates a partition table and directory structure or install a new operating system such as Linux or Windows. Of course, if you are just disposing of or reselling the disk then you don't need to do anything else. So if you are reasonably happy that you know what you are doing and you understand that you will need to format the disc then I hope this software does it's job and is useful to you. Before you press that 'S' key to start the wipe, pause and double check you have selected the correct drive/s, something I always do !
 
 ## Nwipe's erasure methods
@@ -443,10 +451,10 @@ hdparm has many uses and is a powerfull tool. Although Nwipe will be adding ATA 
 
 ## Compiling ShredOS and burning to USB stick, the harder way !
 
-The ShredOS system is built using buildroot.
-The image (.img) file is 47.4MiB and can be burnt onto a USB memory stick with a tool such as dd or Etcher.
+The ShredOS system is based on the buildroot tool whos main application is to create operating systems for embedded systems.
+The image (.img) file is approximately 60 MiB and can be written to a USB memory stick with a tool such as dd or Etcher.
 
-### You can build shredos using the following commands. This build was compiled on KDE Neon (Ubuntu 20.04).
+### You can build shredos using the following commands. This example build was compiled on KDE Neon (Ubuntu 20.04).
 
 #### Install the following prerequisite software first. Without this software, the make command will fail
 ```
@@ -457,7 +465,7 @@ $ sudo apt-get install libelf-dev
 $ sudo apt-get install mtools
 ```
 
-#### Download the ShredOS source using the git command and build ShredOS
+#### Download the ShredOS source using the git clone command, build ShredOS and write to a USB memory device.
 ```
 $ git clone https://github.com/PartialVolume/shredos.x86_64.git (or shredos.i686.git for 32bit)
 $ cd shredos
@@ -472,36 +480,51 @@ $ dd if=shredos-20200412.img of=/dev/sdx (20200412 will be the day you compiled,
 ```
 ### Commands to configure buildroot, you will only need to use these if you are making changes to ShredOS
 
-#### Change build configuration, install software then save the buildroot config changes to shredos_defconfig, defined in the buildroot config) ALWAYS RUN 'make savedefconfig' AFTER CHANGES to were made in menuconfig.
+#### Change buildroot configuration, select the architecture, install software packages then save the buildroot config changes to shredos_defconfig, the location if which is defined in the buildroot config within `make menuconfig` ALWAYS RUN `make savedefconfig` AFTER CHANGES are made in menuconfig.
 ```		
 $ make menuconfig
-$ make savedefconfig #Saves buildroot config to shredos_defconfig
+$ make savedefconfig # save the changes
 ```
 #### Edit the linux kernel configuration, install kernel drivers .. then save the configuration.
 ```
 $ make linux-menuconfig
-$ make linux-update-defconfig
+$ make linux-update-defconfig # save the changes
 ```
 #### Edit the busybox selection of software and save the configuration.
 ```
 make busybox-menuconfig
-make busybox-update-config
+make busybox-update-config # save the changes
 ```
-### Important ShredOS files and folders when building from source
+### Important ShredOS files and folders when building ShredOS from source
 
 #### ../board/shredos/doimg.sh
-doimg.sh is a bash script, the main purpose of which, is to generate the .img file located in output/images/. However it is also used to copy the pre-compiled .efi file and other files such as the shredos.ico, autorun.inf for Windows, README.txt. The contents of board/shredos/version.txt is also used to rename the .img file with version info and current date and time.
+doimg.sh is a bash script, the main purpose of which is to generate the .img file located in output/images/. However it is also used to copy the pre-compiled .efi file and other files such as the shredos.ico, autorun.inf for Windows, README.txt. The contents of board/shredos/version.txt is also used to rename the .img file with version info and the current date and time.
 		
 #### ../board/shredos/version.txt
 This file contains the version information as seen in the title on nwipe's title bar, i.e. '2021.08.2_22_x86-64_0.32.023'. This version ingformation is also used when naming the .img file in ../output/images/ /board/shredos/version.txt is manually updated for each new release of ShredOS.
 		
 #### ../board/shredos/fsoverlay/
-This fsoverlay directory contains files and folders that are directly copied into the root filesystem of ShredOS. An example of this is ../board/shredos/fsoverlay/etc/inittab file where the tty1 and tty2 virtual terminals are setup. This is where you will find /usr/bin/nwipe_launcher that automatically starts in tty1. If you want to place or overwrite a specific file in the root filesystem the ../board/shredos/fsoverlay/ directory is one way of inserting your own files.
+This fsoverlay directory contains files and folders that are directly copied into the root filesystem of ShredOS. A example of this is the  ../board/shredos/fsoverlay/etc/inittab file where the tty1 and tty2 virtual terminals are configured. This is where you will find the script `/usr/bin/nwipe_launcher` that automatically starts in tty1 after ShredOS has booted. If you want to place or overwrite a specific file in the root filesystem of ShredOS, the ../board/shredos/fsoverlay/ directory is one way of inserting your own files.
 		
 #### ../board/shredos/fsoverlay/etc/init.d/S40network
-S40network is responsible for starting the network & obtaining a IP address via DHCP by starting a ShredOS script called /usr/bin/shredos_net.sh The shredos_net.sh script can also be found in the fsoverlay directory ../board/shredos/fsoverlay/usr/bin/shredos_net.sh which then ends up in /usr/bin/ of the ShredOS filesystem.
+S40network is responsible for starting the network & obtaining a IP address via DHCP by starting a ShredOS script called `/usr/bin/shredos_net.sh` The shredos_net.sh script can also be found in the fsoverlay directory `../board/shredos/fsoverlay/usr/bin/shredos_net.sh` which then ends up in the directory /usr/bin/ of the ShredOS filesystem.
 		
 #### ../board/shredos/fsoverlay/usr/bin/nwipe_launcher
-nwipe_launcher starts the nwipe program in tty1, see ../board/shredos/fsoverlay/etc/inittab which is where nwipe_launcher is called from. nwipe_launcher, apart from starting nwipe in tty1 also is responsible for calling lftp to transfer log files to a remote ftp server on your local area network. It also contains the 4,3,2,1 countdown and nwipe restart code.
+nwipe_launcher starts the nwipe program in tty1, see ../board/shredos/fsoverlay/etc/inittab which is where nwipe_launcher is called from. The nwipe_launcher script, apart from starting nwipe in tty1 also is responsible for calling the lftp program to automatically transfer log files to a remote ftp server on your local area network, assuming lftp has been enabled on the kernel command line. It also contains the 4,3,2,1 countdown and nwipe restart code.
 		
-#### More file details to follow..
+#### ../package/nwipe/
+All programs in ShredOS appear under their individual sub-directory under the package directory, therefore, you will find all the information relating to the build of nwipe under ../package/nwipe. The four files contained here are involved in downloading the nwipe source from https://github.com/PartialVolume/nwipe, checking the integrity of the source by comparison of the hash, patching the nwipe version.c and compiling the code. Each file in ../package/nwipe/ is descibed below.
+		
+#### ../package/nwipe/nwipe.mk
+This is the buildroot make file for nwipe. This is where the nwipe source download is initiated & hash checked. It also patches the nwipe code, in the case of ShredOS the only patching to the vanilla nwipe code is to change the nwipe title bar from nwipe [version] to ShredOS [shredos version] i.e ShredOS 2021.08.2_22_x86-64_0.32.023. This file also includes nwipe dependencies and nwipe version number. Therefore is file should have the nwipe version number updated if a new version of nwipe is incorporated into ShredOS.
+		
+#### ../package/nwipe/nwipe.hash
+This file contains the sha1 hash for the nwipe tar file, i.e. nwipe-v0.32.023.tar.gz. The hash and filename contained in this file is manually updated with each new release of nwipe.
+		
+#### ../package/nwipe/Config.in
+This is a buildroot file that exists in each package. The only time it would be manually edited is if nwipe's dependendencies changed.
+		
+#### ../package/nwipe/002-nwipe-banner-patch.sh
+This script contains the changes that are made to nwipe's version.c
+
+#### END OF README.md
