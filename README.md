@@ -26,6 +26,7 @@
 | v2021.08.2_21_i586_0.32.023 | v0.32.023 | [.img 32bit](https://github.com/PartialVolume/shredos.x86_64/releases/download/v2021.08.2_21_x86-64_0.32.023/shredos-2021.08.2_21_i586_0.32.023_20220126.img) | [.iso 32 bit](https://github.com/PartialVolume/shredos.x86_64/releases/download/v2021.08.2_21_x86-64_0.32.023/shredos-2021.08.2_21_i586_0.32.023_20220126.iso) |
 		
 Note: The .img files for burning to USB flash drives support both bios/UEFI booting. The .iso image currently supports legacy bios booting only and not UEFI, however, a bios/UEFI version of the .iso is in development and will be released shortly.
+You can also consider [VENTOY (Open Source tool to create bootable USB drive for ISO/WIM/IMG/VHD(x)/EFI files)](https://github.com/ventoy/Ventoy) as a workaround to avoid bios/UEFI issues.
 		
 #### Demo video showing ShredOS having booted straight into Nwipe where you can then select one or more drives to be erased.
 
@@ -37,6 +38,7 @@ Note: The .img files for burning to USB flash drives support both bios/UEFI boot
 1. [Obtaining and writing ShredOS to a USB flash drive - The easy way!](https://github.com/PartialVolume/shredos.x86_64#obtaining-and-writing-shredos-to-a-usb-flash-drive-the-easy-way-)
    1. [Linux and MAC users](https://github.com/PartialVolume/shredos.x86_64#linux-and-mac-users)
    1. [Windows users](https://github.com/PartialVolume/shredos.x86_64#windows-users)
+   1. [Multi OS with VENTOY](https://github.com/PartialVolume/shredos.x86_64#multi-os-with-ventoy)
 1. [Virtual terminals](https://github.com/PartialVolume/shredos.x86_64#virtual-terminals)
 1. [How to run nwipe so you can specify nwipe command line options](https://github.com/PartialVolume/shredos.x86_64#how-to-run-nwipe-so-you-can-specify-nwipe-command-line-options)
 1. [How to change the default nwipe options so the change persists between reboots](https://github.com/PartialVolume/shredos.x86_64#how-to-change-the-default-nwipe-options-so-the-change-persists-between-reboots)
@@ -105,7 +107,7 @@ Nwipe also includes the following pseudo random number generators:
 * Mersenne Twister (mt19937ar-cok)
 * ISAAC (rand.c 20010626)
 
-## Obtaining and writing ShredOS to a USB flash drive, the easy way !
+## Obtaining and writing ShredOS to a USB flash drive, the easy way!
 
 You can of course compile ShredOS from source but that can take a long time and you can run into all sorts of problems if your not familiar with compiling an operating system. So if you just want to get started with using ShredOS and nwipe then just download the ShredOS image file and write it to a USB flash drive. Please note this will over write the existing contents of your USB flash drive.
 
@@ -131,7 +133,19 @@ dd if=shredos.img of=/dev/sdx
 #### Windows users:
 If you are a windows user, use a program such as [Rufus](https://rufus.ie/) or [etcher](https://www.balena.io/etcher/) to write the image file to a USB stick, remembering that the entire contents of the USB flash drive will be overwritten. [Winzip](https://www.winzip.com/win/en/) can be used to extract the shredos.img file from the compressed shredos.img.tar.gz file that you downloaded. [hashtab](http://implbits.com/products/hashtab/) can be downloaded and used to confirm the sha1 checksum.
 
+#### Multi OS with VENTOY
+As explained on the [GitHub repository](https://github.com/ventoy/Ventoy):
+> Ventoy is an open source tool to create bootable USB drive for ISO/WIM/IMG/VHD(x)/EFI files.
+With ventoy, you don't need to format the disk over and over, you just need to copy the image files to the USB drive and boot it. You can copy many image files at a time and ventoy will give you a boot menu to select them.
+You can also browse ISO/WIM/IMG/VHD(x)/EFI files in local disk and boot them.
+x86 Legacy BIOS, IA32 UEFI, x86_64 UEFI, ARM64 UEFI and MIPS64EL UEFI are supported in the same way.
+Both MBR and GPT partition style are supported in the same way.
+Most type of OS supported(Windows/WinPE/Linux/Unix/ChromeOS/Vmware/Xen...)
+920+ ISO files are tested (List). 90%+ distros in distrowatch.com supported (Details).
 
+Once your USB removable drive is having VENTOY installed, you just have to copy the latest .iso version of ShredOS at the root.
+
+		
 ## Virtual Terminals
 ShredOS has three tty terminals, ALT-F1 (Where nwipe is initially launched), ALT-F2 (A virtual terminal), ALT-F3 (console log, login required which is root with no password).
 
