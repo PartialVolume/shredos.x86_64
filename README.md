@@ -32,27 +32,27 @@ You can also consider [VENTOY (Open Source tool to create bootable USB drive for
 
 ![Example wipe](/images/example_wipe.gif)
 
-1. [What is ShredOS?](https://github.com/PartialVolume/shredos.x86_64#what-is-shredos)
-1. [What do I do after I've erased everything on my disk? What is actually erased?](https://github.com/PartialVolume/shredos.x86_64#what-do-i-do-after-ive-erased-everything-on-my-disk-what-is-actually-erased)
-1. [Nwipe's erasure methods](https://github.com/PartialVolume/shredos.x86_64#nwipes-erasure-methods)
-1. [Obtaining and writing ShredOS to a USB flash drive - The easy way!](https://github.com/PartialVolume/shredos.x86_64#obtaining-and-writing-shredos-to-a-usb-flash-drive-the-easy-way-)
-   1. [Linux and MAC users](https://github.com/PartialVolume/shredos.x86_64#linux-and-mac-users)
-   1. [Windows users](https://github.com/PartialVolume/shredos.x86_64#windows-users)
-   1. [Multi OS with VENTOY](https://github.com/PartialVolume/shredos.x86_64#multi-os-with-ventoy)
-1. [Virtual terminals](https://github.com/PartialVolume/shredos.x86_64#virtual-terminals)
-1. [How to run nwipe so you can specify nwipe command line options](https://github.com/PartialVolume/shredos.x86_64#how-to-run-nwipe-so-you-can-specify-nwipe-command-line-options)
-1. [How to change the default nwipe options so the change persists between reboots](https://github.com/PartialVolume/shredos.x86_64#how-to-change-the-default-nwipe-options-so-the-change-persists-between-reboots)
-1. [How to set the keyboard map using the loadkeys command (see here for persistent change between reboots](https://github.com/PartialVolume/shredos.x86_64#how-to-set-the-keyboard-map-using-the-loadkeys-command-see-here-for-persistent-change-between-reboots)
-1. [How to make a persistent change to keyboard maps](https://github.com/PartialVolume/shredos.x86_64#how-to-make-a-persistent-change-to-keyboard-maps)
-1. [Reading and saving nwipes log files - via USB (manually) or ftp (manually & automatically)](https://github.com/PartialVolume/shredos.x86_64#reading-and-saving-nwipes-log-files---via-usb-manually-or-ftp-manually--automatically)
-   1. [Transferring nwipe log files to a USB storage device](https://github.com/PartialVolume/shredos.x86_64#transferring-nwipe-log-files-to-a-usb-storage-device)
-   1. [Transferring nwipe log files to a ftp server](https://github.com/PartialVolume/shredos.x86_64#transferring-nwipe-log-files-to-a-ftp-server)
-1. [How to wipe drives on headless systems or systems with faulty display hardware. (For use on secure LANs only)](https://github.com/PartialVolume/shredos.x86_64#how-to-wipe-drives-on-headless-systems-or-systems-with-faulty-display-hardware-for-use-on-secure-lans-only)
-1. [The latest ShredOS now includes the following](https://github.com/PartialVolume/shredos.x86_64#the-latest-shredos-now-includes-the-following)
-   1. [smartmontools](https://github.com/PartialVolume/shredos.x86_64#smartmontools)
-   1. [hexedit](https://github.com/PartialVolume/shredos.x86_64#hexedit)
-   1. [hdparm](https://github.com/PartialVolume/shredos.x86_64#hdparm)
-1. [Compiling shredos and burning to USB stick, the harder way!](https://github.com/PartialVolume/shredos.x86_64#compiling-shredos-and-burning-to-usb-stick-the-harder-way-)
+1. [What is ShredOS?](#what-is-shredos)
+1. [What do I do after I've erased everything on my disk? What is actually erased?](#what-do-i-do-after-ive-erased-everything-on-my-disk-what-is-actually-erased)
+1. [Nwipe's erasure methods](#nwipes-erasure-methods)
+1. [Obtaining and writing ShredOS to a USB flash drive - The easy way!](#obtaining-and-writing-shredos-to-a-usb-flash-drive-the-easy-way-)
+   1. [Linux and MAC users](#linux-and-mac-users)
+   1. [Windows users](#windows-users)
+   1. [Multi OS with VENTOY](#multi-os-with-ventoy)
+1. [Virtual terminals](#virtual-terminals)
+1. [How to run nwipe so you can specify nwipe command line options](#how-to-run-nwipe-so-you-can-specify-nwipe-command-line-options)
+1. [How to change the default nwipe options so the change persists between reboots](#how-to-change-the-default-nwipe-options-so-the-change-persists-between-reboots)
+1. [How to set the keyboard map using the loadkeys command (see here for persistent change between reboots](#how-to-set-the-keyboard-map-using-the-loadkeys-command-see-here-for-persistent-change-between-reboots)
+1. [How to make a persistent change to keyboard maps](#how-to-make-a-persistent-change-to-keyboard-maps)
+1. [Reading and saving nwipes log files - via USB (manually) or ftp (manually & automatically)](#reading-and-saving-nwipes-log-files---via-usb-manually-or-ftp-manually--automatically)
+   1. [Transferring nwipe log files to a USB storage device](#transferring-nwipe-log-files-to-a-usb-storage-device)
+   1. [Transferring nwipe log files to a ftp server](#transferring-nwipe-log-files-to-a-ftp-server)
+1. [How to wipe drives on headless systems or systems with faulty display hardware. (For use on secure LANs only)](#how-to-wipe-drives-on-headless-systems-or-systems-with-faulty-display-hardware-for-use-on-secure-lans-only)
+1. [The latest ShredOS now includes the following](#the-latest-shredos-now-includes-the-following)
+   1. [smartmontools](#smartmontools)
+   1. [hexedit](#hexedit)
+   1. [hdparm](#hdparm)
+1. [Compiling shredos and burning to USB stick, the harder way!](#compiling-shredos-and-burning-to-usb-stick-the-harder-way-)
    1. [Install the following prerequisite software first. Without this software, the make command will fail](https://github.com/PartialVolume/shredos.x86_64/blob/master/README.md#install-the-following-prerequisite-software-first-without-this-software-the-make-command-will-fail)
    1. [Download the ShredOS source using the git command and build ShredOS](https://github.com/PartialVolume/shredos.x86_64/blob/master/README.md#download-the-shredos-source-using-the-git-command-and-build-shredos)
    1. [Commands to configure buildroot, you will only need to use these if you are making changes to ShredOS](https://github.com/PartialVolume/shredos.x86_64/blob/master/README.md#commands-to-configure-buildroot-you-will-only-need-to-use-these-if-you-are-making-changes-to-shredos)
@@ -62,11 +62,11 @@ You can also consider [VENTOY (Open Source tool to create bootable USB drive for
 	1. [../board/shredos/fsoverlay/](https://github.com/PartialVolume/shredos.x86_64/blob/master/README.md#boardshredosfsoverlay)
 	1. [../board/shredos/fsoverlay/etc/init.d/S40network](https://github.com/PartialVolume/shredos.x86_64/blob/master/README.md#boardshredosfsoverlayetcinitds40network)
 	1. [../board/shredos/fsoverlay/usr/bin/nwipe_launcher](https://github.com/PartialVolume/shredos.x86_64/blob/master/README.md#boardshredosfsoverlayusrbinnwipe_launcher)
-	1. [../package/nwipe/](https://github.com/PartialVolume/shredos.x86_64#packagenwipe)
-	1. [../package/nwipe/nwipe.mk](https://github.com/PartialVolume/shredos.x86_64#packagenwipenwipemk)
-	1. [../package/nwipe/nwipe.hash](https://github.com/PartialVolume/shredos.x86_64#packagenwipenwipehash)
-	1. [../package/nwipe/Config.in](https://github.com/PartialVolume/shredos.x86_64#packagenwipeconfigin)
-	1. [../package/nwipe/002-nwipe-banner-patch.sh](https://github.com/PartialVolume/shredos.x86_64#packagenwipe002-nwipe-banner-patchsh)
+	1. [../package/nwipe/](#packagenwipe)
+	1. [../package/nwipe/nwipe.mk](#packagenwipenwipemk)
+	1. [../package/nwipe/nwipe.hash](#packagenwipenwipehash)
+	1. [../package/nwipe/Config.in](#packagenwipeconfigin)
+	1. [../package/nwipe/002-nwipe-banner-patch.sh](#packagenwipe002-nwipe-banner-patchsh)
 
 ## What is ShredOS?
 ShredOS is a USB bootable (BIOS or UEFI) small linux distribution with the sole purpose of securely erasing the entire contents of your
@@ -76,7 +76,7 @@ ShredOS supports either 32bit or 64bit processors. You will need to download the
 
 ShredOS can be used as a software image and booted from PXE capable systems from a PXE server.
 		
-You can also use ShredOS on headless systems or systems with faulty display hardware as it includes a user enabled telnet server. Further details can be found here. [How to wipe drives on headless systems or systems with faulty or missing display hardware or keyboards](https://github.com/PartialVolume/shredos.x86_64#how-to-wipe-drives-on-headless-systems-or-systems-with-faulty-display-hardware-for-use-on-secure-lans-only)
+You can also use ShredOS on headless systems or systems with faulty display hardware as it includes a user enabled telnet server. Further details can be found here. [How to wipe drives on headless systems or systems with faulty or missing display hardware or keyboards](#how-to-wipe-drives-on-headless-systems-or-systems-with-faulty-display-hardware-for-use-on-secure-lans-only)
 
 ShredOS includes the latest Nwipe official release, but in addition includes other disc related utilities such as Smartmontools, hdparm, a hexeditor [hexedit](https://linux.die.net/man/1/hexedit), and, the program loadkeys which can be used for [setting the keyboard layout](https://github.com/PartialVolume/shredos.2020.02/blob/master/README.md#how-to-set-the-keyboard-map-using-the-loadkeys-command-see-here-for-persistent-change-between-reboots). Nwipe automatically starts it's GUI in the first virtual terminal (ALT-F1), hdparm, smartmontools and hexeditor can be run in the second virtual terminal, (ALT-F2). Nwipe will erase drives using a user selectable choice of seven methods. hdparm - amongst many of its options - can be used for wiping a drive by [issueing ATA erase commands to the drive's internal firmware](https://ata.wiki.kernel.org/index.php/ATA_Secure_Erase). This is a planned feature addition to nwipe.
 
@@ -111,7 +111,7 @@ Nwipe also includes the following pseudo random number generators:
 
 You can of course compile ShredOS from source but that can take a long time and you can run into all sorts of problems if your not familiar with compiling an operating system. So if you just want to get started with using ShredOS and nwipe then just download the ShredOS image file and write it to a USB flash drive. Please note this will over write the existing contents of your USB flash drive.
 
-Download the latest ShredOS for either 32bit, 64bit, .img or .iso from [here](https://github.com/PartialVolume/shredos.x86_64#download-img-and-iso-files-for-burning-to-usb-flash-drives-and-cd-rdvd-r)
+Download the latest ShredOS for either 32bit, 64bit, .img or .iso from [here](#download-img-and-iso-files-for-burning-to-usb-flash-drives-and-cd-rdvd-r)
 
 #### Linux (and MAC) users
 
@@ -290,7 +290,7 @@ Options:
                           --exclude=/dev/sdc,/dev/sdd
                           --exclude=/dev/sdc,/dev/sdd,/dev/mapper/cryptswap1
 ```
-## How to set the keyboard map using the loadkeys command (see [here](https://github.com/PartialVolume/shredos.x86_64#how-to-make-a-persistent-change-to-keyboard-maps) for persistent change between reboots)
+## How to set the keyboard map using the loadkeys command (see [here](#how-to-make-a-persistent-change-to-keyboard-maps) for persistent change between reboots)
 You can set the type of keyboard that you are using by typing, `loadkeys uk`, `loadkeys us`, `loadkeys fr`, `loadkeys cf`, `loadkeys by`, `loadkeys cf`, `loadkeys cz` etc. See /usr/share/keymaps/i386/ for full list of keymaps. However you will need to add an entry to `loadkeys=uk` etc to grub.cfg for a persistent change between reboots.
 
 Examples are:
