@@ -61,6 +61,8 @@ then
 	fi
 fi
 
+/usr/bin/archive_log.sh
+
 printf ""
 printf "Paused, press a key to restart nwipe."
 read -rsn1 input
