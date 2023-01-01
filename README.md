@@ -18,13 +18,26 @@
 [![GitHub all releases](https://img.shields.io/github/downloads/PartialVolume/shredos.x86_64/total?label=Total%20downloads%20x86_64%20all%20releases&style=plastic)](https://github.com/PartialVolume/shredos.x86_64/releases)
 [![GitHub all releases](https://img.shields.io/github/downloads/PartialVolume/shredos.i686/total?label=Total%20downloads%20i686%20all%20releases&style=plastic)](https://github.com/PartialVolume/shredos.i686/releases)
 
-## Download .img and .iso files for burning to USB flash drives and CD-R/DVD-R
+## Download the Latest ShredOS .img and .iso files for burning to USB flash drives and CD-R/DVD-R
 
-| Latest ShredOS Version | Nwipe Version | .img for USB Flash | .iso for CD-R/DVD-R |
-| -- | -- | -- | -- |
-| v2021.08.2_21_x86-64_0.32.023 | v0.32.023 | [.img 64bit](https://github.com/PartialVolume/shredos.x86_64/releases/download/v2021.08.2_21_x86-64_0.32.023/shredos-2021.08.2_21_x86-64_0.32.023_20220123.img) | [.iso 64bit](https://github.com/PartialVolume/shredos.x86_64/releases/download/v2021.08.2_21_x86-64_0.32.023/shredos-2021.08.2_21_x86-64_0.32.023_20220126.iso) |
-| v2021.08.2_21_i586_0.32.023 | v0.32.023 | [.img 32bit](https://github.com/PartialVolume/shredos.x86_64/releases/download/v2021.08.2_21_x86-64_0.32.023/shredos-2021.08.2_21_i586_0.32.023_20220126.img) | [.iso 32 bit](https://github.com/PartialVolume/shredos.x86_64/releases/download/v2021.08.2_21_x86-64_0.32.023/shredos-2021.08.2_21_i586_0.32.023_20220126.iso) |
-		
+### ShredOS version v2021.08.2_23_x86-64_0.34 (LATEST RELEASE)
+| Media | Nwipe Version | File to download |
+| -- | -- | -- |
+| 64bit .img for USB flash drive | v0.34 | [ShredOS .img 64bit](https://github.com/PartialVolume/shredos.x86_64/releases/download/v2021.08.2_23_x86-64_0.34/shredos-2021.08.2_23_x86-64_0.34_20221231.img) |
+| 64bit .iso for CD/DVD | v0.34 | Available Soon |
+| 32bit .img for USB flash drive | v0.34 |  Available Soon |
+| 32bit .iso for CD/DVD | v0.34 | Available Soon |
+
+### ShredOS version v2021.08.2_21_x86-64_0.32.023 (PREVIOUS RELEASE)
+| Media | Nwipe Version | File to download |
+| -- | -- | -- |
+| 64bit .img for USB flash drive | v0.32.023 | [ShredOS .img 64bit](https://github.com/PartialVolume/shredos.x86_64/releases/download/v2021.08.2_21_x86-64_0.32.023/shredos-2021.08.2_21_x86-64_0.32.023_20220123.img) |
+| 64bit .iso for CD/DVD | v0.32.023 | [ShredOS .iso 64bit](https://github.com/PartialVolume/shredos.x86_64/releases/download/v2021.08.2_21_x86-64_0.32.023/shredos-2021.08.2_21_x86-64_0.32.023_20220126.iso) |
+| 32bit .img for USB flash drive | v0.32.023 | [ShredOS .img 32bit](https://github.com/PartialVolume/shredos.x86_64/releases/download/v2021.08.2_21_x86-64_0.32.023/shredos-2021.08.2_21_i586_0.32.023_20220126.img) |
+| 32bit .iso for CD/DVD | v0.32.023 | [ShredOS .iso 32bit](https://github.com/PartialVolume/shredos.x86_64/releases/download/v2021.08.2_21_x86-64_0.32.023/shredos-2021.08.2_21_i586_0.32.023_20220126.iso) |
+
+### For review and to download other [releases](https://github.com/PartialVolume/shredos.x86_64/releases)
+
 Note: The .img files for burning to USB flash drives support both bios/UEFI booting. The .iso image currently supports legacy bios booting only and not UEFI, however, a bios/UEFI version of the .iso is in development and will be released shortly.
 You can also consider [VENTOY (Open Source tool to create bootable USB drive for ISO/WIM/IMG/VHD(x)/EFI files)](https://github.com/ventoy/Ventoy) as a workaround to avoid bios/UEFI issues.
 		
