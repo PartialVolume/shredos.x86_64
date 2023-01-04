@@ -26,7 +26,7 @@
 | -- | -- | -- |
 | 64bit .img for USB flash drive | v0.34 | [ShredOS .img 64bit](https://github.com/PartialVolume/shredos.x86_64/releases/download/v2021.08.2_23_x86-64_0.34/shredos-2021.08.2_23_x86-64_0.34_20221231.img) |
 | 64bit .iso for CD/DVD | v0.34 | [ShredOS .iso 64bit](https://github.com/PartialVolume/shredos.x86_64/releases/download/v2021.08.2_23_x86-64_0.34/shredos-2021.08.2_23_x86-64_0.34_20221231.iso) |
-| 32bit .img for USB flash drive | v0.34 |  Available Soon |
+| 32bit .img for USB flash drive | v0.34 | [ShredOS .img 32bit](https://github.com/PartialVolume/shredos.x86_64/releases/download/v2021.08.2_23_x86-64_0.34/shredos-2021.08.2_23_i586_0.34_32-bit_20221231.img) |
 | 32bit .iso for CD/DVD | v0.34 | Available Soon |
 
 ### ShredOS version v2021.08.2_21_x86-64_0.32.023 (PREVIOUS RELEASE)
