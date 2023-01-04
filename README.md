@@ -12,9 +12,9 @@
 
 # ShredOS x86_64 - Disk Eraser
 
-## For all Intel and compatible 64 bit processors
+## For all Intel and compatible 64 & 32 bit processors
 
-#### For the 32 bit version of ShredOS that will run on both 32bit and 64bit processors, see [ShredOS i686](https://github.com/PartialVolume/shredos.i686)
+#### As well as a 64bit versions, also included are 32bit .img & .iso images of ShredOS that will run on both 32bit and 64bit processors, see [Release Assets](https://github.com/PartialVolume/shredos.x86_64/releases) and the table of download links below. For those that wish to build their own ShredOS from source, rather than just burn the .img/.iso images, instructions for modififing the x86_64 build to generate 32bit code as well as .iso images will be included below in the notes in due course.
 [![GitHub all releases](https://img.shields.io/github/downloads/PartialVolume/shredos.x86_64/total?label=Total%20downloads%20x86_64%20all%20releases&style=plastic)](https://github.com/PartialVolume/shredos.x86_64/releases)
 [![GitHub all releases](https://img.shields.io/github/downloads/PartialVolume/shredos.i686/total?label=Total%20downloads%20i686%20all%20releases&style=plastic)](https://github.com/PartialVolume/shredos.i686/releases)
 
