@@ -62,6 +62,7 @@ You can also consider [VENTOY (Open Source tool to create bootable USB drive for
    1. [Transferring nwipe log files to a USB storage device](#transferring-nwipe-log-files-to-a-usb-storage-device)
    1. [Transferring nwipe log files to a ftp server](#transferring-nwipe-log-files-to-a-ftp-server)
 1. [How to wipe drives on headless systems or systems with faulty display hardware. (For use on secure LANs only)](#how-to-wipe-drives-on-headless-systems-or-systems-with-faulty-display-hardware-for-use-on-secure-lans-only)
+1. [Nwipe's font size is too small, I want the text to be bigger](#Nwipe's-font-size-is-too-small,-I-want-the-text-to-be-bigger)
 1. [The latest ShredOS now includes the following](#the-latest-shredos-now-includes-the-following)
    1. [smartmontools](#smartmontools)
    1. [hexedit](#hexedit)
@@ -463,7 +464,33 @@ sh-5.1# nwipe
 ```
 Type `nwipe` as shown above and the nwipe GUI will be displayed and you can proceed with wiping the discs. On some terminals, i.e retro, nwipe doesn't display properly. If you find this then use a different terminal to launch nwipe. Terminals that do work ok are KDE's Konsole, terminator, guake, tmux, xfce terminal and xterm. Terminals that don't seem to work properly via a telnet session with nwipe are cool retro term and qterminal. Putty works but doesn't have the correct box characters but is usable. Putty may work perfectly if you can set the correct character encoding. These are my observations using KDE Neon, they may differ on your systems. If you find a workaround for those terminals that don't display nwipe perfectly over telnet, then please let me know. 
 		
-**WARNING:** Due to the insecure nature of telnet as opposed to ssh, it goes without saying that this method of accessing ShredOS & nwipe should only be carried out on a trusted local area network and never over the internet unless via a VPN or SSH tunnel. ssh access may be provided at a future date if it's requested.
+> **Warning** 
+>Due to the insecure nature of telnet as opposed to ssh, it goes without saying that this method of accessing ShredOS & nwipe should only be carried out on a trusted local area network and never over the internet unless via a VPN or SSH tunnel. ssh access may be provided at a future date if it's requested.
+
+## Nwipe's font size is too small, I want the text to be bigger
+If you are using a monitor with a native high resolution you may find that nwipe's font size is too small for your liking, if that's the case, you just need to type the following command in the second virtual terminal `/bin/setfont -d -C /dev/tty1`
+
+#### Detail
+Type ALT F2 (Fn ALT F2 on a MAC) to bring up the 2nd virtual console. Type the following tty command which will return the current console name. So from this result /dev/tty2 we can deduce that the default nwipe in ALT F1 is /dev/tty1. For reference ALT F3 is /dev/console.
+
+```
+tty
+/dev/tty2
+```
+To set the font for the default nwipe in the first virtual console ALT F1 (/dev/tty1), type the following command in the 2nd virtual console (ALT F2)
+```
+/bin/setfont -d -C /dev/tty1
+```
+
+> **Warning**
+>Always specify the full path to setfont, setfont -d -C /dev/tty1 without the /bin/ prefix, will not work! There are actually two different versions of setfont on Linux and if you ommit the prefix path you will be running the wrong setfont which won't work.
+
+
+![image](https://user-images.githubusercontent.com/22084881/216849290-8e1c05d2-c856-4466-b76f-eec4ccd2d880.png)
+Default font size on a high resolution monitor.
+.
+![image](https://user-images.githubusercontent.com/22084881/216849326-e9a5c3a0-4485-432a-a3c7-a72858faeab1.png)
+After running the setfont command.
 		
 ## ShredOS includes the following related programs
 
