@@ -62,7 +62,7 @@ You can also consider [VENTOY (Open Source tool to create bootable USB drive for
    1. [Transferring nwipe log files to a USB storage device](#transferring-nwipe-log-files-to-a-usb-storage-device)
    1. [Transferring nwipe log files to a ftp server](#transferring-nwipe-log-files-to-a-ftp-server)
 1. [How to wipe drives on headless systems or systems with faulty display hardware. (For use on secure LANs only)](#how-to-wipe-drives-on-headless-systems-or-systems-with-faulty-display-hardware-for-use-on-secure-lans-only)
-1. [Nwipe's font size is too small, I want the text to be bigger](#Nwipe's-font-size-is-too-small,-I-want-the-text-to-be-bigger)
+1. [Nwipe's font size is too small, I want the text to be bigger](#Nwipes-font-size-is-too-small-I-want-the-text-to-be-bigger)
 1. [The latest ShredOS now includes the following](#the-latest-shredos-now-includes-the-following)
    1. [smartmontools](#smartmontools)
    1. [hexedit](#hexedit)
