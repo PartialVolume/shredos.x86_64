@@ -19,7 +19,10 @@
 #### For those that just want to get on with using ShredOS, you can download the prebuild .img or .iso images and burn them straight to USB flash drive or CD/DVD. Boot from the USB flash drive or CD/DVD and nwipe will appear ready for you to select your preferred wipe options.
 [![GitHub all releases](https://img.shields.io/github/downloads/PartialVolume/shredos.x86_64/total?label=Total%20downloads%20x86_64%20all%20releases,%2064%20and%2032bit%20code,%20.iso%20and%20.img%20&style=plastic)](https://github.com/PartialVolume/shredos.x86_64/releases)
 
-## Download the Latest ShredOS .img and .iso files for burning to USB flash drives and CD-R/DVD-R
+## Download the Latest ShredOS .img and .iso files for burning to USB flash drives and CD-R/DVD-R.
+
+> **WARNING vv2021.08.2_23_x86-64_0.34 (v23) is missing AMDGPU, Radeon and Intel firmware and therefore on some systems will not boot to the nwipe program. If you find your system doesn't boot please try the preview version, v2021.08.2_23.1_x86-64_0.34 (v23.1). This includes the
+missing firmware required for DRM graphics. Please leave a comment in discussions on whether it worked (or not), with the preview version (23.1) of ShredOS
 
 ### ShredOS version v2021.08.2_23_x86-64_0.34 (LATEST RELEASE)
 | Media | Nwipe Version | File to download |
@@ -49,7 +52,7 @@ You can also consider [VENTOY (Open Source tool to create bootable USB drive for
 1. [What is ShredOS?](#what-is-shredos)
 1. [What do I do after I've erased everything on my disk? What is actually erased?](#what-do-i-do-after-ive-erased-everything-on-my-disk-what-is-actually-erased)
 1. [Nwipe's erasure methods](#nwipes-erasure-methods)
-1. [Obtaining and writing ShredOS to a USB flash drive - The easy way!](#obtaining-and-writing-shredos-to-a-usb-flash-drive-the-easy-way-)
+1. [Obtaining and writing ShredOS to a USB flash drive - The easy way!](#obtaining-and-writing-shredos-to-a-usb-flash-drive-the-easy-way)
    1. [Linux and MAC users](#linux-and-mac-users)
    1. [Windows users](#windows-users)
    1. [Multi OS with VENTOY](#multi-os-with-ventoy)
@@ -62,7 +65,8 @@ You can also consider [VENTOY (Open Source tool to create bootable USB drive for
    1. [Transferring nwipe log files to a USB storage device](#transferring-nwipe-log-files-to-a-usb-storage-device)
    1. [Transferring nwipe log files to a ftp server](#transferring-nwipe-log-files-to-a-ftp-server)
 1. [How to wipe drives on headless systems or systems with faulty display hardware. (For use on secure LANs only)](#how-to-wipe-drives-on-headless-systems-or-systems-with-faulty-display-hardware-for-use-on-secure-lans-only)
-1. [The latest ShredOS now includes the following](#the-latest-shredos-now-includes-the-following)
+1. [Nwipe's font size is too small, I want the text to be bigger](#nwipes-font-size-is-too-small-I-want-the-text-to-be-bigger)
+1. [Shredos includes the following related programs](#shredos-includes-the-following-related-programs)
    1. [smartmontools](#smartmontools)
    1. [hexedit](#hexedit)
    1. [hdparm](#hdparm)
@@ -100,7 +104,9 @@ The vanilla version of ShredOS boots into nwipe's GUI and shows the available di
 
 ## What do I do after I've erased everything on my disk? What is actually erased?
 > **Warning**
-> Nwipe & therefore ShredOS does not automatically detect HDA (hidden disc areas) i.e the disc reporting a smaller size than it actually is. You should always run hdparm to detect for a HDA (and correct if necessary) before running a wipe. HDA detection will be added in nwipe at a future date.
+> Nwipe & therefore ShredOS does not automatically detect HDA (hidden disc areas) i.e the disc reporting a smaller size than it actually is. You should always run hdparm to detect for a HDA (and correct if necessary) before running a wipe.
+>
+>HPA/DCO detection and correction, along with the automatic creation of PDF certificates will appear in nwipe 0.35 and will be included in the next release of ShredOS.
 		
 This paragraph is for those that are not familiar with wiping discs. if you know what you are doing skip to the next section. So you have erased your disc with ShredOS/nwipe and nwipe reported zero errors and the disc was erased. In it's erased state and depending upon the method you used every block on the drive contains either zero's or meaningless random data. In this state the disc won't be recognised by your operating system except at a very low level or by specialised programs. You won't be able to write files to the disc because nwipe has removed everything, absolutely everything, the operating system is gone, all your data is gone, the partition table is gone, the file system gone, the MBR and all the files have been erased without a trace and will never ever be recovered from the disk. The only thing left is a whole load of zeros or random data. To make the disc usable again you will either need to format the disk, which creates a partition table and directory structure or install a new operating system such as Linux or Windows. Of course, if you are just disposing of or reselling the disk then you don't need to do anything else. So if you are reasonably happy that you know what you are doing and you understand that you will need to format the disc then I hope this software does it's job and is useful to you. Before you press that 'S' key to start the wipe, pause and double check you have selected the correct drive/s, something I always do !
 
@@ -346,7 +352,7 @@ menuentry "shredos" {
 }
 ```
 ## Reading and saving nwipes log files - via USB (manually) or ftp (manually & automatically)
-The nwipe that is automatically launched in the first virtual terminal ALT-F1, creates a log file that contains the details of the wipe/s and a summary table that shows successfull erasure or failure. The file is time stamped within it's name. A new timestamped log file is created each time nwipe is started. The files can be found in the / directory. A example being nwipe_log_20200418-084910.txt. As currently, ShredOS does not have persistent storage, if you want to keep these files between reboots of ShredOS, you will need to manually copy them to the USB stick or send to a ftp server on your local area network. Both methods are described below starting with manually writing to a USB storage device. This is then followed by setting up grub.cfg to auto transfer the nwipe log files to a ftp server.
+The nwipe that is automatically launched in the first virtual terminal ALT-F1, creates a log file that contains the details of the wipe/s and a summary table that shows successfull erasure or failure. The file is time stamped within it's name. A new timestamped log file is created each time nwipe is started. The files can be found in the / directory. A example being nwipe_log_20200418-084910.txt. As of version [v2021.08.2_23_x86-64_0.34](https://github.com/PartialVolume/shredos.x86_64/releases/tag/v2021.08.2_23_x86-64_0.34) ShredOS will automatically copy the nwipe log files to the first FAT32 partition it finds, which is normally the ShredOS USB flash drive. In addition you can manually copy the log files or send them to a ftp server on your local area network. Both methods are described below starting with manually writing to a USB storage device. This is then followed by setting up grub.cfg to auto transfer the nwipe log files to a ftp server.
 
 ### Transferring nwipe log files to a USB storage device
 1. Locate the device name of your USB stick from it's model & size. 
@@ -463,7 +469,33 @@ sh-5.1# nwipe
 ```
 Type `nwipe` as shown above and the nwipe GUI will be displayed and you can proceed with wiping the discs. On some terminals, i.e retro, nwipe doesn't display properly. If you find this then use a different terminal to launch nwipe. Terminals that do work ok are KDE's Konsole, terminator, guake, tmux, xfce terminal and xterm. Terminals that don't seem to work properly via a telnet session with nwipe are cool retro term and qterminal. Putty works but doesn't have the correct box characters but is usable. Putty may work perfectly if you can set the correct character encoding. These are my observations using KDE Neon, they may differ on your systems. If you find a workaround for those terminals that don't display nwipe perfectly over telnet, then please let me know. 
 		
-**WARNING:** Due to the insecure nature of telnet as opposed to ssh, it goes without saying that this method of accessing ShredOS & nwipe should only be carried out on a trusted local area network and never over the internet unless via a VPN or SSH tunnel. ssh access may be provided at a future date if it's requested.
+> **Warning** 
+>Due to the insecure nature of telnet as opposed to ssh, it goes without saying that this method of accessing ShredOS & nwipe should only be carried out on a trusted local area network and never over the internet unless via a VPN or SSH tunnel. ssh access may be provided at a future date if it's requested.
+
+## Nwipe's font size is too small, I want the text to be bigger
+If you are using a monitor with a native high resolution you may find that nwipe's font size is too small for your liking, if that's the case, you just need to type the following command in the second virtual terminal `/bin/setfont -d -C /dev/tty1`
+
+#### Detail
+Type ALT F2 (Fn ALT F2 on a MAC) to bring up the 2nd virtual console. Type the following tty command which will return the current console name. So from this result /dev/tty2 we can deduce that the default nwipe in ALT F1 is /dev/tty1. For reference ALT F3 is /dev/console.
+
+```
+tty
+/dev/tty2
+```
+To set the font for the default nwipe in the first virtual console ALT F1 (/dev/tty1), type the following command in the 2nd virtual console (ALT F2)
+```
+/bin/setfont -d -C /dev/tty1
+```
+
+> **Warning**
+>Always specify the full path to setfont, setfont -d -C /dev/tty1 without the /bin/ prefix, will not work! There are actually two different versions of setfont on Linux and if you ommit the prefix path you will be running the wrong setfont which won't work.
+
+
+![image](https://user-images.githubusercontent.com/22084881/216849290-8e1c05d2-c856-4466-b76f-eec4ccd2d880.png)
+Default font size on a high resolution monitor.
+.
+![image](https://user-images.githubusercontent.com/22084881/216849326-e9a5c3a0-4485-432a-a3c7-a72858faeab1.png)
+After running the setfont command.
 		
 ## ShredOS includes the following related programs
 
