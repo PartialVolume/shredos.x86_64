@@ -21,8 +21,7 @@
 
 ## Download the Latest ShredOS .img and .iso files for burning to USB flash drives and CD-R/DVD-R.
 
-> **WARNING vv2021.08.2_23_x86-64_0.34 (v23) is missing AMDGPU, Radeon and Intel firmware and therefore on some systems will not boot to the nwipe program. If you find your system doesn't boot please try the preview version, v2021.08.2_23.1_x86-64_0.34 (v23.1). This includes the
-missing firmware required for DRM graphics. Please leave a comment in discussions on whether it worked (or not), with the preview version (23.1) of ShredOS
+> **WARNING** v2021.08.2_23_x86-64_0.34 (v23) is missing the AMDGPU, Radeon and Intel firmware and therefore on some systems will not boot to the nwipe program. If you find your system doesn't boot please try the preview version, v2021.08.2_23.1_x86-64_0.34 (v23.1), see [release page](https://github.com/PartialVolume/shredos.x86_64/releases/tag/v2021.08.2_23.1_x86-64_0.34) for the details and  [shredos-2021.08.2_23.1_x86-64_0.34_20230320.img](https://github.com/PartialVolume/shredos.x86_64/releases/download/v2021.08.2_23.1_x86-64_0.34/shredos-2021.08.2_23.1_x86-64_0.34_20230320.img) for the .img file to burn to a USB stick. This pre-release version includes the missing firmware required for DRM graphics. Please leave a comment in [discussions](https://github.com/PartialVolume/shredos.x86_64/discussions/134) on whether it worked (or not), with the preview version (23.1) of ShredOS
 
 ### ShredOS version v2021.08.2_23_x86-64_0.34 (LATEST RELEASE)
 | Media | Nwipe Version | File to download |
