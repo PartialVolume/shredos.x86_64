@@ -1,0 +1,2 @@
+tmux new-session \; split-window -h \; split-window -d \; split-window -t0 -d
+
