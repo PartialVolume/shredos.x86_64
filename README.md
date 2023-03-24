@@ -537,6 +537,18 @@ $ ls output/images/shredos*.img
 $ cd output/images
 $ dd if=shredos-20200412.img of=/dev/sdx (20200412 will be the day you compiled, sdx is the USB flash drive)
 ```
+### Issues that you may get when building ShredOS
+- **Error: "Internal Size Too Big"** If you are compiling the vanilla version of ShredOS and have made no alterations or additions but it fails to build the .img with the error "Internal error: size too big" then you may have a version of mtools that has a version of mcopy which has a bug whenever the -b option is used. This bug is known to exist in mcopy version 4.0.32 and maybe others but is fixed in v4.0.42. The solution is to upgrade your copy of mtools to a later version. However, if you have altered ShredOS by adding more packages you may need to update the size of the fat32 partition. You can do this by increasing the 'size' in ../board/shredos/genimage.cfg. Depending on how much extra software you have added increase the size by 10MB or more. Currently as of March 2023 the current size is `size = 130000000`, this is in bytes, so adding 10MB will mean you need to edit this value so that it reads `size = 140000000`. After the edit, just run `make` which will result in a quicker build. You don't need to run `make clean` first as that would result in a full rebuild which is not neccessary when all you are doing is increasing the final image size. If your repository does not supply a later version of mtools, then you can obtain mtools packages for various distros from [here](https://www.gnu.org/software/mtools/#downloads)
+
+>INFO: vfat(boot.vfat): cmd: "MTOOLS_SKIP_CHECK=1 mcopy -bsp -i '/home/shredos/Downloads/shredos/mcopybug/shredos.x86_64/output/images/boot.vfat' '/home/shredos/Downloads/shredos/mcopybug/shredos.x86_64/output/images/grub.cfg' '::boot/grub/grub.cfg'" (stderr):
+***Internal error, size too big***
+Streamcache allocation problem:: 5
+INFO: vfat(boot.vfat): cmd: "rm -f "/home/shredos/Downloads/shredos/mcopybug/shredos.x86_64/output/images/boot.vfat"" (stderr):
+***ERROR: vfat(boot.vfat): failed to generate boot.vfat***
+make[1]: [Makefile:823: target-post-image] Error 1
+make: [Makefile:84: _all] Error 2
+
+
 ### Commands to configure buildroot, you will only need to use these if you are making changes to ShredOS
 
 #### Change buildroot configuration, select the architecture, install software packages then save the buildroot config changes to shredos_defconfig, the location if which is defined in the buildroot config within `make menuconfig` ALWAYS RUN `make savedefconfig` AFTER CHANGES are made in menuconfig.
