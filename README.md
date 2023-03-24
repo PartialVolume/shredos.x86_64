@@ -537,6 +537,9 @@ $ ls output/images/shredos*.img
 $ cd output/images
 $ dd if=shredos-20200412.img of=/dev/sdx (20200412 will be the day you compiled, sdx is the USB flash drive)
 ```
+### Issues that you may get when building ShredOS
+- **Error: "Internal Size Too Big"** If you are compiling the vanilla version of ShredOS and have made no alterations or additions but it fails to build the .img with the error "Internal error: size too big" then you may have a version of mtools that has a version of mcopy that has a bug whenever the -b option is used with it. This bug is known to exist in mcopy version 4.0.32 and maybe others but is fixed in v4.0.42. The solution is to either upgrade your copy of mtools to a later version. If you have altered ShredOS by adding more packages you may need to update the size of the fat32 partition. You can do this by increasing the 'size' in ../board/shredos/genimage.cfg. Depending on how much you have added increase the size by 10MB. Currently as of March 2023 the current size is `size = 130000000`, this is in bytes, so adding 10MB will mean you need to edit this value so it reads `size = 140000000`. After the edit just run make which will be a much quicker build, you don't need to run make clean first as that would result in a full rebuild which is not neccessary when all you are doing is increasing the final image size.
+
 ### Commands to configure buildroot, you will only need to use these if you are making changes to ShredOS
 
 #### Change buildroot configuration, select the architecture, install software packages then save the buildroot config changes to shredos_defconfig, the location if which is defined in the buildroot config within `make menuconfig` ALWAYS RUN `make savedefconfig` AFTER CHANGES are made in menuconfig.
