@@ -55,6 +55,7 @@ You can also consider [VENTOY (Open Source tool to create bootable USB drive for
    1. [Linux and MAC users](#linux-and-mac-users)
    1. [Windows users](#windows-users)
    1. [Multi OS with VENTOY](#multi-os-with-ventoy)
+1. [Having trouble with USB adapters not working/hanging, want to buy one that works properly!](https://github.com/PartialVolume/shredos.x86_64/discussions/128#discussion-4906723)
 1. [Virtual terminals](#virtual-terminals)
 1. [How to run nwipe so you can specify nwipe command line options](#how-to-run-nwipe-so-you-can-specify-nwipe-command-line-options)
 1. [How to change the default nwipe options so the change persists between reboots](#how-to-change-the-default-nwipe-options-so-the-change-persists-between-reboots)
