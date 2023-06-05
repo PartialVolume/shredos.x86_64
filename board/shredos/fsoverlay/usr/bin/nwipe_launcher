@@ -1,9 +1,15 @@
 #!/bin/sh
 
 # trap the ctrl+c signal
+#
 trap "echo" INT
 
+# archive dmesg.txt and nwipe logs prior to launching nwipe. This is done just
+# in case there are any display issues and we want to take a look at the dmesg data.
+/usr/bin/archive_log.sh
+
 # initialise
+#
 country_code=""
 nwipe_options_string=""
 lftp_command_line=""
@@ -11,6 +17,7 @@ lftp_command_line=""
 echo "[`date`] lftp log" > lftp.log
 
 # read the kernel command line for the loadkeys label for setting the correct keyboard layout
+#
 country_code=$(kernel_cmdline_extractor loadkeys)
 if [ $? == 0 ]
 then
@@ -21,15 +28,65 @@ then
 fi
 
 # read the kernel command line for nwipe options
+#
 nwipe_options_string=$(kernel_cmdline_extractor nwipe_options)
 if [ $? == 0 ]
 then
+	# set some flags
 	nwipe_options_flag=1
+
+	# Remove the --autopoweroff string if present from the nwipe options.
+	# We do this because we don't want nwipe itself to power down the system.
+	# ShredOS will handle the auto power down once the logs and dmesg output
+	# have been transferred to the USB flash drive after the wipe completes.
+	# One feature of nwipes autopoweroff is that it does not require the user
+	# to press a key to exit. So that nwipe doesn't pause waiting for the
+	# user to press a key which is nwipes default behaviour, we replace
+	# --autopoweroff with --nowait.
+
+	case "$nwipe_options_string" in
+	*--autopoweroff*) autopoweroff=1 ;;
+	*               ) autopoweroff=0 ;;
+	esac
+	
+	if [ $autopoweroff == 1 ]
+	then
+		echo $nwipe_options_string > nwipe_options.txt
+		sed -i 's/--autopoweroff/--nowait/g' nwipe_options.txt
+		nwipe_options_string=`cat nwipe_options.txt`
+	fi
+
+	# In addition, check whether user has specified a /dev/loop0 or /dev/loop1
+	# device and if yes, create 1Mbyte loop devices. These are used for testing.
+
+	case "$nwipe_options_string" in
+	*/dev/loop0*) createloop0=1 ;;
+	*           ) createloop0=0 ;;
+	esac
+
+	if [ $createloop0 == 1 ]
+	then
+		truncate -s 1M loopback0.img
+		losetup -fP loopback0.img
+	fi
+
+	case "$nwipe_options_string" in
+	*/dev/loop0*) createloop1=1 ;;
+	*           ) createloop1=0 ;;
+	esac
+
+	if [ $createloop1 == 1 ]
+	then
+		truncate -s 1M loopback1.img
+		losetup -fP loopback1.img
+	fi
+
 else
 	nwipe_options_flag=0	
 fi
 
 # run nwipe with a time stamped log file
+#
 while true
 do
 if [ $nwipe_options_flag == 0 ]
@@ -41,6 +98,7 @@ fi
 
 # read the kernel command line for a lftp command
 # example lftp command "open 192.168.1.60; user joe joe's_password; cd data; mput nwipe_*.txt
+#
 lftp_command_line=$(kernel_cmdline_extractor lftp)
 if [ $? == 0 ]
 then
@@ -62,6 +120,13 @@ then
 fi
 
 /usr/bin/archive_log.sh
+
+# If the user specified --autopoweroff as a nwipe option then shutdown now 
+#
+if [ $autopoweroff == 1 ]
+then
+	init 0
+fi
 
 printf ""
 printf "Paused, press a key to restart nwipe."

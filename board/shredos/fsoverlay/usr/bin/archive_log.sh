@@ -1,8 +1,8 @@
 #!/bin/bash
 #
-# This script will archive the nwipe log file to a FAT32 formatted partition.
-# If there is more than one FAT32 drive this script will always archive
-# to the first drive found.
+# This script will archive the nwipe log file/s and dmesg.txt file to a
+# FAT32 formatted partition. If there is more than one FAT32 drive this
+# script will always archive to the first drive found.
 #
 # Written by PartialVolume, a component of ShredOS - the disk eraser.
 
@@ -43,11 +43,19 @@ if [ $status != 0 ] && [ $status != 32 ]; then
 else
     printf "archive_log.sh: FAT32 partition $drive is now mounted to $archive_drive_directory\n"
 
+    # Copy the dmesg.txt file over to the FAT32 partition
+    dmesg > dmesg.txt
+    cp /dmesg.txt "$archive_drive_directory/"
+    if [ $? != 0 ]; then
+	printf "archive_log.sh: Unable to copy the dmesg.txt file to the root of $drive:/\n"
+    else
+	printf "archive_log.sh: Sucessfully copied dmesg.txt to $drive:/\n" 
+    fi
+
     # Copy the nwipe log files over to the FAT32 partition
     cp /nwipe_log* "$archive_drive_directory/"
     if [ $? != 0 ]; then
         printf "archive_log.sh: Unable to copy the nwipe log files to the root of $drive:/\n"
-        exit_code=4
     else
         printf "archive_log.sh: Successfully copied the nwipe logs to $drive:/\n"
 
