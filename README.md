@@ -150,7 +150,7 @@ $ tar xvf shredos.img.tar
 ```
 If you are using linux or a MAC write the shredos.img file (also sometimes called shredos-2020MMDD.img i.e. shredos-20200418.img etc) to your USB flash drive using the following command.  (/dev/sdx is the device name of your USB drive, this can be obtained from the results of sudo fdisk -l)
 ```
-dd if=shredos.img of=/dev/sdx
+sudo dd if=shredos.img of=/dev/sdx
 
 ```
 #### Windows users:
