@@ -13,6 +13,7 @@ trap "echo" INT
 country_code=""
 nwipe_options_string=""
 lftp_command_line=""
+autopoweroff=0
 
 echo "[`date`] lftp log" > lftp.log
 
