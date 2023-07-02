@@ -148,7 +148,7 @@ If the image file has a .img.tar.gz extension then use the following commands to
 $ gunzip shredos.img.tar.gz
 $ tar xvf shredos.img.tar
 ```
-If you are using linux or a MAC write the shredos.img file (also sometimes called shredos-2020MMDD.img i.e. shredos-20200418.img etc) to your USB flash drive using the following command.  (/dev/sdx is the device name of your USB drive, this can be obtained from the results of sudo fdisk -l)
+If you are using linux or a MAC write the shredos.img file (also sometimes called shredos-2020MMDD.img i.e. shredos-20200418.img etc) to your USB flash drive using the following command.  (/dev/sdx is the device name of your USB drive, this can be obtained from the results of sudo fdisk -l on linux and diskutil list on a MAC)
 ```
 sudo dd if=shredos.img of=/dev/sdx
 
