@@ -4,7 +4,8 @@ version=`cat board/shredos/version.txt`
 
 cp "board/shredos/grub.cfg"                "${BINARIES_DIR}/grub.cfg"    || exit 1
 cp "board/shredos/bootx64.efi"             "${BINARIES_DIR}/bootx64.efi" || exit 1
-cp "${HOST_DIR}/lib/grub/i386-pc/boot.img" "${BINARIES_DIR}/boot.img"    || exit 1
+#cp "${HOST_DIR}/lib/grub/i386-pc/boot.img" "${BINARIES_DIR}/boot.img"    || exit 1
+cp "output/target/lib/grub/i386-pc/boot.img" "${BINARIES_DIR}/boot.img"    || exit 1
 
 # copy the ShredOS icon and Windows autorun.inf; if a USB stick is plugged into a Windows system
 # it will be identified as 'ShredOS - Dangerous' as a warning to users unaware what ShredOS is.
@@ -19,6 +20,7 @@ genimage --rootpath="${TARGET_DIR}" --inputpath="${BINARIES_DIR}" --outputpath="
 SUFFIXIMG="${version}_$(date +%Y%m%d)"
 FINAL_IMAGE_PATH="${BINARIES_DIR}/shredos-${SUFFIXIMG}.img"
 mv "${BINARIES_DIR}/shredos.img" "${FINAL_IMAGE_PATH}" || exit 1
+#mv "${BINARIES_DIR}/bzImage" "${FINAL_IMAGE_PATH}" || exit 1
 
 echo "File ${FINAL_IMAGE_PATH} created successfully"
 

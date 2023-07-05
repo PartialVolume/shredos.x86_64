@@ -4,12 +4,13 @@
 #
 ################################################################################
 
-WIRESHARK_VERSION = 3.4.7
+WIRESHARK_VERSION = 4.0.4
 WIRESHARK_SOURCE = wireshark-$(WIRESHARK_VERSION).tar.xz
 WIRESHARK_SITE = https://www.wireshark.org/download/src/all-versions
 WIRESHARK_LICENSE = wireshark license
-WIRESHARK_LICENSE_FILES = COPYING
+WIRESHARK_LICENSE_FILES = COPYING README.md
 WIRESHARK_CPE_ID_VENDOR = wireshark
+WIRESHARK_SELINUX_MODULES = wireshark
 WIRESHARK_DEPENDENCIES = \
 	c-ares \
 	host-pkgconf \
@@ -17,37 +18,22 @@ WIRESHARK_DEPENDENCIES = \
 	libgcrypt \
 	libglib2 \
 	libpcap \
+	pcre2 \
 	speexdsp
 
-WIRESHARK_MAKE_ENV = \
-	$(TARGET_MAKE_ENV) \
-	PATH="$(@D)/bin:$(BR_PATH)"
-
 WIRESHARK_CONF_OPTS = \
-	-DDISABLE_WERROR=ON \
 	-DENABLE_ILBC=OFF \
 	-DENABLE_PCAP=ON \
-	-DENABLE_SMI=OFF
-
-# wireshark needs the host version of lemon during compilation.
-# This binrary is provided by sqlite-src (which is different from
-# sqlite-autotools that is currently packaged in buildroot) moreover wireshark
-# adds several patches.
-# So, instead of creating a separate host package and installing lemon to
-# $(HOST_DIR), this binary is compiled on-the-fly
-define WIRESHARK_BUILD_LEMON_TOOL
-	cd $(@D); \
-	mkdir -p $(@D)/bin; \
-	$(HOSTCC) $(HOST_CFLAGS) -o $(@D)/bin/lemon tools/lemon/lemon.c
-endef
-
-WIRESHARK_PRE_BUILD_HOOKS += WIRESHARK_BUILD_LEMON_TOOL
+	-DENABLE_SMI=OFF \
+	-DENABLE_WERROR=OFF \
+	-DHAVE_C99_VSNPRINTF=ON \
+	-DLEMON_C_COMPILER=$(HOSTCC_NOCCACHE)
 
 ifeq ($(BR2_TOOLCHAIN_HAS_LIBATOMIC),y)
 WIRESHARK_CONF_OPTS += -DCMAKE_EXE_LINKER_FLAGS=-latomic
 endif
 
-ifeq ($(BR2_GCC_ENABLE_LTO),y)
+ifeq ($(BR2_ENABLE_LTO),y)
 WIRESHARK_CONF_OPTS += -DENABLE_LTO=ON
 else
 WIRESHARK_CONF_OPTS += -DENABLE_LTO=OFF
@@ -79,6 +65,13 @@ WIRESHARK_CONF_OPTS += -DENABLE_GNUTLS=ON
 WIRESHARK_DEPENDENCIES += gnutls
 else
 WIRESHARK_CONF_OPTS += -DENABLE_GNUTLS=OFF
+endif
+
+ifeq ($(BR2_PACKAGE_LIBCAP),y)
+WIRESHARK_CONF_OPTS += -DENABLE_CAP=ON
+WIRESHARK_DEPENDENCIES += libcap
+else
+WIRESHARK_CONF_OPTS += -DENABLE_CAP=OFF
 endif
 
 ifeq ($(BR2_PACKAGE_LIBKRB5),y)
@@ -131,6 +124,13 @@ else
 WIRESHARK_CONF_OPTS += -DENABLE_LZ4=OFF
 endif
 
+ifeq ($(BR2_PACKAGE_MINIZIP_ZLIB),y)
+WIRESHARK_CONF_OPTS += -DENABLE_MINIZIP=ON
+WIRESHARK_DEPENDENCIES += minizip-zlib
+else
+WIRESHARK_CONF_OPTS += -DENABLE_MINIZIP=OFF
+endif
+
 ifeq ($(BR2_PACKAGE_NGHTTP2),y)
 WIRESHARK_CONF_OPTS += -DENABLE_NGHTTP2=ON
 WIRESHARK_DEPENDENCIES += nghttp2
@@ -171,6 +171,13 @@ WIRESHARK_CONF_OPTS += -DBUILD_sdjournal=ON
 WIRESHARK_DEPENDENCIES += systemd
 else
 WIRESHARK_CONF_OPTS += -DBUILD_sdjournal=OFF
+endif
+
+ifeq ($(BR2_PACKAGE_ZLIB),y)
+WIRESHARK_CONF_OPTS += -DENABLE_ZLIB=ON
+WIRESHARK_DEPENDENCIES += zlib
+else
+WIRESHARK_CONF_OPTS += -DENABLE_ZLIB=OFF
 endif
 
 ifeq ($(BR2_PACKAGE_ZSTD),y)

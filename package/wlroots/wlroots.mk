@@ -4,8 +4,8 @@
 #
 ################################################################################
 
-WLROOTS_VERSION = 0.13.0
-WLROOTS_SITE = https://github.com/swaywm/wlroots/releases/download/$(WLROOTS_VERSION)
+WLROOTS_VERSION = 0.15.1
+WLROOTS_SITE = https://gitlab.freedesktop.org/wlroots/wlroots/-/releases/$(WLROOTS_VERSION)/downloads
 WLROOTS_LICENSE = MIT
 WLROOTS_LICENSE_FILES = LICENSE
 WLROOTS_INSTALL_STAGING = YES
@@ -18,39 +18,35 @@ WLROOTS_DEPENDENCIES = \
 	libegl \
 	libgles \
 	pixman \
+	seatd \
 	udev \
 	wayland \
 	wayland-protocols
 
 WLROOTS_CONF_OPTS = -Dexamples=false -Dxcb-errors=disabled
 
-ifeq ($(BR2_PACKAGE_FFMPEG),y)
-WLROOTS_DEPENDENCIES += ffmpeg
-endif
-
-ifeq ($(BR2_PACKAGE_LIBPNG),y)
-WLROOTS_DEPENDENCIES += libpng
-endif
-
-ifeq ($(BR2_PACKAGE_SYSTEMD_LOGIND),y)
-WLROOTS_CONF_OPTS += -Dlogind=enabled -Dlogind-provider=systemd
-WLROOTS_DEPENDENCIES += systemd
-else
-WLROOTS_CONF_OPTS += -Dlogind=disabled
-endif
+WLROOTS_RENDERERS = gles2
+WLROOTS_BACKENDS = libinput drm
 
 ifeq ($(BR2_PACKAGE_WLROOTS_X11),y)
-WLROOTS_CONF_OPTS += -Dx11-backend=enabled -Dxwayland=enabled
+WLROOTS_BACKENDS += x11
 WLROOTS_DEPENDENCIES += libxcb xcb-util-wm xcb-util-renderutil xlib_libX11
-else
-WLROOTS_CONF_OPTS += -Dx11-backend=disabled -Dxwayland=disabled
 endif
 
-ifeq ($(BR2_PACKAGE_SEATD),y)
-WLROOTS_CONF_OPTS += -Dlibseat=enabled
-WLROOTS_DEPENDENCIES += seatd
+ifeq ($(BR2_PACKAGE_WLROOTS_XWAYLAND),y)
+WLROOTS_CONF_OPTS += -Dxwayland=enabled
+WLROOTS_DEPENDENCIES += libxcb xcb-util-wm xwayland
 else
-WLROOTS_CONF_OPTS += -Dlibseat=disabled
+WLROOTS_CONF_OPTS += -Dxwayland=disabled
 endif
+
+ifeq ($(BR2_PACKAGE_MESA3D_VULKAN_DRIVER),y)
+WLROOTS_RENDERERS += vulkan
+WLROOTS_DEPENDENCIES += mesa3d
+endif
+
+WLROOTS_CONF_OPTS += \
+	-Dbackends=$(subst $(space),$(comma),$(strip $(WLROOTS_BACKENDS))) \
+	-Drenderers=$(subst $(space),$(comma),$(strip $(WLROOTS_RENDERERS)))
 
 $(eval $(meson-package))

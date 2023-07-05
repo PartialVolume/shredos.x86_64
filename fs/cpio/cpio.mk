@@ -36,6 +36,8 @@ ROOTFS_CPIO_DEPENDENCIES += host-cpio
 ROOTFS_CPIO_OPTS += --reproducible
 endif
 
+ifeq ($(BR2_TARGET_ROOTFS_CPIO_FULL),y)
+
 define ROOTFS_CPIO_CMD
 	cd $(TARGET_DIR) && \
 	find . \
@@ -43,6 +45,57 @@ define ROOTFS_CPIO_CMD
 	| cpio $(ROOTFS_CPIO_OPTS) --quiet -o -H newc \
 	> $@
 endef
+
+else ifeq ($(BR2_TARGET_ROOTFS_CPIO_DRACUT),y)
+
+ROOTFS_CPIO_DEPENDENCIES += host-dracut
+
+ROOTFS_CPIO_DRACUT_MODULES = $(call qstrip,$(BR2_TARGET_ROOTFS_CPIO_DRACUT_MODULES))
+ifeq ($(BR_BUILDING),y)
+ifneq ($(words $(ROOTFS_CPIO_DRACUT_MODULES)),$(words $(sort $(notdir $(ROOTFS_CPIO_DRACUT_MODULES)))))
+$(error No two dracut modules can have the same basename, check your BR2_TARGET_ROOTFS_CPIO_DRACUT_MODULES setting)
+endif
+endif
+
+ROOTFS_CPIO_DRACUT_CONF_FILES = $(call qstrip,$(BR2_TARGET_ROOTFS_CPIO_DRACUT_CONF_FILES))
+ifeq ($(BR_BUILDING),y)
+ifeq ($(ROOTFS_CPIO_DRACUT_CONF_FILES),)
+$(error No dracut config file name specified, check your BR2_TARGET_ROOTFS_CPIO_DRACUT_CONF_FILES setting)
+endif
+ifneq ($(words $(ROOTFS_CPIO_DRACUT_CONF_FILES)),$(words $(sort $(notdir $(ROOTFS_CPIO_DRACUT_CONF_FILES)))))
+$(error No two dracut config files can have the same basename, check your BR2_TARGET_ROOTFS_CPIO_DRACUT_CONF_FILES setting)
+endif
+endif
+
+ifeq ($(BR2_LINUX_KERNEL),y)
+ROOTFS_CPIO_DEPENDENCIES += linux
+ROOTFS_CPIO_OPTS += --kver $(LINUX_VERSION_PROBED)
+else
+ROOTFS_CPIO_OPTS += --no-kernel
+endif
+
+define ROOTFS_CPIO_CMD
+	mkdir -p $(ROOTFS_CPIO_DIR)/tmp $(ROOTFS_CPIO_DIR)/confdir $(HOST_DIR)/lib/dracut/modules.d
+	touch $(ROOTFS_CPIO_DIR)/empty-config
+	$(foreach cfg,$(ROOTFS_CPIO_DRACUT_CONF_FILES), \
+		cp $(cfg) $(ROOTFS_CPIO_DIR)/confdir/$(notdir $(cfg))
+	)
+	$(foreach m,$(ROOTFS_CPIO_DRACUT_MODULES), \
+		cp -a $(m)/* $(HOST_DIR)/lib/dracut/modules.d/
+	)
+	$(HOST_DIR)/bin/dracut \
+		$(ROOTFS_CPIO_OPTS) \
+		-c $(ROOTFS_CPIO_DIR)/empty-config \
+		--confdir $(ROOTFS_CPIO_DIR)/confdir \
+		--sysroot $(TARGET_DIR) \
+		--tmpdir $(ROOTFS_CPIO_DIR)/tmp \
+		-M \
+		--force \
+		--no-compress \
+		$@
+endef
+
+endif #BR2_TARGET_ROOTFS_CPIO_DRACUT
 
 ifeq ($(BR2_TARGET_ROOTFS_CPIO_UIMAGE),y)
 ROOTFS_CPIO_DEPENDENCIES += host-uboot-tools

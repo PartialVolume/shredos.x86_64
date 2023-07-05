@@ -17,7 +17,7 @@ define inner-barebox-package
 
 $(1)_VERSION = $$(call qstrip,$$(BR2_TARGET_BAREBOX_VERSION))
 
-ifeq ($$($(1)_VERSION),custom)
+ifeq ($$(BR2_TARGET_BAREBOX_CUSTOM_TARBALL),y)
 # Handle custom Barebox tarballs as specified by the configuration
 $(1)_TARBALL = $$(call qstrip,$$(BR2_TARGET_BAREBOX_CUSTOM_TARBALL_LOCATION))
 $(1)_SITE = $$(patsubst %/,%,$$(dir $$($(1)_TARBALL)))
@@ -59,20 +59,27 @@ ifneq ($$(BR2_TARGET_$(1)_BAREBOXENV),y)
 $(1)_INSTALL_TARGET = NO
 endif
 
-ifeq ($$(KERNEL_ARCH),i386)
+ifeq ($$(NORMALIZED_ARCH),i386)
 $(1)_ARCH = x86
-else ifeq ($$(KERNEL_ARCH),x86_64)
+else ifeq ($$(NORMALIZED_ARCH),x86_64)
 $(1)_ARCH = x86
-else ifeq ($$(KERNEL_ARCH),powerpc)
+else ifeq ($$(NORMALIZED_ARCH),powerpc)
 $(1)_ARCH = ppc
-else ifeq ($$(KERNEL_ARCH),arm64)
+else ifeq ($$(NORMALIZED_ARCH),arm64)
 $(1)_ARCH = arm
 else
-$(1)_ARCH = $$(KERNEL_ARCH)
+$(1)_ARCH = $$(NORMALIZED_ARCH)
 endif
 
 $(1)_MAKE_FLAGS = ARCH=$$($(1)_ARCH) CROSS_COMPILE="$$(TARGET_CROSS)"
 $(1)_MAKE_ENV = $$(TARGET_MAKE_ENV)
+
+ifeq ($$(BR2_REPRODUCIBLE),y)
+$(1)_MAKE_ENV += \
+	KBUILD_BUILD_USER=buildroot \
+	KBUILD_BUILD_HOST=buildroot \
+	KBUILD_BUILD_TIMESTAMP="$$(shell LC_ALL=C TZ='UTC' date -d @$(SOURCE_DATE_EPOCH))"
+endif
 
 ifeq ($$(BR2_TARGET_$(1)_USE_DEFCONFIG),y)
 $(1)_KCONFIG_DEFCONFIG = $$(call qstrip,$$(BR2_TARGET_$(1)_BOARD_DEFCONFIG))_defconfig
@@ -121,7 +128,7 @@ endef
 
 define $(1)_BUILD_CMDS
 	$$($(1)_BUILD_BAREBOXENV_CMDS)
-	$$(TARGET_MAKE_ENV) $$(MAKE) $$($(1)_MAKE_FLAGS) -C $$(@D)
+	$$($(1)_MAKE_ENV) $$(MAKE) $$($(1)_MAKE_FLAGS) -C $$(@D)
 	$$($(1)_BUILD_CUSTOM_ENV)
 endef
 

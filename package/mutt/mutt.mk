@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-MUTT_VERSION = 2.1.1
+MUTT_VERSION = 2.2.9
 MUTT_SITE = https://bitbucket.org/mutt/mutt/downloads
 MUTT_LICENSE = GPL-2.0+
 MUTT_LICENSE_FILES = GPL
@@ -37,6 +37,10 @@ MUTT_DEPENDENCIES += libgpgme
 MUTT_CONF_OPTS += \
 	--enable-gpgme \
 	--with-gpgme-prefix=$(STAGING_DIR)/usr
+
+# Force the path to "gpgrt-config" (from the libgpg-error package) to
+# avoid using the one on host, if present.
+MUTT_CONF_ENV += GPGRT_CONFIG=$(STAGING_DIR)/usr/bin/gpgrt-config
 else
 MUTT_CONF_OPTS += --disable-gpgme
 endif
@@ -53,8 +57,15 @@ else
 MUTT_CONF_OPTS += --disable-pop
 endif
 
-# SSL support is only used by imap or pop3 module
+# SASL and SSL support are only used by imap or pop3 module
 ifneq ($(BR2_PACKAGE_MUTT_IMAP)$(BR2_PACKAGE_MUTT_POP3),)
+ifeq ($(BR2_PACKAGE_LIBGSASL),y)
+MUTT_DEPENDENCIES += libgsasl
+MUTT_CONF_OPTS += --with-gsasl
+else
+MUTT_CONF_OPTS += --without-gsasl
+endif
+
 ifeq ($(BR2_PACKAGE_OPENSSL),y)
 MUTT_DEPENDENCIES += openssl
 MUTT_CONF_OPTS += \
@@ -72,6 +83,7 @@ MUTT_CONF_OPTS += \
 endif
 else
 MUTT_CONF_OPTS += \
+	--without-gsasl \
 	--without-gnutls \
 	--without-ssl
 endif

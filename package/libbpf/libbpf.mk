@@ -4,11 +4,13 @@
 #
 ################################################################################
 
-LIBBPF_VERSION = 0.2
+LIBBPF_VERSION = 1.1.0
 LIBBPF_SITE = $(call github,libbpf,libbpf,v$(LIBBPF_VERSION))
 LIBBPF_LICENSE = GPL-2.0, LGPL-2.1, BSD-2-Clause
-LIBBPF_LICENSE_FILES = LICENSE LICENSE.BSD-2-Clause LICENSE.LPGL-2.1
+LIBBPF_LICENSE_FILES = LICENSE LICENSE.BSD-2-Clause LICENSE.LGPL-2.1
+LIBBPF_CPE_ID_VENDOR = libbpf_project
 LIBBPF_DEPENDENCIES = host-bison host-flex host-pkgconf elfutils zlib
+HOST_LIBBPF_DEPENDENCIES = host-bison host-flex host-pkgconf host-elfutils host-zlib
 LIBBPF_INSTALL_STAGING = YES
 
 define LIBBPF_BUILD_CMDS
@@ -37,4 +39,10 @@ define LIBBPF_INSTALL_TARGET_CMDS
 		-C $(@D)/src install DESTDIR=$(TARGET_DIR)
 endef
 
+define HOST_LIBBPF_INSTALL_CMDS
+	$(HOST_MAKE_ENV) $(HOST_CONFIGURE_OPTS) $(MAKE) \
+		-C $(@D)/src install install_uapi_headers DESTDIR=$(HOST_DIR)
+endef
+
 $(eval $(generic-package))
+$(eval $(host-generic-package))

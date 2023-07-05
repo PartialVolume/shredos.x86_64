@@ -1,60 +1,75 @@
 // -*- mode:doc; -*-
 // vim: set syntax=asciidoc:
 
-= The ShredOS user and developer manual
-
-image::shred_db.png[]
-
+= The Buildroot user manual
 :toc:
 
-ShredOS {sys:echo $\{BR2_VERSION%%-git*\}} manual generated on {localdate}
+Buildroot {sys:echo $\{BR2_VERSION%%-git*\}} manual generated on {localdate}
 {localtime} from git revision {sys:git rev-parse --short HEAD}
 
-----
-The ShredOS user and developer manual is written by the PartialVolume and the ShredOS developers.
+The Buildroot manual is written by the Buildroot developers.
 It is licensed under the GNU General Public License, version 2. Refer to the
 http://git.buildroot.org/buildroot/tree/COPYING?id={sys:git rev-parse HEAD}[COPYING]
 file in the Buildroot sources for the full text of this license.
-----
 
-  
-  
-  
-WARNING: Warning.
-  
-  
-  
-Copyright (C) 2018-2021 PartialVolume and The ShredOS developers
+Copyright (C) The Buildroot developers <buildroot@buildroot.org>
 
+image::logo.png[]
 
 = Getting started
 
 include::introduction.txt[]
 
-//include::prerequisite.txt[]
+include::prerequisite.txt[]
 
-//include::getting.txt[]
+include::getting.txt[]
 
-//= User guide
+include::quickstart.txt[]
 
-//include::configure.txt[]
+include::resources.txt[]
 
-//include::graphical_user_interface.txt[]
+= User guide
 
-//include::known-issues.txt[]
+include::configure.txt[]
 
-//include::legal-notice.txt[]
+include::configure-other-components.txt[]
 
-//include::beyond-buildroot.txt[]
+include::common-usage.txt[]
 
-//= Developer guide
+include::customize.txt[]
 
-//include::key_shredos_components.txt[]
+include::integration.txt[]
 
-//include::build_procedure.txt[]
+include::faq-troubleshooting.txt[]
 
-//include::contributing_to_the_shredos_manual.txt[]
+include::known-issues.txt[]
 
-//= Appendix
+include::legal-notice.txt[]
 
-//include::appendix.txt[] 
+include::beyond-buildroot.txt[]
+
+= Developer guide
+
+include::how-buildroot-works.txt[]
+
+include::writing-rules.txt[]
+
+include::adding-board-support.txt[]
+
+include::adding-packages.txt[]
+
+include::patch-policy.txt[]
+
+include::download-infra.txt[]
+
+include::debugging-buildroot.txt[]
+
+include::contribute.txt[]
+
+include::developers.txt[]
+
+include::release-engineering.txt[]
+
+= Appendix
+
+include::appendix.txt[]

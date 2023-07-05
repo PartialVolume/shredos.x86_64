@@ -1,0 +1,6 @@
+# md5 from: https://download.osgeo.org/gdal/3.6.2/gdal-3.6.2.tar.gz.md5, sha256 locally computed:
+md5  6f22ffdbd8e00059ddb2b825c5920c4c  gdal-3.6.2.tar.xz
+sha256  35f40d2e08061b342513cdcddc2b997b3814ef8254514f0ef1e8bc7aa56cf681  gdal-3.6.2.tar.xz
+
+# Hashes of license files:
+sha256  1dae3468e81d00da56e2936f74d33b8b3ad09d726437f19ce209a5dabea41f77  LICENSE.TXT

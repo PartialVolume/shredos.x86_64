@@ -2,11 +2,14 @@ config BR2_PACKAGE_GST1_VAAPI
 	bool "gst1-vaapi"
 	depends on !BR2_STATIC_LIBS # dlopen(), libva
 	depends on BR2_TOOLCHAIN_HAS_THREADS # libva, libdrm
+	depends on BR2_INSTALL_LIBSTDCPP # gst1-plugins-bad
 	depends on BR2_PACKAGE_HAS_UDEV
 	select BR2_PACKAGE_LIBVA
 	select BR2_PACKAGE_LIBDRM
 	select BR2_PACKAGE_GST1_PLUGINS_BASE
 	select BR2_PACKAGE_GST1_PLUGINS_BAD # gstreamer-codecparsers
+	select BR2_PACKAGE_XLIB_LIBX11 if BR2_PACKAGE_XORG7
+	select BR2_PACKAGE_XLIB_LIBXRANDR if BR2_PACKAGE_XORG7
 	help
 	  gstreamer-vaapi consists in a collection of VA-API based
 	  plugins for GStreamer and helper libraries.
@@ -45,6 +48,6 @@ config BR2_PACKAGE_GST1_VAAPI_ENCODERS
 
 endif
 
-comment "gst1-vaapi needs udev /dev management and a toolchain w/ threads, dynamic library"
+comment "gst1-vaapi needs udev /dev management and a toolchain w/ threads, dynamic library, C++"
 	depends on !BR2_TOOLCHAIN_HAS_THREADS || BR2_STATIC_LIBS || \
-		!BR2_PACKAGE_HAS_UDEV
+		!BR2_PACKAGE_HAS_UDEV || !BR2_INSTALL_LIBSTDCPP

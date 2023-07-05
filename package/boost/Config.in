@@ -16,40 +16,6 @@ config BR2_PACKAGE_BOOST
 
 if BR2_PACKAGE_BOOST
 
-choice
-	prompt "Layout"
-	default BR2_PACKAGE_BOOST_LAYOUT_SYSTEM
-	help
-	  Selects the layout of Boost binary names
-
-config BR2_PACKAGE_BOOST_LAYOUT_SYSTEM
-	bool "system"
-	help
-	  Boost binary names do not include the Boost version number
-	  or the name and version number of the compiler.
-
-config BR2_PACKAGE_BOOST_LAYOUT_TAGGED
-	bool "tagged"
-	help
-	  Boost binary names include the encoded build properties such
-	  as variant and threading, but do not include compiler name
-	  and version, or Boost version. This option is useful if you
-	  build several variants of Boost, using the same compiler.
-
-config BR2_PACKAGE_BOOST_LAYOUT_VERSIONED
-	bool "versioned"
-	help
-	  Boost binary names include the Boost version number, name
-	  and version of the compiler and encoded build properties.
-
-endchoice
-
-config BR2_PACKAGE_BOOST_LAYOUT
-	string
-	default "system" if BR2_PACKAGE_BOOST_LAYOUT_SYSTEM
-	default "tagged" if BR2_PACKAGE_BOOST_LAYOUT_TAGGED
-	default "versioned" if BR2_PACKAGE_BOOST_LAYOUT_VERSIONED
-
 config BR2_PACKAGE_BOOST_ATOMIC
 	bool "boost-atomic"
 	depends on BR2_TOOLCHAIN_SUPPORTS_ALWAYS_LOCKFREE_ATOMIC_INTS
@@ -68,12 +34,13 @@ config BR2_PACKAGE_BOOST_CONTAINER
 	  Standard library containers and extensions.
 
 # see
-# http://www.boost.org/doc/libs/1_59_0/libs/context/doc/html/context/architectures.html
+# http://www.boost.org/doc/libs/1_78_0/libs/context/doc/html/context/architectures.html
 # for the list of supported architectures. Sparc pretends to be
 # supported, but it doesn't build.
 config BR2_PACKAGE_BOOST_CONTEXT_ARCH_SUPPORTS
 	bool
 	default y if ((BR2_arm || BR2_armeb) && BR2_ARM_CPU_HAS_ARM)
+	default y if (BR2_aarch64 || BR2_aarch64_be)
 	default y if BR2_i386
 	default y if BR2_mips
 	default y if BR2_mipsel
@@ -140,8 +107,7 @@ config BR2_PACKAGE_BOOST_FIBER
 	# mips support uses the "pause" instruction, only available
 	# since mips32r2/mips64r2.
 	depends on !BR2_MIPS_CPU_MIPS32 && !BR2_MIPS_CPU_MIPS64
-	depends on BR2_TOOLCHAIN_SUPPORTS_ALWAYS_LOCKFREE_ATOMIC_INTS \
-		|| BR2_TOOLCHAIN_GCC_AT_LEAST_6 # boost-context -> boost-thread
+	depends on BR2_TOOLCHAIN_SUPPORTS_ALWAYS_LOCKFREE_ATOMIC_INTS # boost-filesystem
 	depends on !BR2_TOOLCHAIN_HAS_GCC_BUG_64735 # boost-context
 	select BR2_PACKAGE_BOOST_CONTEXT
 	select BR2_PACKAGE_BOOST_FILESYSTEM
@@ -151,8 +117,7 @@ config BR2_PACKAGE_BOOST_FIBER
 
 comment "boost-fiber needs a toolchain w/ NPTL"
 	depends on BR2_PACKAGE_BOOST_CONTEXT_ARCH_SUPPORTS
-	depends on BR2_TOOLCHAIN_SUPPORTS_ALWAYS_LOCKFREE_ATOMIC_INTS \
-		|| BR2_TOOLCHAIN_GCC_AT_LEAST_6
+	depends on BR2_TOOLCHAIN_SUPPORTS_ALWAYS_LOCKFREE_ATOMIC_INTS
 	depends on !BR2_TOOLCHAIN_HAS_THREADS_NPTL
 
 comment "boost-fiber needs a toolchain not affected by GCC bug 64735"
@@ -163,6 +128,8 @@ comment "boost-fiber needs a toolchain not affected by GCC bug 64735"
 
 config BR2_PACKAGE_BOOST_FILESYSTEM
 	bool "boost-filesystem"
+	depends on BR2_TOOLCHAIN_SUPPORTS_ALWAYS_LOCKFREE_ATOMIC_INTS # boost-atomic
+	select BR2_PACKAGE_BOOST_ATOMIC
 	select BR2_PACKAGE_BOOST_SYSTEM
 	help
 	  The Boost Filesystem Library provides portable facilities to
@@ -252,6 +219,7 @@ comment "boost-log needs a toolchain not affected by GCC bug 64735"
 
 config BR2_PACKAGE_BOOST_MATH
 	bool "boost-math"
+	depends on BR2_TOOLCHAIN_GCC_AT_LEAST_5 # C++14
 	help
 	  Boost.Math includes several contributions in the domain of
 	  mathematics:
@@ -295,7 +263,7 @@ config BR2_PACKAGE_BOOST_PROGRAM_OPTIONS
 
 config BR2_PACKAGE_BOOST_PYTHON
 	bool "boost-python"
-	depends on BR2_PACKAGE_PYTHON || BR2_PACKAGE_PYTHON3
+	depends on BR2_PACKAGE_PYTHON3
 	help
 	  The Boost Python Library is a framework for interfacing Python
 	  and C++. It allows you to quickly and seamlessly expose C++
@@ -373,6 +341,19 @@ config BR2_PACKAGE_BOOST_TYPE_ERASURE
 
 comment "boost-type_erasure needs a toolchain not affected by GCC bug 64735"
 	depends on BR2_TOOLCHAIN_HAS_GCC_BUG_64735
+
+config BR2_PACKAGE_BOOST_URL
+	bool "boost-url"
+	help
+	  Boost.URL is a portable C++ library which provides containers
+	  and algorithms which model a "URL," more formally described
+	  using the Uniform Resource Identifier (URI) specification.
+
+	  This library understands the grammars related to URLs and
+	  provides functionality to validate, parse, examine, and
+	  modify urls, and apply normalization or resolution algorithms.
+
+	  To use the library "header-only" this option is not needed.
 
 config BR2_PACKAGE_BOOST_WAVE
 	bool "boost-wave"

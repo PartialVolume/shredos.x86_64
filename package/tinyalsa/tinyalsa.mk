@@ -4,30 +4,17 @@
 #
 ################################################################################
 
-TINYALSA_VERSION = 1.1.1
-TINYALSA_SITE = $(call github,tinyalsa,tinyalsa,$(TINYALSA_VERSION))
+TINYALSA_VERSION = 2.0.0
+TINYALSA_SITE = $(call github,tinyalsa,tinyalsa,v$(TINYALSA_VERSION))
 TINYALSA_LICENSE = BSD-3-Clause
 TINYALSA_LICENSE_FILES = NOTICE
 TINYALSA_INSTALL_STAGING = YES
+TINYALSA_CONF_OPTS = -Ddocs=disabled -Dexamples=disabled
 
-define TINYALSA_BUILD_CMDS
-	$(TARGET_MAKE_ENV) $(MAKE) CROSS_COMPILE="$(TARGET_CROSS)" -C $(@D)
-endef
+ifeq ($(BR2_PACKAGE_TINYALSA_TOOLS),y)
+TINYALSA_CONF_OPTS += -Dutils=enabled
+else
+TINYALSA_CONF_OPTS += -Dutils=disabled
+endif
 
-define TINYALSA_INSTALL_STAGING_CMDS
-	$(TARGET_MAKE_ENV) $(MAKE) \
-		-C $(@D) \
-		PREFIX="/usr" \
-		CROSS_COMPILE="$(TARGET_CROSS)" \
-		DESTDIR="$(STAGING_DIR)" install
-endef
-
-define TINYALSA_INSTALL_TARGET_CMDS
-	$(TARGET_MAKE_ENV) $(MAKE) \
-		-C $(@D) \
-		PREFIX="/usr" \
-		CROSS_COMPILE="$(TARGET_CROSS)" \
-		DESTDIR="$(TARGET_DIR)" install
-endef
-
-$(eval $(generic-package))
+$(eval $(meson-package))

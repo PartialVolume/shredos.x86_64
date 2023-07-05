@@ -6,13 +6,13 @@
 
 # mesa3d-headers is inherently incompatible with mesa3d, so error out
 # if both are enabled.
-ifeq ($(BR2_PACKAGE_MESA3D)$(BR2_PACKAGE_MESA3D_HEADERS),yy)
+ifeq ($(BR_BUILDING)$(BR2_PACKAGE_MESA3D)$(BR2_PACKAGE_MESA3D_HEADERS),yyy)
 $(error mesa3d-headers enabled, but mesa3d enabled too)
 endif
 
 # Not possible to directly refer to mesa3d variables, because of
 # first/second expansion trickery...
-MESA3D_HEADERS_VERSION = 21.1.6
+MESA3D_HEADERS_VERSION = 23.1.0
 MESA3D_HEADERS_SOURCE = mesa-$(MESA3D_HEADERS_VERSION).tar.xz
 MESA3D_HEADERS_SITE = https://archive.mesa3d.org
 MESA3D_HEADERS_DL_SUBDIR = mesa3d
@@ -37,14 +37,14 @@ ifeq ($(BR2_PACKAGE_XORG7),y)
 # contains -i.
 define MESA3D_HEADERS_BUILD_DRI_PC
 	sed -e 's:@VERSION@:$(MESA3D_HEADERS_VERSION):' \
-	    package/mesa3d-headers/dri.pc \
-	    >$(@D)/src/mesa/drivers/dri/dri.pc
+		$(MESA3D_HEADERS_PKGDIR)/dri.pc \
+		>$(@D)/src/gallium/frontends/dri/dri.pc
 endef
 
 define MESA3D_HEADERS_INSTALL_DRI_PC
 	$(INSTALL) -D -m 0644 $(@D)/include/GL/internal/dri_interface.h \
 		$(STAGING_DIR)/usr/include/GL/internal/dri_interface.h
-	$(INSTALL) -D -m 0644 $(@D)/src/mesa/drivers/dri/dri.pc \
+	$(INSTALL) -D -m 0644 $(@D)/src/gallium/frontends/dri/dri.pc \
 		$(STAGING_DIR)/usr/lib/pkgconfig/dri.pc
 endef
 

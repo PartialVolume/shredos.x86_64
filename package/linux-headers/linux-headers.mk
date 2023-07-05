@@ -33,8 +33,19 @@ LINUX_HEADERS_REPO_URL = $(call qstrip,$(BR2_KERNEL_HEADERS_CUSTOM_REPO_URL))
 LINUX_HEADERS_CIP =
 endif # BR2_KERNEL_HEADERS_AS_KERNEL
 
+ifeq ($(BR2_KERNEL_HEADERS_VERSION)$(BR_BUILDING),yy)
+ifeq ($(LINUX_HEADERS_VERSION),)
+$(error No kernel headers version set, check your BR2_DEFAULT_KERNEL_VERSION setting)
+endif
+endif
+
 # Compute LINUX_HEADERS_SOURCE and LINUX_HEADERS_SITE from the configuration
 ifeq ($(LINUX_HEADERS_CUSTOM_TARBALL),y)
+ifeq ($(BR_BUILDING),y)
+ifeq ($(LINUX_HEADERS_CUSTOM_TARBALL_LOCATION),)
+$(error No kernel headers tarball location set, check your BR2_KERNEL_HEADERS_CUSTOM_TARBALL_LOCATION setting)
+endif
+endif
 LINUX_HEADERS_SOURCE = $(notdir $(LINUX_HEADERS_CUSTOM_TARBALL_LOCATION))
 LINUX_HEADERS_SITE = $(patsubst %/,%,$(dir $(LINUX_HEADERS_CUSTOM_TARBALL_LOCATION)))
 else ifeq ($(LINUX_HEADERS_CUSTOM_GIT),y)
@@ -114,6 +125,8 @@ LINUX_HEADERS_INSTALL_STAGING = YES
 # linux-headers is part of the toolchain so disable the toolchain dependency
 LINUX_HEADERS_ADD_TOOLCHAIN_DEPENDENCY = NO
 
+LINUX_HEADERS_DEPENDENCIES = $(BR2_MAKE_HOST_DEPENDENCY)
+
 # For some architectures (eg. Arc, Cris, Hexagon, ia64, parisc,
 # score and xtensa), the Linux buildsystem tries to call the
 # cross-compiler, although it is not needed at all.
@@ -126,7 +139,7 @@ LINUX_HEADERS_ADD_TOOLCHAIN_DEPENDENCY = NO
 # of "its" headers
 define LINUX_HEADERS_CONFIGURE_CMDS
 	(cd $(@D); \
-		$(TARGET_MAKE_ENV) $(MAKE) \
+		$(TARGET_MAKE_ENV) $(BR2_MAKE) \
 			ARCH=$(KERNEL_ARCH) \
 			HOSTCC="$(HOSTCC)" \
 			HOSTCFLAGS="$(HOSTCFLAGS)" \
@@ -137,7 +150,7 @@ endef
 
 define LINUX_HEADERS_INSTALL_STAGING_CMDS
 	(cd $(@D); \
-		$(TARGET_MAKE_ENV) $(MAKE) \
+		$(TARGET_MAKE_ENV) $(BR2_MAKE) \
 			ARCH=$(KERNEL_ARCH) \
 			HOSTCC="$(HOSTCC)" \
 			HOSTCFLAGS="$(HOSTCFLAGS)" \

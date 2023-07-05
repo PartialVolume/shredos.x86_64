@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-VALGRIND_VERSION = 3.17.0
+VALGRIND_VERSION = 3.20.0
 VALGRIND_SITE = https://sourceware.org/pub/valgrind
 VALGRIND_SOURCE = valgrind-$(VALGRIND_VERSION).tar.bz2
 VALGRIND_LICENSE = GPL-2.0, GFDL-1.2
@@ -50,7 +50,7 @@ VALGRIND_CONF_OPTS += \
 	--host=$(patsubst arm-%,armv7-%,$(GNU_TARGET_NAME))
 endif
 
-ifeq ($(BR2_GCC_ENABLE_LTO),y)
+ifeq ($(BR2_ENABLE_LTO),y)
 VALGRIND_CONF_OPTS += --enable-lto
 else
 VALGRIND_CONF_OPTS += --disable-lto

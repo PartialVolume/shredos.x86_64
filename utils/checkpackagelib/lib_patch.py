@@ -8,6 +8,7 @@ import re
 
 from checkpackagelib.base import _CheckFunction
 from checkpackagelib.lib import NewlineAtEof           # noqa: F401
+from checkpackagelib.tool import NotExecutable         # noqa: F401
 
 
 class ApplyOrder(_CheckFunction):
@@ -59,4 +60,22 @@ class Sob(_CheckFunction):
         if not self.found:
             return ["{}:0: missing Signed-off-by in the header "
                     "({}#_format_and_licensing_of_the_package_patches)"
+                    .format(self.filename, self.url_to_manual)]
+
+class Upstream(_CheckFunction):
+    UPSTREAM_ENTRY = re.compile(r"^Upstream: .*$")
+
+    def before(self):
+        self.found = False
+
+    def check_line(self, lineno, text):
+        if self.found:
+            return
+        if self.UPSTREAM_ENTRY.search(text):
+            self.found = True
+
+    def after(self):
+        if not self.found:
+            return ["{}:0: missing Upstream in the header "
+                    "({}#_additional_patch_documentation)"
                     .format(self.filename, self.url_to_manual)]

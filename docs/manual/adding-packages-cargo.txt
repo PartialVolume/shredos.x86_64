@@ -1,0 +1,100 @@
+// -*- mode:doc; -*-
+// vim: set syntax=asciidoc:
+
+=== Infrastructure for Cargo-based packages
+
+Cargo is the package manager for the Rust programming language. It allows the
+user to build programs or libraries written in Rust, but it also downloads and
+manages their dependencies, to ensure repeatable builds. Cargo packages are
+called "crates".
+
+[[cargo-package-tutorial]]
+
+==== +cargo-package+ tutorial
+
+The +Config.in+ file of Cargo-based package 'foo' should contain:
+
+---------------------------
+01: config BR2_PACKAGE_FOO
+02: 	bool "foo"
+03: 	depends on BR2_PACKAGE_HOST_RUSTC_TARGET_ARCH_SUPPORTS
+04: 	select BR2_PACKAGE_HOST_RUSTC
+05: 	help
+06: 	  This is a comment that explains what foo is.
+07:
+08: 	  http://foosoftware.org/foo/
+---------------------------
+
+And the +.mk+ file for this package should contain:
+
+------------------------------
+01: ################################################################################
+02: #
+03: # foo
+04: #
+05: ################################################################################
+06:
+07: FOO_VERSION = 1.0
+08: FOO_SOURCE = foo-$(FOO_VERSION).tar.gz
+09: FOO_SITE = http://www.foosoftware.org/download
+10: FOO_LICENSE = GPL-3.0+
+11: FOO_LICENSE_FILES = COPYING
+12:
+13: $(eval $(cargo-package))
+--------------------------------
+
+The Makefile starts with the definition of the standard variables for
+package declaration (lines 7 to 11).
+
+As seen in line 13, it is based on the +cargo-package+
+infrastructure. Cargo will be invoked automatically by this
+infrastructure to build and install the package.
+
+It is still possible to define custom build commands or install
+commands (i.e.  with FOO_BUILD_CMDS and FOO_INSTALL_TARGET_CMDS).
+Those will then replace the commands from the cargo infrastructure.
+
+==== +cargo-package+ reference
+
+The main macros for the Cargo package infrastructure are
++cargo-package+ for target packages and +host-cargo-package+ for host
+packages.
+
+Just like the generic infrastructure, the Cargo infrastructure works
+by defining a number of variables before calling the +cargo-package+
+or +host-cargo-package+ macros.
+
+First, all the package metadata information variables that exist in
+the generic infrastructure also exist in the Cargo infrastructure:
++FOO_VERSION+, +FOO_SOURCE+, +FOO_PATCH+, +FOO_SITE+,
++FOO_DEPENDENCIES+, +FOO_LICENSE+, +FOO_LICENSE_FILES+, etc.
+
+A few additional variables, specific to the Cargo infrastructure, can
+also be defined. Many of them are only useful in very specific cases,
+typical packages will therefore only use a few of them.
+
+* +FOO_SUBDIR+ may contain the name of a subdirectory inside the package
+  that contains the Cargo.toml file. This is useful, if for example, it
+  is not at the root of the tree extracted by the tarball. If
+  +HOST_FOO_SUBDIR+ is not specified, it defaults to +FOO_SUBDIR+.
+
+* +FOO_CARGO_ENV+ can be used to pass additional variables in the
+  environment of +cargo+ invocations. It used at both build and
+  installation time
+
+* +FOO_CARGO_BUILD_OPTS+ can be used to pass additional options to
+  +cargo+ at build time.
+
+* +FOO_CARGO_INSTALL_OPTS+ can be used to pass additional options to
+  +cargo+ at install time.
+
+A crate can depend on other libraries from crates.io or git
+repositories, listed in its +Cargo.toml+ file. Buildroot automatically
+takes care of downloading such dependencies as part of the download
+step of packages that use the +cargo-package+ infrastructure. Such
+dependencies are then kept together with the package source code in
+the tarball cached in Buildroot's +DL_DIR+, and therefore the hash of
+the package's tarball includes such dependencies.
+
+This mechanism ensures that any change in the dependencies will be
+detected, and allows the build to be performed completely offline.

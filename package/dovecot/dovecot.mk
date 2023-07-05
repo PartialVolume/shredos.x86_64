@@ -5,7 +5,7 @@
 ################################################################################
 
 DOVECOT_VERSION_MAJOR = 2.3
-DOVECOT_VERSION = $(DOVECOT_VERSION_MAJOR).15
+DOVECOT_VERSION = $(DOVECOT_VERSION_MAJOR).20
 DOVECOT_SITE = https://dovecot.org/releases/$(DOVECOT_VERSION_MAJOR)
 DOVECOT_INSTALL_STAGING = YES
 DOVECOT_LICENSE = LGPL-2.1, MIT, Public Domain, BSD-3-Clause, Unicode-DFS-2015
@@ -20,6 +20,9 @@ DOVECOT_DEPENDENCIES = \
 # CVE-2016-4983 is an issue in a postinstall script in the dovecot rpm, which
 # is part of the Red Hat packaging and not part of upstream dovecot
 DOVECOT_IGNORE_CVES += CVE-2016-4983
+
+# 0001-auth-Fix-handling-passdbs-with-identical-driver-args.patch
+DOVECOT_IGNORE_CVES += CVE-2022-30550
 
 DOVECOT_CONF_ENV = \
 	RPCGEN=__disable_RPCGEN_rquota \

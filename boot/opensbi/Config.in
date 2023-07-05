@@ -19,7 +19,7 @@ choice
 	  Select the specific OpenSBI version you want to use
 
 config BR2_TARGET_OPENSBI_LATEST_VERSION
-	bool "0.9"
+	bool "1.2"
 
 config BR2_TARGET_OPENSBI_CUSTOM_VERSION
 	bool "Custom version"
@@ -57,7 +57,7 @@ endif
 
 config BR2_TARGET_OPENSBI_VERSION
 	string
-	default "0.9"	if BR2_TARGET_OPENSBI_LATEST_VERSION
+	default "1.2"	if BR2_TARGET_OPENSBI_LATEST_VERSION
 	default BR2_TARGET_OPENSBI_CUSTOM_VERSION_VALUE \
 		if BR2_TARGET_OPENSBI_CUSTOM_VERSION
 	default "custom"	if BR2_TARGET_OPENSBI_CUSTOM_TARBALL
@@ -118,5 +118,11 @@ config BR2_TARGET_OPENSBI_FW_FDT_PATH
 	  $(BINARIES_DIR)/u-boot.dtb. Note that CONFIG_OF_SEPARATE
 	  must be set in the U-Boot configuration for this file to be
 	  produced.
+
+config BR2_TARGET_OPENSBI_ADDITIONAL_VARIABLES
+	string "Additional build variables"
+	help
+	  Additional parameters for the build, which will be passed on
+	  the make command line. E.g: BUILD_INFO=1.
 
 endif

@@ -1,4 +1,5 @@
-# md5 from https://pypi.python.org/pypi/libusb1/json, sha256 locally computed
-md5	cb4073182fef4cee6ab9c6666b48d1a1  libusb1-1.7.1.tar.gz
-sha256	adf64a4f3f5c94643a1286f8153bcf4bc787c348b38934aacd7fe17fbeebc571  libusb1-1.7.1.tar.gz
-sha256	dc626520dcd53a22f727af3ee42c770e56c97a64fe3adb063799d8ab032fe551  COPYING.LESSER
+# md5, sha256 from https://pypi.org/pypi/libusb1/json
+md5  ffbb02bf9aa49f973a6a58112aed7b06  libusb1-3.0.0.tar.gz
+sha256  5792a9defee40f15d330a40d9b1800545c32e47ba7fc66b6f28f133c9fcc8538  libusb1-3.0.0.tar.gz
+# Locally computed sha256 checksums
+sha256  dc626520dcd53a22f727af3ee42c770e56c97a64fe3adb063799d8ab032fe551  COPYING.LESSER

@@ -18,17 +18,22 @@
 # Copyright (C) 2016 Jérôme Pouiller <jezz@sysmic.org>
 #
 
-DATE_BIN=false
-# Do not call `date' directly since it will produce an infinite recursion.
-# Instead, find path of true `date' binary.
-for P in `echo $PATH | tr ':' ' '`; do
-    if [ -x "$P/date" ]; then
-        if ! [ "$P/date" -ef "$0" ]; then
-            DATE_BIN="$P/date"
-            break;
-        fi
+# Do not call any 'date' before us in the PATH, or that would create
+# an infinite recursion.
+found=false
+for date in $(which -a date); do
+    if [ "${date}" -ef "$0" ]; then
+        found=true
+    elif ${found}; then
+        DATE_BIN="${date}"
+        break
     fi
 done
+
+if [ -z "${DATE_BIN}" ]; then
+    printf 'fakedate: no real date found in PATH after "%s"\n' "${0}" >&2
+    exit 1
+fi
 
 if [ -n "$SOURCE_DATE_EPOCH" ]; then
     FORCE_EPOCH=1

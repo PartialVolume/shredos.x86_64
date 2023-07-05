@@ -4,14 +4,14 @@
 #
 ################################################################################
 
-EARLYOOM_VERSION = 1.6.2
+EARLYOOM_VERSION = 1.7
 EARLYOOM_SITE = $(call github,rfjakob,earlyoom,v$(EARLYOOM_VERSION))
 EARLYOOM_LICENSE = MIT
 EARLYOOM_LICENSE_FILES = LICENSE
 
 EARLYOOM_BUILD_TARGETS = earlyoom.service earlyoom
 EARLYOOM_INSTALL_TARGETS = install-default install-bin
-EARLYOOM_CFLAGS = '$(TARGET_CFLAGS) -std=gnu99 -DVERSION=\"1.6\"'
+EARLYOOM_CFLAGS = '$(TARGET_CFLAGS) -std=gnu99 -DVERSION=\"$(EARLYOOM_VERSION)\"'
 
 EARLYOOM_MAKE_OPTS = \
 	$(TARGET_CONFIGURE_OPTS) \

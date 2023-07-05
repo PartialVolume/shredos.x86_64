@@ -1,4 +1,3 @@
-from __future__ import print_function
 from io import open
 import os
 import re
@@ -226,34 +225,38 @@ def parse_developer_runtime_tests(fnames):
     return runtimes
 
 
-def parse_developers():
+def parse_developers(filename=None):
     """Parse the DEVELOPERS file and return a list of Developer objects."""
     developers = []
     linen = 0
     global unittests
     unittests = list_unittests()
-    developers_fname = os.path.join(brpath, 'DEVELOPERS')
+    developers_fname = filename or os.path.join(brpath, 'DEVELOPERS')
     with open(developers_fname, mode='r', encoding='utf_8') as f:
         files = []
         name = None
         for line in f:
+            linen += 1
             line = line.strip()
             if line.startswith("#"):
                 continue
             elif line.startswith("N:"):
                 if name is not None or len(files) != 0:
-                    print("Syntax error in DEVELOPERS file, line %d" % linen,
+                    print("Syntax error in DEVELOPERS file, line %d" % (linen - 1),
                           file=sys.stderr)
+                    return None
                 name = line[2:].strip()
             elif line.startswith("F:"):
                 fname = line[2:].strip()
                 dev_files = glob.glob(os.path.join(brpath, fname))
                 if len(dev_files) == 0:
-                    print("WARNING: '%s' doesn't match any file" % fname,
+                    print("WARNING: '%s' doesn't match any file, line %d" % (fname, linen),
                           file=sys.stderr)
                 for f in dev_files:
                     dev_file = os.path.relpath(f, brpath)
                     dev_file = dev_file.replace(os.sep, '/')  # force unix sep
+                    if f[-1] == '/':  # relpath removes the trailing /
+                        dev_file = dev_file + '/'
                     files.append(dev_file)
             elif line == "":
                 if not name:
@@ -265,7 +268,6 @@ def parse_developers():
                 print("Syntax error in DEVELOPERS file, line %d: '%s'" % (linen, line),
                       file=sys.stderr)
                 return None
-            linen += 1
     # handle last developer
     if name is not None:
         developers.append(Developer(name, files))

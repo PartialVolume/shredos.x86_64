@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-QUAZIP_VERSION = 1.1
+QUAZIP_VERSION = 1.3
 QUAZIP_SITE = $(call github,stachenov,quazip,v$(QUAZIP_VERSION))
 QUAZIP_INSTALL_STAGING = YES
 QUAZIP_DEPENDENCIES = \
@@ -12,5 +12,6 @@ QUAZIP_DEPENDENCIES = \
 	qt5base
 QUAZIP_LICENSE = LGPL-2.1
 QUAZIP_LICENSE_FILES = COPYING
+QUAZIP_CPE_ID_VENDOR = quazip_project
 
 $(eval $(cmake-package))

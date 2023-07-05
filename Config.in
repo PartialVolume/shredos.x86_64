@@ -87,6 +87,8 @@ config BR2_NEEDS_HOST_GCC_PLUGIN_SUPPORT
 
 source "arch/Config.in"
 
+source "toolchain/Config.in"
+
 menu "Build options"
 
 menu "Commands"
@@ -118,6 +120,10 @@ config BR2_LOCALFILES
 config BR2_SCP
 	string "Secure copy (scp) command"
 	default "scp"
+
+config BR2_SFTP
+	string "Secure file transfer (sftp) command"
+	default "sftp"
 
 config BR2_HG
 	string "Mercurial (hg) command"
@@ -281,14 +287,15 @@ config BR2_LUAROCKS_MIRROR
 
 config BR2_CPAN_MIRROR
 	string "CPAN mirror (Perl packages)"
-	default "http://cpan.metacpan.org"
+	default "https://cpan.metacpan.org"
 	help
 	  CPAN (Comprehensive Perl Archive Network) is a repository of
 	  Perl packages. It has multiple software mirrors scattered
 	  around the world. This option allows you to select a mirror.
 
 	  The list of mirrors is available at:
-	  http://search.cpan.org/mirror
+	  http://mirrors.cpan.org/          (tabular)
+	  http://mirrors.cpan.org/map.html  (clickable world map)
 
 endif
 
@@ -428,7 +435,7 @@ config BR2_ENABLE_RUNTIME_DEBUG
 config BR2_STRIP_strip
 	bool "strip target binaries"
 	default y
-	depends on !BR2_PACKAGE_HOST_ELF2FLT
+	depends on BR2_BINFMT_ELF
 	help
 	  Binaries and libraries in the target filesystem will be
 	  stripped using the normal 'strip' command. This allows to save
@@ -547,6 +554,25 @@ config BR2_OPTIMIZE_FAST
 
 endchoice
 
+config BR2_ENABLE_LTO
+	bool "build packages with link-time optimisation"
+	help
+	  Enable the link-time optimisation (LTO) option when building
+	  packages. Link-time optimisation re-runs optimisations at
+	  link time, which allows the compiler to do interprocedural
+	  analysis across compilation units and thus come with better
+	  results: smaller size and better performance.
+
+	  Note that this analysis is limited to statically linked
+	  object files and libraries.
+
+	  This option may significantly increase build times,
+	  sometimes 5 times longer, with only limited gains.
+
+	  At this time, this option only enables LTO in packages that
+	  have an explicit configuration option for it. Other packages
+	  always enable LTO, but most packages never enable LTO.
+
 config BR2_GOOGLE_BREAKPAD_ENABLE
 	bool "Enable google-breakpad support"
 	depends on BR2_INSTALL_LIBSTDCPP
@@ -597,6 +623,7 @@ choice
 
 config BR2_STATIC_LIBS
 	bool "static only"
+	depends on !BR2_TOOLCHAIN_USES_GLIBC
 	help
 	  Build and use only static libraries. No shared libraries will
 	  be installed on the target. This potentially increases your
@@ -604,6 +631,9 @@ config BR2_STATIC_LIBS
 	  doing. Note that some packages may not be available when this
 	  option is enabled, due to their need for dynamic library
 	  support.
+
+comment "static only needs a toolchain w/ uclibc or musl"
+	depends on BR2_TOOLCHAIN_USES_GLIBC
 
 config BR2_SHARED_LIBS
 	bool "shared only"
@@ -654,24 +684,6 @@ config BR2_GLOBAL_PATCH_DIR
 	  applied.
 
 menu "Advanced"
-
-config BR2_COMPILER_PARANOID_UNSAFE_PATH
-	bool "paranoid check of library/header paths"
-	default y
-	help
-	  By default, when this option is disabled, when the Buildroot
-	  cross-compiler will encounter an unsafe library or header path
-	  (such as /usr/include, or /usr/lib), the compiler will display
-	  a warning.
-
-	  By enabling this option, this warning is turned into an error,
-	  which will completely abort the build when such unsafe paths
-	  are encountered.
-
-	  Note that this mechanism is available for both the internal
-	  toolchain (through the toolchain wrapper and binutils patches)
-	  and external toolchain backends (through the toolchain
-	  wrapper).
 
 config BR2_FORCE_HOST_BUILD
 	bool "Force the building of host dependencies"
@@ -900,14 +912,21 @@ config BR2_FORTIFY_SOURCE_2
 	  Also adds checks at run-time (detected buffer overflow
 	  terminates the program)
 
+config BR2_FORTIFY_SOURCE_3
+	bool "Extended"
+	depends on BR2_TOOLCHAIN_GCC_AT_LEAST_12
+	help
+	  This option sets _FORTIFY_SOURCES to 3 and even more
+	  checking is added compared to level 2. Extends checks at
+	  run-time that can introduce an additional performance
+	  overhead.
+
 endchoice
 
 comment "Fortify Source needs a glibc toolchain and optimization"
 	depends on BR2_FORTIFY_SOURCE_ARCH_SUPPORTS
 	depends on (!BR2_TOOLCHAIN_USES_GLIBC || BR2_OPTIMIZE_0)
 endmenu
-
-source "toolchain/Config.in"
 
 source "system/Config.in"
 

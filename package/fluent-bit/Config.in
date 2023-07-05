@@ -1,0 +1,41 @@
+config BR2_PACKAGE_FLUENT_BIT
+	bool "fluent-bit"
+	depends on BR2_TOOLCHAIN_HAS_THREADS
+	depends on BR2_TOOLCHAIN_HAS_SYNC_4
+	depends on !BR2_STATIC_LIBS # dlfcn.h
+	select BR2_PACKAGE_MUSL_FTS if !BR2_TOOLCHAIN_USES_GLIBC
+	select BR2_PACKAGE_OPENSSL
+	select BR2_PACKAGE_LIBYAML
+	help
+	  Fast and Lightweight Logs and Metrics processor.
+
+	  https://github.com/fluent/fluent-bit
+
+if BR2_PACKAGE_FLUENT_BIT
+
+config BR2_PACKAGE_FLUENT_BIT_WASM_ARCH_SUPPORTS
+	bool
+	# see lib/wasm-micro-runtime-WAMR-1.1.1/README.md#supported-architectures-and-platforms
+	default y if BR2_arc
+	default y if BR2_arm || BR2_armeb
+	default y if BR2_aarch64 || BR2_aarch64_be
+	default y if BR2_i386 || BR2_x86_64
+	default y if BR2_RISCV_64
+	default y if BR2_xtensa
+
+config BR2_PACKAGE_FLUENT_BIT_WASM
+	bool "wasm runtime support"
+	depends on BR2_INSTALL_LIBSTDCPP
+	depends on BR2_PACKAGE_FLUENT_BIT_WASM_ARCH_SUPPORTS
+	help
+	  Support for WASM-based plugins.
+
+comment "wasm runtime support needs a toolchain w/ C++"
+	depends on BR2_PACKAGE_FLUENT_BIT_WASM_ARCH_SUPPORTS
+	depends on !BR2_INSTALL_LIBSTDCPP
+
+endif
+
+comment "fluent-bit needs a toolchain w/ threads, dynamic library"
+	depends on BR2_TOOLCHAIN_HAS_SYNC_4
+	depends on !BR2_TOOLCHAIN_HAS_THREADS || BR2_STATIC_LIBS

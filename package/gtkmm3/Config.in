@@ -19,11 +19,11 @@ config BR2_PACKAGE_GTKMM3
 	depends on BR2_USE_MMU # *mm/libgtk3 -> libglib2
 	depends on BR2_USE_WCHAR # *mm/libgtk3 -> libglib2
 	depends on BR2_PACKAGE_LIBGTK3
-	select BR2_PACKAGE_ATKMM
-	select BR2_PACKAGE_CAIROMM
-	select BR2_PACKAGE_GLIBMM
-	select BR2_PACKAGE_LIBSIGC
-	select BR2_PACKAGE_PANGOMM
+	select BR2_PACKAGE_ATKMM2_28
+	select BR2_PACKAGE_CAIROMM1_14
+	select BR2_PACKAGE_GLIBMM2_66
+	select BR2_PACKAGE_LIBSIGC2
+	select BR2_PACKAGE_PANGOMM2_46
 	help
 	  The gtkmm3 package is a set of C++ bindings for GTK 3.
 

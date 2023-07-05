@@ -4,12 +4,13 @@
 #
 ################################################################################
 
-GST1_PLUGINS_GOOD_VERSION = 1.18.5
+GST1_PLUGINS_GOOD_VERSION = 1.22.2
 GST1_PLUGINS_GOOD_SOURCE = gst-plugins-good-$(GST1_PLUGINS_GOOD_VERSION).tar.xz
 GST1_PLUGINS_GOOD_SITE = https://gstreamer.freedesktop.org/src/gst-plugins-good
 GST1_PLUGINS_GOOD_LICENSE_FILES = COPYING
 GST1_PLUGINS_GOOD_LICENSE = LGPL-2.1+
 
+GST1_PLUGINS_GOOD_CFLAGS = $(TARGET_CFLAGS) -std=gnu99
 GST1_PLUGINS_GOOD_LDFLAGS = $(TARGET_LDFLAGS) $(TARGET_NLS_LIBS)
 
 GST1_PLUGINS_GOOD_CONF_OPTS = \
@@ -323,6 +324,12 @@ else
 GST1_PLUGINS_GOOD_CONF_OPTS += -Dwavparse=disabled
 endif
 
+ifeq ($(BR2_PACKAGE_GST1_PLUGINS_GOOD_PLUGIN_XINGMUX),y)
+GST1_PLUGINS_GOOD_CONF_OPTS += -Dxingmux=enabled
+else
+GST1_PLUGINS_GOOD_CONF_OPTS += -Dxingmux=disabled
+endif
+
 ifeq ($(BR2_PACKAGE_GST1_PLUGINS_GOOD_PLUGIN_Y4M),y)
 GST1_PLUGINS_GOOD_CONF_OPTS += -Dy4m=enabled
 else
@@ -477,10 +484,6 @@ GST1_PLUGINS_GOOD_CONF_OPTS += -Dwavpack=enabled
 GST1_PLUGINS_GOOD_DEPENDENCIES += wavpack
 else
 GST1_PLUGINS_GOOD_CONF_OPTS += -Dwavpack=disabled
-endif
-
-ifeq ($(BR2_PACKAGE_GST1_PLUGINS_GOOD_ZLIB),y)
-GST1_PLUGINS_GOOD_DEPENDENCIES += zlib
 endif
 
 ifeq ($(BR2_PACKAGE_GST1_PLUGINS_GOOD_BZ2),y)

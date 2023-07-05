@@ -4,10 +4,10 @@
 #
 ################################################################################
 
-LIBGLIB2_VERSION_MAJOR = 2.68
-LIBGLIB2_VERSION = $(LIBGLIB2_VERSION_MAJOR).4
+LIBGLIB2_VERSION_MAJOR = 2.76
+LIBGLIB2_VERSION = $(LIBGLIB2_VERSION_MAJOR).1
 LIBGLIB2_SOURCE = glib-$(LIBGLIB2_VERSION).tar.xz
-LIBGLIB2_SITE = http://ftp.gnome.org/pub/gnome/sources/glib/$(LIBGLIB2_VERSION_MAJOR)
+LIBGLIB2_SITE = https://download.gnome.org/sources/glib/$(LIBGLIB2_VERSION_MAJOR)
 LIBGLIB2_LICENSE = LGPL-2.1+
 LIBGLIB2_LICENSE_FILES = COPYING
 LIBGLIB2_CPE_ID_VENDOR = gnome
@@ -24,24 +24,22 @@ endif
 
 HOST_LIBGLIB2_CONF_OPTS = \
 	-Ddtrace=false \
-	-Dfam=false \
 	-Dglib_debug=disabled \
 	-Dlibelf=disabled \
 	-Dselinux=disabled \
 	-Dsystemtap=false \
 	-Dxattr=false \
-	-Dinternal_pcre=false \
 	-Dtests=false \
 	-Doss_fuzz=disabled
 
 LIBGLIB2_DEPENDENCIES = \
 	host-pkgconf host-libglib2 \
-	libffi pcre zlib $(TARGET_NLS_DEPENDENCIES)
+	libffi pcre2 zlib $(TARGET_NLS_DEPENDENCIES)
 
 HOST_LIBGLIB2_DEPENDENCIES = \
 	host-gettext \
 	host-libffi \
-	host-pcre \
+	host-pcre2 \
 	host-pkgconf \
 	host-util-linux \
 	host-zlib
@@ -52,7 +50,6 @@ HOST_LIBGLIB2_DEPENDENCIES = \
 # bogus installation path once combined with $(DESTDIR).
 LIBGLIB2_CONF_OPTS = \
 	-Dglib_debug=disabled \
-	-Dinternal_pcre=false \
 	-Dlibelf=disabled \
 	-Dgio_module_dir=/usr/lib/gio/modules \
 	-Dtests=false \
@@ -69,6 +66,11 @@ endif
 
 ifeq ($(BR2_PACKAGE_ELFUTILS),y)
 LIBGLIB2_DEPENDENCIES += elfutils
+endif
+
+# Uses __atomic_compare_exchange_4
+ifeq ($(BR2_TOOLCHAIN_HAS_LIBATOMIC),y)
+LIBGLIB2_LDFLAGS += -latomic
 endif
 
 ifeq ($(BR2_PACKAGE_LIBICONV),y)

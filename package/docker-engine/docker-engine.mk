@@ -4,13 +4,13 @@
 #
 ################################################################################
 
-DOCKER_ENGINE_VERSION = 20.10.9
+DOCKER_ENGINE_VERSION = 23.0.5
 DOCKER_ENGINE_SITE = $(call github,moby,moby,v$(DOCKER_ENGINE_VERSION))
 
 DOCKER_ENGINE_LICENSE = Apache-2.0
 DOCKER_ENGINE_LICENSE_FILES = LICENSE
 
-DOCKER_ENGINE_DEPENDENCIES = host-pkgconf
+DOCKER_ENGINE_DEPENDENCIES = host-pkgconf libseccomp
 DOCKER_ENGINE_GOMOD = github.com/docker/docker
 
 DOCKER_ENGINE_CPE_ID_VENDOR = docker
@@ -24,16 +24,10 @@ DOCKER_ENGINE_LDFLAGS = \
 	-X $(DOCKER_ENGINE_GOMOD)/dockerversion.Version="$(DOCKER_ENGINE_VERSION)"
 
 DOCKER_ENGINE_TAGS = cgo exclude_graphdriver_zfs
-DOCKER_ENGINE_BUILD_TARGETS = cmd/dockerd
+DOCKER_ENGINE_BUILD_TARGETS = cmd/dockerd cmd/docker-proxy
 
 ifeq ($(BR2_PACKAGE_LIBAPPARMOR),y)
 DOCKER_ENGINE_DEPENDENCIES += libapparmor
-DOCKER_ENGINE_TAGS += apparmor
-endif
-
-ifeq ($(BR2_PACKAGE_LIBSECCOMP),y)
-DOCKER_ENGINE_TAGS += seccomp
-DOCKER_ENGINE_DEPENDENCIES += libseccomp
 endif
 
 ifeq ($(BR2_INIT_SYSTEMD),y)
@@ -61,6 +55,15 @@ DOCKER_ENGINE_DEPENDENCIES += gvfs
 else
 DOCKER_ENGINE_TAGS += exclude_graphdriver_vfs
 endif
+
+# create the go.mod file with language version go1.19
+# remove the conflicting vendor/modules.txt
+# https://github.com/moby/moby/issues/44618#issuecomment-1343565705
+define DOCKER_ENGINE_FIX_VENDORING
+	printf "module $(DOCKER_ENGINE_GOMOD)\n\ngo 1.19\n" > $(@D)/go.mod
+	rm -f $(@D)/vendor/modules.txt
+endef
+DOCKER_ENGINE_POST_EXTRACT_HOOKS += DOCKER_ENGINE_FIX_VENDORING
 
 DOCKER_ENGINE_INSTALL_BINS = $(notdir $(DOCKER_ENGINE_BUILD_TARGETS))
 
@@ -124,10 +127,6 @@ define DOCKER_ENGINE_LINUX_CONFIG_FIXUPS
 	$(call KCONFIG_ENABLE_OPT,CONFIG_IP_NF_TARGET_MASQUERADE)
 	$(call KCONFIG_ENABLE_OPT,CONFIG_BRIDGE)
 	$(call KCONFIG_ENABLE_OPT,CONFIG_NET_CORE)
-	$(call KCONFIG_ENABLE_OPT,CONFIG_DUMMY)
-	$(call KCONFIG_ENABLE_OPT,CONFIG_MACVLAN)
-	$(call KCONFIG_ENABLE_OPT,CONFIG_IPVLAN)
-	$(call KCONFIG_ENABLE_OPT,CONFIG_VXLAN)
 	$(call KCONFIG_ENABLE_OPT,CONFIG_VETH)
 	$(call KCONFIG_ENABLE_OPT,CONFIG_OVERLAY_FS)
 	$(call KCONFIG_ENABLE_OPT,CONFIG_KEYS)

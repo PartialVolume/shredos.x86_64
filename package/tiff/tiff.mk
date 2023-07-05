@@ -4,15 +4,23 @@
 #
 ################################################################################
 
-TIFF_VERSION = 4.3.0
+TIFF_VERSION = 4.5.0
 TIFF_SITE = http://download.osgeo.org/libtiff
 TIFF_LICENSE = tiff license
-TIFF_LICENSE_FILES = COPYRIGHT
+TIFF_LICENSE_FILES = LICENSE.md
 TIFF_CPE_ID_VENDOR = libtiff
 TIFF_CPE_ID_PRODUCT = libtiff
 TIFF_INSTALL_STAGING = YES
+
+# 0001-tiffcrop-Correct-simple-copy-paste-error-Fix-488.patch
+TIFF_IGNORE_CVES += CVE-2022-48281
+
+# webp has a (optional) dependency on tiff, so we can't have webp
+# support in tiff, or that would create a circular dependency.
 TIFF_CONF_OPTS = \
-	--disable-cxx \
+	--disable-contrib \
+	--disable-tests \
+	--disable-webp \
 	--without-x
 
 TIFF_DEPENDENCIES = host-pkgconf
@@ -21,12 +29,29 @@ HOST_TIFF_CONF_OPTS = \
 	--disable-cxx \
 	--without-x \
 	--disable-zlib \
+	--disable-libdeflate \
 	--disable-lzma \
-	--disable-jpeg
+	--disable-jpeg \
+	--disable-tests \
+	--disable-webp \
+	--disable-zstd
 HOST_TIFF_DEPENDENCIES = host-pkgconf
+
+ifeq ($(BR2_INSTALL_LIBSTDCPP),y)
+TIFF_CONF_OPTS += --enable-cxx
+else
+TIFF_CONF_OPTS += --disable-cxx
+endif
 
 ifneq ($(BR2_PACKAGE_TIFF_CCITT),y)
 TIFF_CONF_OPTS += --disable-ccitt
+endif
+
+ifeq ($(BR2_PACKAGE_TIFF_LIBDEFLATE),y)
+TIFF_CONF_OPTS += --enable-libdeflate
+TIFF_DEPENDENCIES += libdeflate
+else
+TIFF_CONF_OPTS += --disable-libdeflate
 endif
 
 ifneq ($(BR2_PACKAGE_TIFF_PACKBITS),y)
@@ -83,12 +108,18 @@ ifneq ($(BR2_PACKAGE_TIFF_JBIG),y)
 TIFF_CONF_OPTS += --disable-jbig
 endif
 
-TIFF_SUBDIRS = port libtiff
 ifeq ($(BR2_PACKAGE_TIFF_UTILITIES),y)
-TIFF_SUBDIRS += tools
+TIFF_CONF_OPTS += --enable-tools
+else
+TIFF_CONF_OPTS += --disable-tools
 endif
 
-TIFF_MAKE = $(MAKE) SUBDIRS="$(TIFF_SUBDIRS)"
+ifeq ($(BR2_PACKAGE_TIFF_ZSTD),y)
+TIFF_CONF_OPTS += --enable-zstd
+TIFF_DEPENDENCIES += zstd
+else
+TIFF_CONF_OPTS += --disable-zstd
+endif
 
 $(eval $(autotools-package))
 $(eval $(host-autotools-package))

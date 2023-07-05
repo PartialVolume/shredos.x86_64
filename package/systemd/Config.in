@@ -22,11 +22,11 @@ menuconfig BR2_PACKAGE_SYSTEMD
 	depends on !BR2_STATIC_LIBS # kmod
 	depends on BR2_TOOLCHAIN_USES_GLIBC
 	depends on BR2_TOOLCHAIN_HAS_SSP
-	depends on BR2_TOOLCHAIN_HEADERS_AT_LEAST_3_10
+	depends on BR2_TOOLCHAIN_HEADERS_AT_LEAST_3_15
 	depends on BR2_TOOLCHAIN_GCC_AT_LEAST_5
 	depends on BR2_HOST_GCC_AT_LEAST_5 # host-systemd
 	select BR2_PACKAGE_HAS_UDEV
-	select BR2_PACKAGE_DBUS # runtime dependency only
+	select BR2_PACKAGE_DBUS if !BR2_PACKAGE_DBUS_BROKER # runtime
 	select BR2_PACKAGE_LIBCAP
 	select BR2_PACKAGE_UTIL_LINUX
 	select BR2_PACKAGE_UTIL_LINUX_LIBS
@@ -51,13 +51,31 @@ menuconfig BR2_PACKAGE_SYSTEMD
 	  an elaborate transactional dependency-based service control
 	  logic.  It can work as a drop-in replacement for sysvinit.
 
-	  Systemd requires a Linux kernel >= 3.0 with the following
+	  Kernel versions below 4.15 ("recommended baseline") have
+	  significant gaps in functionality and are not recommended
+	  for use with this version of systemd.
+
+	  Systemd requires a Linux kernel >= 3.15 with the following
 	  options enabled:
 
-	  - CONFIG_CGROUPS
+	  - CONFIG_DEVTMPFS
+	  - CONFIG_CGROUPS (it is OK to disable all controllers)
 	  - CONFIG_INOTIFY_USER
-	  - CONFIG_FHANDLE
-	  - CONFIG_AUTOFS4_FS
+	  - CONFIG_SIGNALFD
+	  - CONFIG_TIMERFD
+	  - CONFIG_EPOLL
+	  - CONFIG_UNIX (it requires CONFIG_NET, but every other flag in
+	    it is not necessary)
+	  - CONFIG_SYSFS
+	  - CONFIG_PROC_FS
+	  - CONFIG_FHANDLE (libudev, mount and bind mount handling)
+
+	  - CONFIG_NET_NS (Required for PrivateNetwork=, used in some
+	    systemd units)
+
+	  - CONFIG_USER_NS (Required for PrivateUsers=)
+
+	  - CONFIG_AUTOFS_FS / CONFIG_AUTOFS4_FS
 	  - CONFIG_TMPFS_POSIX_ACL
 	  - CONFIG_TMPFS_XATTR
 
@@ -82,7 +100,7 @@ menuconfig BR2_PACKAGE_SYSTEMD
 	  the apropriate ones (e.g. e2fsck, from the e2fsprogs
 	  package) according to the system configuration.
 
-	  http://freedesktop.org/wiki/Software/systemd
+	  https://freedesktop.org/wiki/Software/systemd/
 
 if BR2_PACKAGE_SYSTEMD
 
@@ -167,7 +185,7 @@ config BR2_PACKAGE_SYSTEMD_BACKLIGHT
 	  systemd-backlight is a service that restores the display
 	  backlight brightness at early boot and saves it at shutdown.
 
-	  http://www.freedesktop.org/software/systemd/man/systemd-backlight@.service.html
+	  https://www.freedesktop.org/software/systemd/man/systemd-backlight@.service.html
 
 config BR2_PACKAGE_SYSTEMD_BINFMT
 	bool "enable binfmt tool"
@@ -184,7 +202,7 @@ config BR2_PACKAGE_SYSTEMD_COREDUMP
 	  kernel when a user space program receives a fatal signal and
 	  dumps core.
 
-	  http://www.freedesktop.org/software/systemd/man/systemd-coredump.html
+	  https://www.freedesktop.org/software/systemd/man/systemd-coredump.html
 
 config BR2_PACKAGE_SYSTEMD_PSTORE
 	bool "enable pstore support"
@@ -202,7 +220,7 @@ config BR2_PACKAGE_SYSTEMD_FIRSTBOOT
 	  systemd-firstboot initializes the most basic system settings
 	  interactively on the first boot.
 
-	  http://www.freedesktop.org/software/systemd/man/systemd-firstboot.html
+	  https://www.freedesktop.org/software/systemd/man/systemd-firstboot.html
 
 config BR2_PACKAGE_SYSTEMD_HIBERNATE
 	bool "enable hibernation support"
@@ -211,7 +229,7 @@ config BR2_PACKAGE_SYSTEMD_HIBERNATE
 	  When this features is enabled, additional tools and services
 	  are built to support suspending and resuming the system.
 
-	  http://www.freedesktop.org/software/systemd/man/systemd-sleep.html
+	  https://www.freedesktop.org/software/systemd/man/systemd-sleep.html
 
 config BR2_PACKAGE_SYSTEMD_HOMED
 	bool "enable home daemon"
@@ -222,6 +240,7 @@ config BR2_PACKAGE_SYSTEMD_HOMED
 	depends on BR2_TOOLCHAIN_HEADERS_AT_LEAST_4_12 # fscrypt_key
 	select BR2_PACKAGE_CRYPTSETUP
 	select BR2_PACKAGE_OPENSSL
+	select BR2_PACKAGE_OPENSSL_FORCE_LIBOPENSSL
 	select BR2_PACKAGE_UTIL_LINUX_LIBFDISK
 	help
 	  systemd-homed is a system service that may be used to create,
@@ -242,7 +261,7 @@ config BR2_PACKAGE_SYSTEMD_HOSTNAMED
 	  systemd-hostnamed is a system service that may be used as a
 	  mechanism to change the system's hostname.
 
-	  http://www.freedesktop.org/software/systemd/man/systemd-hostnamed.service.html
+	  https://www.freedesktop.org/software/systemd/man/systemd-hostnamed.service.html
 
 config BR2_PACKAGE_SYSTEMD_HWDB
 	bool "enable hwdb installation"
@@ -267,7 +286,21 @@ config BR2_PACKAGE_SYSTEMD_IMPORTD
 	  machine and container images for systemd-machined and
 	  machinectl.
 
-	  http://www.freedesktop.org/software/systemd/man/machinectl.html#Image%20Transfer%20Commands
+	  https://www.freedesktop.org/software/systemd/man/machinectl.html#Image%20Transfer%20Commands
+
+config BR2_PACKAGE_SYSTEMD_CATALOGDB
+	bool "enable journal catalog database installation"
+	depends on BR2_TARGET_GENERIC_REMOUNT_ROOTFS_RW # conflicting tmpfiles magic
+	help
+	  Build and install the journal catalog database.
+
+	  catalog files are used to provide extended and potentially
+	  localized messages for the journal.
+
+	  The original catalog files will be built into a DB at
+	  /usr/share/factory/var/lib/systemd/catalog/database.
+
+	  https://www.freedesktop.org/wiki/Software/systemd/catalog/
 
 config BR2_PACKAGE_SYSTEMD_LOCALED
 	bool "enable locale daemon"
@@ -276,14 +309,14 @@ config BR2_PACKAGE_SYSTEMD_LOCALED
 	  mechanism to change the system locale settings, as well as
 	  the console key mapping and default X11 key mapping.
 
-	  http://www.freedesktop.org/software/systemd/man/systemd-localed.service.html
+	  https://www.freedesktop.org/software/systemd/man/systemd-localed.service.html
 
 config BR2_PACKAGE_SYSTEMD_LOGIND
 	bool "enable login daemon"
 	help
 	  systemd-logind is a system service that manages user logins.
 
-	  http://www.freedesktop.org/software/systemd/man/systemd-logind.service.html
+	  https://www.freedesktop.org/software/systemd/man/systemd-logind.service.html
 
 config BR2_PACKAGE_SYSTEMD_MACHINED
 	bool "enable machine daemon"
@@ -292,7 +325,7 @@ config BR2_PACKAGE_SYSTEMD_MACHINED
 	  virtual machines and containers, and processes belonging to
 	  them.
 
-	  http://www.freedesktop.org/software/systemd/man/systemd-machined.service.html
+	  https://www.freedesktop.org/software/systemd/man/systemd-machined.service.html
 
 config BR2_PACKAGE_SYSTEMD_MYHOSTNAME
 	bool "enable myhostname NSS plugin"
@@ -303,7 +336,7 @@ config BR2_PACKAGE_SYSTEMD_MYHOSTNAME
 	  primarily providing hostname resolution for the locally
 	  configured system hostname as returned by gethostname(2).
 
-	  http://www.freedesktop.org/software/systemd/man/nss-myhostname.html
+	  https://www.freedesktop.org/software/systemd/man/nss-myhostname.html
 
 config BR2_PACKAGE_SYSTEMD_NETWORKD
 	bool "enable network manager"
@@ -316,7 +349,7 @@ config BR2_PACKAGE_SYSTEMD_NETWORKD
 	  This simple network configuration solution is an alternative
 	  to dhcpcd or ISC dhcp.
 
-	  http://www.freedesktop.org/software/systemd/man/systemd-networkd.html
+	  https://www.freedesktop.org/software/systemd/man/systemd-networkd.html
 
 config BR2_PACKAGE_SYSTEMD_OOMD
 	bool "enable out-of-memory killer"
@@ -332,6 +365,7 @@ config BR2_PACKAGE_SYSTEMD_POLKIT
 	depends on BR2_TOOLCHAIN_GCC_AT_LEAST_7 # polkit -> c++17
 	depends on BR2_TOOLCHAIN_HAS_THREADS # polkit
 	depends on BR2_USE_WCHAR # libglib2
+	depends on !BR2_OPTIMIZE_FAST # polkit -> duktape
 	select BR2_PACKAGE_POLKIT
 	help
 	  If enabled, systemd is built with polkit support and policy
@@ -339,11 +373,14 @@ config BR2_PACKAGE_SYSTEMD_POLKIT
 	  useful for allowing unprivileged processes to speak to
 	  systemd's many privileged processes.
 
-	  http://wiki.freedesktop.org/www/Software/polkit/
+	  https://wiki.freedesktop.org/www/Software/polkit/
 
 comment "polkit support needs a toolchain with threads, wchar, gcc >= 7"
 	depends on !BR2_USE_WCHAR || !BR2_TOOLCHAIN_GCC_AT_LEAST_7 || \
 		!BR2_TOOLCHAIN_HAS_THREADS
+
+comment "polkit support can't be built with Optimize for fast"
+	depends on BR2_OPTIMIZE_FAST
 
 config BR2_PACKAGE_SYSTEMD_PORTABLED
 	bool "enable portable services"
@@ -371,7 +408,7 @@ config BR2_PACKAGE_SYSTEMD_QUOTACHECK
 	  file systems are mounted. It is pulled in only if at least
 	  one file system has quotas enabled.
 
-	  http://www.freedesktop.org/software/systemd/man/systemd-quotacheck.service.html
+	  https://www.freedesktop.org/software/systemd/man/systemd-quotacheck.service.html
 
 config BR2_PACKAGE_SYSTEMD_RANDOMSEED
 	bool "enable random-seed support"
@@ -381,11 +418,12 @@ config BR2_PACKAGE_SYSTEMD_RANDOMSEED
 	  shutdown. Saving/restoring the random seed across boots
 	  increases the amount of available entropy early at boot.
 
-	  http://www.freedesktop.org/software/systemd/man/systemd-random-seed.service.html
+	  https://www.freedesktop.org/software/systemd/man/systemd-random-seed.service.html
 
 config BR2_PACKAGE_SYSTEMD_REPART
 	bool "enable repart support"
 	select BR2_PACKAGE_OPENSSL
+	select BR2_PACKAGE_OPENSSL_FORCE_LIBOPENSSL
 	select BR2_PACKAGE_UTIL_LINUX_LIBFDISK
 	help
 	  systemd-repart grows and adds partitions to a partition table,
@@ -402,7 +440,7 @@ config BR2_PACKAGE_SYSTEMD_RESOLVED
 	  caching and validating DNS/DNSSEC stub resolver, as well as
 	  an LLMNR resolver and responder.
 
-	  http://www.freedesktop.org/software/systemd/man/systemd-resolved.html
+	  https://www.freedesktop.org/software/systemd/man/systemd-resolved.html
 
 config BR2_PACKAGE_SYSTEMD_RFKILL
 	bool "enable rfkill tools"
@@ -410,7 +448,7 @@ config BR2_PACKAGE_SYSTEMD_RFKILL
 	  systemd-rfkill is a service that restores the RF kill switch
 	  state at early boot and saves it at shutdown.
 
-	  http://www.freedesktop.org/software/systemd/man/systemd-rfkill@.service.html
+	  https://www.freedesktop.org/software/systemd/man/systemd-rfkill.service.html
 
 config BR2_PACKAGE_SYSTEMD_SMACK_SUPPORT
 	bool "enable SMACK support"
@@ -443,13 +481,29 @@ config BR2_PACKAGE_SYSTEMD_SYSEXT
 
 	  https://www.freedesktop.org/software/systemd/man/systemd-sysext.html
 
+config BR2_PACKAGE_SYSTEMD_SYSUPDATE
+	bool "enable sysupdate support"
+	select BR2_PACKAGE_OPENSSL
+	select BR2_PACKAGE_OPENSSL_FORCE_LIBOPENSSL
+	select BR2_PACKAGE_UTIL_LINUX_LIBFDISK
+	help
+	  systemd-sysupdate atomically updates the host OS, container
+	  images, portable service images or other sources, based on
+	  the transfer configuration files described in sysupdate.d.
+
+	  Note that the bootloader must be configured specifically to
+	  support the A/B update mechanism defined by sysupdate. Only
+	  systemd-boot does this out of the box.
+
+	  https://www.freedesktop.org/software/systemd/man/systemd-sysupdate.html
+
 config BR2_PACKAGE_SYSTEMD_SYSUSERS
 	bool "enable sysusers support"
 	help
 	  systemd-sysusers creates system users and groups, based on
 	  the file format and location specified in sysusers.d(5).
 
-	  http://www.freedesktop.org/software/systemd/man/systemd-sysusers.html
+	  https://www.freedesktop.org/software/systemd/man/systemd-sysusers.html
 
 config BR2_PACKAGE_SYSTEMD_TIMEDATED
 	bool "enable timedate daemon"
@@ -459,7 +513,7 @@ config BR2_PACKAGE_SYSTEMD_TIMEDATED
 	  mechanism to change the system clock and timezone, as well
 	  as to enable/disable NTP time synchronization.
 
-	  http://www.freedesktop.org/software/systemd/man/systemd-timedated.service.html
+	  https://www.freedesktop.org/software/systemd/man/systemd-timedated.service.html
 
 config BR2_PACKAGE_SYSTEMD_TIMESYNCD
 	bool "enable timesync daemon"
@@ -472,18 +526,7 @@ config BR2_PACKAGE_SYSTEMD_TIMESYNCD
 	  This simple NTP solution is an alternative to sntp/ntpd from
 	  the ntp package.
 
-	  http://www.freedesktop.org/software/systemd/man/systemd-timesyncd.html
-
-config BR2_PACKAGE_SYSTEMD_TMPFILES
-	bool "enable tmpfiles support"
-	default y
-	help
-	  systemd-tmpfiles creates, deletes, and cleans up volatile
-	  and temporary files and directories, based on the
-	  configuration file format and location specified in
-	  tmpfiles.d(5).
-
-	  http://www.freedesktop.org/software/systemd/man/systemd-tmpfiles.html
+	  https://www.freedesktop.org/software/systemd/man/systemd-timesyncd.html
 
 config BR2_PACKAGE_SYSTEMD_USERDB
 	bool "enable userdb daemon"
@@ -497,6 +540,26 @@ config BR2_PACKAGE_SYSTEMD_USERDB
 
 	  https://www.freedesktop.org/software/systemd/man/systemd-userdbd.service.html
 
+config BR2_PACKAGE_SYSTEMD_UTMP
+	bool "enable utmp support"
+	help
+	  systemd-update-utmp-runlevel.service is a service that writes
+	  SysV runlevel changes to utmp and wtmp, as well as the audit
+	  logs, as they occur.  systemd-update-utmp.service does the
+	  same for system reboots and shutdown requests.
+
+	  https://www.freedesktop.org/software/systemd/man/systemd-update-utmp.service.html
+
+	  Utmp keeps track of what users do on the system (where they
+	  logged from, on which terminal, ...) along with a general
+	  status of the system (list of reboots, current uptime, current
+	  number of users logged in).
+
+	  You should only enable this if your system will have actual
+	  users who log in.
+
+	  https://man7.org/linux/man-pages/man5/utmp.5.html
+
 config BR2_PACKAGE_SYSTEMD_VCONSOLE
 	bool "enable vconsole tool"
 	default y
@@ -504,6 +567,6 @@ config BR2_PACKAGE_SYSTEMD_VCONSOLE
 	  systemd-vconsole-setup is an early boot service that
 	  configures the virtual console font and console keymap.
 
-	  http://www.freedesktop.org/software/systemd/man/systemd-vconsole-setup.service.html
+	  https://www.freedesktop.org/software/systemd/man/systemd-vconsole-setup.service.html
 
 endif

@@ -11,9 +11,15 @@ AUBIO_LICENSE = GPL-3.0+
 AUBIO_LICENSE_FILES = COPYING
 AUBIO_INSTALL_STAGING = YES
 
+AUBIO_DEPENDENCIES = host-pkgconf
 AUBIO_CONF_OPTS = \
 	--disable-docs \
 	--disable-atlas
+
+# The waf script bundled in aubio 0.4.9 is too old for python3.11
+# Similar issue with Jack:
+# https://github.com/jackaudio/jack2/issues/898
+AUBIO_NEEDS_EXTERNAL_WAF = YES
 
 # Add --notests for each build step to avoid running unit tests on the
 # build machine.

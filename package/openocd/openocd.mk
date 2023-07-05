@@ -4,12 +4,36 @@
 #
 ################################################################################
 
-OPENOCD_VERSION = 0.11.0
+OPENOCD_VERSION = 0.12.0
 OPENOCD_SOURCE = openocd-$(OPENOCD_VERSION).tar.bz2
 OPENOCD_SITE = http://sourceforge.net/projects/openocd/files/openocd/$(OPENOCD_VERSION)
-OPENOCD_LICENSE = GPL-2.0+
-OPENOCD_LICENSE_FILES = COPYING
-# 0002-configure-enable-build-on-uclinux.patch patches configure.ac
+OPENOCD_LICENSE = \
+	BSD-1-clause, \
+	BSD-2-clause, \
+	BSD-2-Clause-Views, \
+	BSD-3-clause, \
+	BSD-Source-Code, \
+	GFDL-1.2-no-invariants-or-later (docs), \
+	GPL-2.0+ with eCos-exception-2.0 (code), \
+	GPL-3.0+ (stand-alone code), \
+	MIT
+
+OPENOCD_LICENSE_FILES = \
+	COPYING \
+	LICENSES/license-rules.txt \
+	LICENSES/exceptions/eCos-exception-2.0 \
+	LICENSES/preferred/BSD-1-Clause \
+	LICENSES/preferred/BSD-2-Clause \
+	LICENSES/preferred/BSD-2-Clause-Views \
+	LICENSES/preferred/BSD-3-Clause \
+	LICENSES/preferred/BSD-Source-Code \
+	LICENSES/preferred/GFDL-1.2 \
+	LICENSES/preferred/gfdl-1.2.texi.readme \
+	LICENSES/preferred/GPL-2.0 \
+	LICENSES/preferred/MIT \
+	LICENSES/stand-alone/GPL-3.0
+
+# 0001-configure-enable-build-on-uclinux.patch patches configure.ac
 OPENOCD_AUTORECONF = YES
 OPENOCD_CONF_ENV = CFLAGS="$(TARGET_CFLAGS) -std=gnu99"
 
@@ -56,8 +80,6 @@ OPENOCD_CONF_OPTS += \
 	$(if $(BR2_PACKAGE_OPENOCD_VPI),--enable-jtag_vpi,--disable-jtag_vpi) \
 	$(if $(BR2_PACKAGE_OPENOCD_UBLASTER),--enable-usb-blaster,--disable-usb-blaster) \
 	$(if $(BR2_PACKAGE_OPENOCD_AMTJT),--enable-amtjtagaccel,--disable-amjtagaccel) \
-	$(if $(BR2_PACKAGE_OPENOCD_ZY1000_MASTER),--enable-zy1000-master,--disable-zy1000-master) \
-	$(if $(BR2_PACKAGE_OPENOCD_ZY1000),--enable-zy1000,--disable-zy1000) \
 	$(if $(BR2_PACKAGE_OPENOCD_EP93XX),--enable-ep93xx,--disable-ep93xx) \
 	$(if $(BR2_PACKAGE_OPENOCD_AT91RM),--enable-at91rm9200,--disable-at91rm9200) \
 	$(if $(BR2_PACKAGE_OPENOCD_BCM2835),--enable-bcm2835gpio,--disable-bcm2835gpio) \

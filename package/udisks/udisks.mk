@@ -10,6 +10,7 @@ UDISKS_SITE = https://github.com/storaged-project/udisks/releases/download/udisk
 UDISKS_LICENSE = GPL-2.0+
 UDISKS_LICENSE_FILES = COPYING
 UDISKS_CPE_ID_VENDOR = freedesktop
+UDISKS_INSTALL_STAGING = YES
 
 UDISKS_DEPENDENCIES = \
 	host-pkgconf \
@@ -28,7 +29,6 @@ UDISKS_CONF_OPTS = \
 	--disable-acl \
 	--disable-bcache \
 	--disable-btrfs \
-	--disable-fhs-media \
 	--disable-introspection \
 	--disable-iscsi \
 	--disable-lsm \
@@ -38,5 +38,11 @@ UDISKS_CONF_OPTS = \
 	--disable-rpath \
 	--disable-vdo \
 	--disable-zram
+
+ifeq ($(BR2_PACKAGE_UDISKS_FHS_MEDIA),y)
+UDISKS_CONF_OPTS += --enable-fhs-media
+else
+UDISKS_CONF_OPTS += --disable-fhs-media
+endif
 
 $(eval $(autotools-package))

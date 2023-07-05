@@ -5,9 +5,21 @@ config BR2_PACKAGE_IPMITOOL
 	  IPMItool provides a simple command-line interface to
 	  IPMI-enabled devices.
 
-	  http://sourceforge.net/projects/ipmitool/
+	  https://github.com/ipmitool/ipmitool/
 
 if BR2_PACKAGE_IPMITOOL
+
+config BR2_PACKAGE_IPMITOOL_PEN_REG_URI
+	string "IANA PEN registry URL or path"
+	default "https://www.iana.org/assignments/enterprise-numbers.txt"
+	help
+	  Enter an URL or a file path to the PEN registry to use.
+
+	  Note that the official registry is 4MiB+ and may change any
+	  time and is thus not guaranteed to be reproducible.
+
+	  Leave empty to not use a registry; vendor IDs will be
+	  displayed instead of the corresponding names.
 
 config BR2_PACKAGE_IPMITOOL_LANPLUS
 	bool "enable lanplus interface"
@@ -32,7 +44,6 @@ config BR2_PACKAGE_IPMITOOL_IPMIEVD
 
 config BR2_PACKAGE_IPMITOOL_IPMISHELL
 	bool "ipmishell"
-	select BR2_PACKAGE_NCURSES
 	select BR2_PACKAGE_READLINE
 	help
 	  IPMI shell interface

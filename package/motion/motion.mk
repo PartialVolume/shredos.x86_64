@@ -4,14 +4,15 @@
 #
 ################################################################################
 
-MOTION_VERSION = 4.3.2
+MOTION_VERSION = 4.5.1
 MOTION_SITE = $(call github,Motion-Project,motion,release-$(MOTION_VERSION))
 MOTION_LICENSE = GPL-2.0
-MOTION_LICENSE_FILES = doc/COPYING
+MOTION_LICENSE_FILES = LICENSE
+MOTION_CPE_ID_VENDOR = motion_project
 MOTION_DEPENDENCIES = host-pkgconf jpeg libmicrohttpd $(TARGET_NLS_DEPENDENCIES)
 # From git
 MOTION_AUTORECONF = YES
-MOTION_GETTEXTIZE = YES
+MOTION_AUTOPOINT = YES
 
 MOTION_CONF_OPTS += --without-optimizecpu
 

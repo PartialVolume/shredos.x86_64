@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-GST1_PLUGINS_UGLY_VERSION = 1.18.5
+GST1_PLUGINS_UGLY_VERSION = 1.22.2
 GST1_PLUGINS_UGLY_SOURCE = gst-plugins-ugly-$(GST1_PLUGINS_UGLY_VERSION).tar.xz
 GST1_PLUGINS_UGLY_SITE = https://gstreamer.freedesktop.org/src/gst-plugins-ugly
 GST1_PLUGINS_UGLY_LICENSE_FILES = COPYING
@@ -51,12 +51,6 @@ else
 GST1_PLUGINS_UGLY_CONF_OPTS += -Ddvdsub=disabled
 endif
 
-ifeq ($(BR2_PACKAGE_GST1_PLUGINS_UGLY_PLUGIN_XINGMUX),y)
-GST1_PLUGINS_UGLY_CONF_OPTS += -Dxingmux=enabled
-else
-GST1_PLUGINS_UGLY_CONF_OPTS += -Dxingmux=disabled
-endif
-
 ifeq ($(BR2_PACKAGE_GST1_PLUGINS_UGLY_PLUGIN_REALMEDIA),y)
 GST1_PLUGINS_UGLY_CONF_OPTS += -Drealmedia=enabled
 else
@@ -89,6 +83,7 @@ endif
 
 # Add GPL license if GPL plugins enabled.
 ifeq ($(GST1_PLUGINS_UGLY_HAS_GPL_LICENSE),y)
+GST1_PLUGINS_UGLY_CONF_OPTS += -Dgpl=enabled
 GST1_PLUGINS_UGLY_LICENSE += , GPL-2.0
 endif
 
