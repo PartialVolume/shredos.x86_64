@@ -96,7 +96,7 @@ disks using the program [nwipe](https://github.com/martijnvanbrummelen/nwipe). I
 
 ShredOS supports either 32bit or 64bit processors. You will need to download the appropriate 64bit or 32bit .img or .iso file, depending upon your target processor and whether you want to burn ShredOS to a USB memory stick, in which case you would download the .img file. Alternatively, if you wanted to burn ShredOS to CD/DVD, then you would download the .iso file.
 
-Because ShredOS boots and runs straight from a USB flash drive or DVD/CD, it doesn't matter what operating system already exists on the computer. It will remove all data/directories/operating systems, from the drive or drives you have selected for wiping, leaving a disk with no trace of what originally existed. It will wipe PC's & Intel based MACs, such as MAC Book Pros. It doesn't care what operating previosuly existed, be it Windows/MAC OSX/Linux/VXWorks. 
+Because ShredOS boots and runs straight from a USB flash drive or DVD/CD, it doesn't matter what operating system already exists on the computer. It will remove all data/directories/operating systems, from the drive or drives you have selected for wiping, leaving a disk with no trace of what originally existed. It will wipe PC's & Intel based MACs, such as MAC Book Pros. It doesn't care what operating system previosuly existed, be it Windows/MAC OSX/Linux/VXWorks. 
 
 ShredOS can be used as a software image and booted via the network using a client PC that supports Preboot execution environment (PXE) via a PXE enabled server. A procedure for creating a simple UEFI PXE server based on Debian/Ubuntu and serving up ShredOS can be found here [#148](https://github.com/PartialVolume/shredos.x86_64/discussions/148)
 		
