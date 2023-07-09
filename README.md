@@ -58,6 +58,7 @@ You can also consider [VENTOY (Open Source tool to create bootable USB drive for
    1. [Linux and MAC users](#linux-and-mac-users)
    1. [Windows users](#windows-users)
    1. [Multi OS with VENTOY](#multi-os-with-ventoy)
+1. [A word about the MAC Book Pro](#A-word-about-the-MAC-Book-Pro)
 1. [Having trouble with USB adapters not working/hanging, want to buy one that works properly!](https://github.com/PartialVolume/shredos.x86_64/discussions/128#discussion-4906723)
 1. [Virtual terminals](#virtual-terminals)
 1. [How to run nwipe so you can specify nwipe command line options](#how-to-run-nwipe-so-you-can-specify-nwipe-command-line-options)
@@ -68,7 +69,7 @@ You can also consider [VENTOY (Open Source tool to create bootable USB drive for
    1. [Transferring nwipe log files to a USB storage device](#transferring-nwipe-log-files-to-a-usb-storage-device)
    1. [Transferring nwipe log files to a ftp server](#transferring-nwipe-log-files-to-a-ftp-server)
 1. [How to wipe drives on headless systems or systems with faulty display hardware. (For use on secure LANs only)](#how-to-wipe-drives-on-headless-systems-or-systems-with-faulty-display-hardware-for-use-on-secure-lans-only)
-1. [Nwipe's font size is too small, I want the text to be bigger](#nwipes-font-size-is-too-small-I-want-the-text-to-be-bigger)
+1. [Nwipe's font size is too small, How to double the size of the text](#Nwipes-font-size-is-too-small-How-to-double-the-size-of-the-text)
 1. [Shredos includes the following related programs](#shredos-includes-the-following-related-programs)
    1. [smartmontools](#smartmontools)
    1. [hexedit](#hexedit)
@@ -94,6 +95,8 @@ ShredOS is a USB bootable (BIOS or UEFI) small linux distribution with the sole 
 disks using the program [nwipe](https://github.com/martijnvanbrummelen/nwipe). If you are familiar with dwipe from DBAN then you will feel right at home with ShredOS and nwipe. What are the advantages of nwipe over dwipe/DBAN? Well as everybody probably knows, DBAN development stopped in 2015 which means it has not received any further bug fixes or support for new hardware since that date. Nwipe originally was a fork of dwipe but has continued to have improvements and bug fixes and is now available in many Linux distros. ShredOS hopefully will always provide the latest nwipe on a up to date Linux kernel so it will support modern hardware.
 
 ShredOS supports either 32bit or 64bit processors. You will need to download the appropriate 64bit or 32bit .img or .iso file, depending upon your target processor and whether you want to burn ShredOS to a USB memory stick, in which case you would download the .img file. Alternatively, if you wanted to burn ShredOS to CD/DVD, then you would download the .iso file.
+
+Because ShredOS boots and runs straight from a USB flash drive or DVD/CD, it doesn't matter what operating system already exists on the computer. It will remove all data/directories/operating systems, from the drive or drives you have selected for wiping, leaving a disk with no trace of what originally existed. It will wipe PC's & Intel based MACs, such as MAC Book Pros. It doesn't care what operating previosuly existed, be it Windows/MAC OSX/Linux/VXWorks. 
 
 ShredOS can be used as a software image and booted via the network using a client PC that supports Preboot execution environment (PXE) via a PXE enabled server. A procedure for creating a simple UEFI PXE server based on Debian/Ubuntu and serving up ShredOS can be found here [#148](https://github.com/PartialVolume/shredos.x86_64/discussions/148)
 		
@@ -170,7 +173,14 @@ Once your USB removable drive is having VENTOY installed, you just have to copy 
 
 		
 ## Virtual Terminals
-ShredOS has three tty terminals, ALT-F1 (Where nwipe is initially launched), ALT-F2 (A virtual terminal), ALT-F3 (console log, login required which is root with no password).
+ShredOS has three tty terminals, ALT-F1 (Where nwipe is initially launched), ALT-F2 (A virtual terminal), ALT-F3 (console log, login required which is root with no password). Typical use of a virtual terminal might be to run other disk related tools such as hdparm to remove hidden sectors or hexedit to display the contents of the disc as hexadecimal values.
+
+## A word about the MAC Book Pro
+Yes, ShredOS will boot on MAC Book Pros, however here's a few tips you may find useful.
+
+- Booting from USB. Power off then power on holding down the `alt` key. After a few seconds select EFI boot.
+- Due to the high resolution screens on a MAC Book Pro you may find the text displayed by nwipe and in the virtual terminals is very small. To enlarge the text follow the instructions [here](#nwipes-font-size-is-too-small-I-want-the-text-to-be-bigger).
+- How to switch between virtual terminals on a MAC. On a PC it's usually (but not always) ALT F1 (/dev/tty1 - nwipe), ALT F2 (/dev/tty2 or /dev/tty0 - terminal), ALT F3 (/dev/console - console). However on a MAC you switch virtual terminals as follows. FN+ALT F1 (/dev/tty1 - nwipe), FN+ALT F2 (/dev/tty2 or /dev/tty0 - terminal), FN+ALT F3 (/dev/console).
 
 ## How to make a persistent change to the terminal resolution
 
@@ -475,8 +485,8 @@ Type `nwipe` as shown above and the nwipe GUI will be displayed and you can proc
 > **Warning** 
 >Due to the insecure nature of telnet as opposed to ssh, it goes without saying that this method of accessing ShredOS & nwipe should only be carried out on a trusted local area network and never over the internet unless via a VPN or SSH tunnel. ssh access may be provided at a future date if it's requested.
 
-## Nwipe's font size is too small, I want the text to be bigger
-If you are using a monitor with a native high resolution you may find that nwipe's font size is too small for your liking, if that's the case, you just need to type the following command in the second virtual terminal `/bin/setfont -d -C /dev/tty1`
+## Nwipes font size is too small How to double the size of the text
+If you are using a monitor with a native high resolution you may find that nwipe's font size is too small for your liking, if that's the case, you just need to type the following command in the second virtual terminal `/bin/setfont -d -C /dev/tty1`. To double the font size in other virtual terminals use `/bin/setfont -d -C /dev/tty2` and `/bin/setfont -d -C /dev/console`.
 
 #### Detail
 Type ALT F2 (Fn ALT F2 on a MAC) to bring up the 2nd virtual console. Type the following tty command which will return the current console name. So from this result /dev/tty2 we can deduce that the default nwipe in ALT F1 is /dev/tty1. For reference ALT F3 is /dev/console.
