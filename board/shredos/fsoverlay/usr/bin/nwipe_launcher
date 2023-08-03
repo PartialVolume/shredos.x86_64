@@ -13,9 +13,12 @@ trap "echo" INT
 country_code=""
 nwipe_options_string=""
 lftp_command_line=""
+http_post_url=""
 autopoweroff=0
+logfile="nwipe_log_$(date +%Y%m%d-%H%M%S).txt"
 
 echo "[`date`] lftp log" > lftp.log
+echo "[`date`] wget log" > wget.log
 
 # read the kernel command line for the loadkeys label for setting the correct keyboard layout
 #
@@ -92,9 +95,9 @@ while true
 do
 if [ $nwipe_options_flag == 0 ]
 then
-    /usr/bin/nwipe --logfile=nwipe_log_$(date +%Y%m%d-%H%M%S).txt
+    /usr/bin/nwipe --logfile=$logfile
 else
-    /usr/bin/nwipe --logfile=nwipe_log_$(date +%Y%m%d-%H%M%S).txt $nwipe_options_string
+    /usr/bin/nwipe --logfile=$logfile $nwipe_options_string
 fi
 
 # read the kernel command line for a lftp command
@@ -114,9 +117,29 @@ then
 	then
 		echo "[`date`] lftp completed sucessfully"
 		echo "[`date`] moving nwipe logs to ../exported"
-		mv nwipe_*.txt exported/
+		mv $logfile exported/
 	else
 		echo "[`date`] lftp command failed, See above and lftp.log for details"
+	fi
+fi
+
+http_post_url=$(kernel_cmdline_extractor http_post_url)
+if [ $? == 0 ]
+then
+	echo "[`date`] Found http_post config on kernel command line in grub.cfg"
+	if [ ! -d "exported" ]; then
+		mkdir exported
+		echo "[`date`] created exported directory"
+	fi
+	echo "[`date`] Executing users http_post request"
+	wget --method PUT --body-file="$logfile" "$http_post_url" -O - -nv >> wget.log
+	if [ $? == 0 ]
+	then
+		echo "[`date`] wget completed sucessfully"
+		echo "[`date`] moving nwipe logs to ../exported"
+		mv $logfile exported/
+	else
+		echo "[`date`] wget command failed, See above and wget.log for details"
 	fi
 fi
 
