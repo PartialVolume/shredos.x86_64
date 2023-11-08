@@ -5,7 +5,7 @@
 trap "echo" INT
 
 # Check dmesg for USB activity, do not proceed until there has been no
-# activity for 5 seconds or automatically proceed after 15 seconds.
+# activity for 5 seconds or automatically proceed after 30 seconds.
 #
 previous_sha1=""
 loop_count=0
