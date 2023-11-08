@@ -4,6 +4,36 @@
 #
 trap "echo" INT
 
+# Check dmesg for USB activity, do not proceed until there has been no
+# activity for 5 seconds or automatically proceed after 15 seconds.
+#
+previous_sha1=""
+loop_count=0
+
+printf "\nWaiting for all USB devices to be initialised, timeout 30s ."
+
+while [ 1 ]; do
+	sha1=$(dmesg | grep -i USB | sha1sum)
+	if [[ "$previous_sha1" == "$sha1" ]]; then
+		break
+	fi
+	previous_sha1=$sha1
+	sleep 1
+	printf "."
+	sleep 1
+	printf "."
+	sleep 1
+	printf "."
+	sleep 1
+	printf "."
+	sleep 1
+	printf "."
+	((loop_count++))
+	if [ $loop_count == 6 ]; then
+		break
+	fi
+done
+printf "\n"
 # archive dmesg.txt and nwipe logs prior to launching nwipe. This is done just
 # in case there are any display issues and we want to take a look at the dmesg data.
 /usr/bin/archive_log.sh

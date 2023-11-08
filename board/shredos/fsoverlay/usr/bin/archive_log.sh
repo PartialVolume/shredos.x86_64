@@ -43,9 +43,10 @@ if [ $status != 0 ] && [ $status != 32 ]; then
 else
     printf "archive_log.sh: FAT32 partition $drive is now mounted to $archive_drive_directory\n"
 
-    # Copy the dmesg.txt file over to the FAT32 partition
+    # Copy the dmesg.txt and PDF files over to the FAT32 partition
     dmesg > dmesg.txt
     cp /dmesg.txt "$archive_drive_directory/"
+    cp /nwipe_report_*pdf "$archive_drive_directory/"
     if [ $? != 0 ]; then
 	printf "archive_log.sh: Unable to copy the dmesg.txt file to the root of $drive:/\n"
     else
@@ -71,6 +72,7 @@ else
         if [ exit_code != 5 ]; then
                 # Move the nwipe logs into the RAM disc sent directory
                 mv /nwipe_log* "$sent_directory/"
+                mv /nwipe_report*pdf "$sent_directory/"
                 if [ $? != 0 ]; then
                             printf "archive_log.sh: Unable to move the nwipe logs into the $sent_directory on the RAM disc\n"
                             exit_code=6
