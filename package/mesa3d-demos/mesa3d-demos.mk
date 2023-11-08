@@ -4,9 +4,9 @@
 #
 ################################################################################
 
-MESA3D_DEMOS_VERSION = 8.5.0
-MESA3D_DEMOS_SOURCE = mesa-demos-$(MESA3D_DEMOS_VERSION).tar.bz2
-MESA3D_DEMOS_SITE = https://archive.mesa3d.org/demos/$(MESA3D_DEMOS_VERSION)
+MESA3D_DEMOS_VERSION = 9.0.0
+MESA3D_DEMOS_SOURCE = mesa-demos-$(MESA3D_DEMOS_VERSION).tar.xz
+MESA3D_DEMOS_SITE = https://archive.mesa3d.org/demos
 MESA3D_DEMOS_DEPENDENCIES = host-pkgconf
 MESA3D_DEMOS_LICENSE = MIT
 
@@ -62,8 +62,8 @@ else
 MESA3D_DEMOS_CONF_OPTS += -Dosmesa=disabled
 endif
 
-ifeq ($(BR2_PACKAGE_WAYLAND),y)
-MESA3D_DEMOS_DEPENDENCIES += wayland
+ifeq ($(BR2_PACKAGE_LIBDECOR)$(BR2_PACKAGE_WAYLAND),yy)
+MESA3D_DEMOS_DEPENDENCIES += libdecor libxkbcommon wayland
 MESA3D_DEMOS_CONF_OPTS += -Dwayland=enabled
 else
 MESA3D_DEMOS_CONF_OPTS += -Dwayland=disabled

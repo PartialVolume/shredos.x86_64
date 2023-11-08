@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-ELFUTILS_VERSION = 0.186
+ELFUTILS_VERSION = 0.189
 ELFUTILS_SOURCE = elfutils-$(ELFUTILS_VERSION).tar.bz2
 ELFUTILS_SITE = https://sourceware.org/elfutils/ftp/$(ELFUTILS_VERSION)
 ELFUTILS_INSTALL_STAGING = YES
@@ -64,6 +64,12 @@ ELFUTILS_CONF_ENV += \
 ifeq ($(BR2_TOOLCHAIN_USES_UCLIBC),y)
 ELFUTILS_DEPENDENCIES += argp-standalone
 ELFUTILS_CONF_OPTS += --disable-symbol-versioning
+endif
+
+ifeq ($(BR2_INSTALL_LIBSTDCPP),y)
+ELFUTILS_CONF_OPTS += --enable-demangler
+else
+ELFUTILS_CONF_OPTS += --disable-demangler
 endif
 
 ifeq ($(BR2_PACKAGE_BZIP2),y)

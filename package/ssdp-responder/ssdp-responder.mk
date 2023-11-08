@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-SSDP_RESPONDER_VERSION = 2.0
+SSDP_RESPONDER_VERSION = 2.1
 SSDP_RESPONDER_SITE = https://github.com/troglobit/ssdp-responder/releases/download/v$(SSDP_RESPONDER_VERSION)
 SSDP_RESPONDER_LICENSE = ISC
 SSDP_RESPONDER_LICENSE_FILES = LICENSE
@@ -23,6 +23,10 @@ endif
 define SSDP_RESPONDER_INSTALL_INIT_SYSV
 	$(INSTALL) -D -m 0755 package/ssdp-responder/S50ssdpd \
 		$(TARGET_DIR)/etc/init.d/S50ssdpd
+endef
+
+define SSDP_RESPONDER_INSTALL_INIT_SYSTEMD
+	mkdir -p $(TARGET_DIR)/var/lib/misc/
 endef
 
 $(eval $(autotools-package))

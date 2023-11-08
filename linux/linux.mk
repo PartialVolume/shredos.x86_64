@@ -88,7 +88,8 @@ LINUX_DEPENDENCIES += \
 # only if the host does not have them.
 LINUX_KCONFIG_DEPENDENCIES = \
 	$(BR2_BISON_HOST_DEPENDENCY) \
-	$(BR2_FLEX_HOST_DEPENDENCY)
+	$(BR2_FLEX_HOST_DEPENDENCY) \
+	$(BR2_MAKE_HOST_DEPENDENCY)
 
 # Starting with 4.18, the kconfig in the kernel calls the
 # cross-compiler to check its capabilities. So we need the
@@ -467,7 +468,7 @@ define LINUX_APPEND_DTB
 			else \
 				dtbpath=dts/$${dtb}.dtb ; \
 			fi ; \
-			cat zImage $${dtbpath} > zImage.$${dtb} || exit 1; \
+			cat zImage $${dtbpath} > zImage.$$(basename $${dtb}) || exit 1; \
 		done)
 endef
 ifeq ($(BR2_LINUX_KERNEL_APPENDED_UIMAGE),y)

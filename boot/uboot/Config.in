@@ -262,6 +262,15 @@ config BR2_TARGET_UBOOT_NEEDS_IMX_FIRMWARE
 	  This option makes sure that the i.MX firmwares are copied into
 	  the U-Boot source directory.
 
+config BR2_TARGET_UBOOT_NEEDS_ROCKCHIP_RKBIN
+	bool "U-Boot needs rockchip-rkbin"
+	depends on BR2_PACKAGE_ROCKCHIP_RKBIN
+	help
+	  For some Rockchip SoCs U-Boot needs binary blobs from
+	  Rockchip.
+	  This option makes sure that the needed binary blobs are copied
+	  into the U-Boot source directory.
+
 menu "U-Boot binary format"
 
 config BR2_TARGET_UBOOT_FORMAT_AIS
@@ -394,6 +403,16 @@ config BR2_TARGET_UBOOT_FORMAT_SD
 config BR2_TARGET_UBOOT_FORMAT_STM32
 	bool "u-boot.stm32"
 	depends on BR2_arm
+
+if BR2_TARGET_UBOOT_FORMAT_STM32
+config BR2_TARGET_UBOOT_BUILD_FORMAT_STM32_LEGACY
+	bool "Legacy build (u-boot.stm32 target)"
+	help
+	  Select this option if you use U-Boot with version older than
+	  2022.01), so that we use the old build target. Otherwise,
+	  binman application is called to create the stm32 binary
+	  format.
+endif
 
 config BR2_TARGET_UBOOT_FORMAT_CUSTOM
 	bool "Custom (specify below)"

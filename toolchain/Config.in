@@ -77,6 +77,12 @@ config BR2_TOOLCHAIN_HAS_BINUTILS_BUG_27597
 	bool
 	default y if BR2_nios2
 
+# https://sourceware.org/bugzilla/show_bug.cgi?id=30730
+# Affect toolchains built with binutils 2.40, still not fixed.
+config BR2_TOOLCHAIN_HAS_BINUTILS_BUG_30730
+	bool
+	default y if BR2_m68k_cf
+
 # Atomic types can be:
 #  - never lock-free
 #  - sometimes lock-free
@@ -243,6 +249,24 @@ config BR2_TOOLCHAIN_HAS_GCC_BUG_107728
 		|| BR2_sh
 	depends on BR2_TOOLCHAIN_USES_GLIBC
 	depends on BR2_OPTIMIZE_0
+
+# https://gcc.gnu.org/bugzilla/show_bug.cgi?id=110934
+# ICE: on M68K: in change_address_1, at emit-rtl.cc:2287
+# This bug exists in gcc = 12.3.0 and gcc = 13.2.0
+config BR2_TOOLCHAIN_HAS_GCC_BUG_110934
+	bool
+	default y if BR2_m68k
+
+# https://gcc.gnu.org/bugzilla/show_bug.cgi?id=111001
+# ICE: on SH4: during RTL pass: sh_treg_combine2
+# This bug exist in gcc = 13.2.0
+config BR2_TOOLCHAIN_HAS_GCC_BUG_111001
+	bool
+	default y if BR2_sh
+	depends on BR2_TOOLCHAIN_GCC_AT_LEAST_13
+	depends on BR2_OPTIMIZE_1 || \
+		   BR2_OPTIMIZE_2 || \
+		   BR2_OPTIMIZE_3
 
 config BR2_TOOLCHAIN_HAS_NATIVE_RPC
 	bool
@@ -608,6 +632,10 @@ config BR2_TOOLCHAIN_HEADERS_AT_LEAST_6_2
 config BR2_TOOLCHAIN_HEADERS_AT_LEAST_6_3
 	bool
 	select BR2_TOOLCHAIN_HEADERS_AT_LEAST_6_2
+
+config BR2_TOOLCHAIN_HEADERS_AT_LEAST_6_4
+	bool
+	select BR2_TOOLCHAIN_HEADERS_AT_LEAST_6_3
 	select BR2_TOOLCHAIN_HEADERS_LATEST
 
 # This should be selected by the latest version, above, to indicate that
@@ -621,6 +649,7 @@ config BR2_TOOLCHAIN_HEADERS_LATEST
 # stops affecting a value on the first matching default.
 config BR2_TOOLCHAIN_HEADERS_AT_LEAST
 	string
+	default "6.4"  if BR2_TOOLCHAIN_HEADERS_AT_LEAST_6_4
 	default "6.3"  if BR2_TOOLCHAIN_HEADERS_AT_LEAST_6_3
 	default "6.2"  if BR2_TOOLCHAIN_HEADERS_AT_LEAST_6_2
 	default "6.1"  if BR2_TOOLCHAIN_HEADERS_AT_LEAST_6_1
@@ -747,10 +776,15 @@ config BR2_TOOLCHAIN_GCC_AT_LEAST_12
 	bool
 	select BR2_TOOLCHAIN_GCC_AT_LEAST_11
 
+config BR2_TOOLCHAIN_GCC_AT_LEAST_13
+	bool
+	select BR2_TOOLCHAIN_GCC_AT_LEAST_12
+
 # This order guarantees that the highest version is set, as kconfig
 # stops affecting a value on the first matching default.
 config BR2_TOOLCHAIN_GCC_AT_LEAST
 	string
+	default "13"	if BR2_TOOLCHAIN_GCC_AT_LEAST_13
 	default "12"	if BR2_TOOLCHAIN_GCC_AT_LEAST_12
 	default "11"	if BR2_TOOLCHAIN_GCC_AT_LEAST_11
 	default "10"	if BR2_TOOLCHAIN_GCC_AT_LEAST_10

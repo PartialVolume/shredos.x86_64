@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-MARIADB_VERSION = 10.3.36
+MARIADB_VERSION = 10.11.4
 MARIADB_SITE = https://downloads.mariadb.org/interstitial/mariadb-$(MARIADB_VERSION)/source
 MARIADB_LICENSE = GPL-2.0 (server), GPL-2.0 with FLOSS exception (GPL client library), LGPL-2.0 (LGPL client library)
 # Tarball no longer contains LGPL license text
@@ -18,11 +18,17 @@ MARIADB_CONFIG_SCRIPTS = mysql_config
 
 MARIADB_DEPENDENCIES = \
 	host-mariadb \
+	fmt \
 	ncurses \
 	openssl \
+	pcre2 \
 	zlib \
 	libaio \
 	libxml2
+
+MARIADB_CONF_OPTS += \
+	-DWITH_FMT=system \
+	-DWITH_PCRE=system
 
 # use bundled GPL-2.0+ licensed readline as package/readline is GPL-3.0+
 MARIADB_CONF_OPTS += -DWITH_READLINE=ON
@@ -64,6 +70,13 @@ ifeq ($(BR2_PACKAGE_LIBRESSL),y)
 MARIADB_CONF_OPTS += \
 	-DLIBRESSL_RESULT=ON \
 	-DLIBRESSL_RESULT__TRYRUN_OUTPUT="LibreSSL $(LIBRESSL_VERSION)"
+endif
+
+ifeq ($(BR2_PACKAGE_SYSTEMD),y)
+MARIADB_DEPENDENCIES += systemd
+MARIADB_CONF_OPTS += -DWITH_SYSTEMD=yes
+else
+MARIADB_CONF_OPTS += -DWITH_SYSTEMD=no
 endif
 
 ifeq ($(BR2_PACKAGE_MARIADB_SERVER),y)

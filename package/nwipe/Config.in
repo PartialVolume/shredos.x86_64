@@ -4,6 +4,7 @@ config BR2_PACKAGE_NWIPE
 	select BR2_PACKAGE_PARTED
 	select BR2_PACKAGE_COREUTILS
 	select BR2_PACKAGE_DMIDECODE
+	select BR2_PACKAGE_LIBCONFIG
         help
           NWipe
 

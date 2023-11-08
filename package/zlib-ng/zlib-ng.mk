@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-ZLIB_NG_VERSION = 2.0.6
+ZLIB_NG_VERSION = 2.1.3
 ZLIB_NG_SITE = $(call github,zlib-ng,zlib-ng,$(ZLIB_NG_VERSION))
 ZLIB_NG_LICENSE = Zlib
 ZLIB_NG_LICENSE_FILES = LICENSE.md
@@ -33,6 +33,12 @@ ifeq ($(BR2_powerpc_power8),y)
 ZLIB_NG_CONF_OPTS += -DWITH_POWER8=ON
 else
 ZLIB_NG_CONF_OPTS += -DWITH_POWER8=OFF
+endif
+
+ifeq ($(BR2_powerpc_power9),y)
+ZLIB_NG_CONF_OPTS += -DWITH_POWER9=ON
+else
+ZLIB_NG_CONF_OPTS += -DWITH_POWER9=OFF
 endif
 
 $(eval $(cmake-package))

@@ -4,11 +4,12 @@
 #
 ################################################################################
 
-DAV1D_VERSION = 1.2.0
+DAV1D_VERSION = 1.2.1
 DAV1D_SOURCE = dav1d-$(DAV1D_VERSION).tar.xz
 DAV1D_SITE = https://download.videolan.org/pub/videolan/dav1d/$(DAV1D_VERSION)
 DAV1D_LICENSE = BSD-2-Clause
 DAV1D_LICENSE_FILES = COPYING
+DAV1D_CPE_ID_VENDOR = videolan
 DAV1D_INSTALL_STAGING = YES
 DAV1D_CONF_OPTS = \
 	-Denable_tests=false \
