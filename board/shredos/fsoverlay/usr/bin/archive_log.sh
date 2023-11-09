@@ -144,7 +144,7 @@ else
         if [ $? == 0 ]
         then
             # Copy nwipe.conf from USB flash to ShredOS ram disc
-            cp "$archive_drive_directory/etc/nwipe/nwipe.conf" /etc/nwipe.conf
+            cp "$archive_drive_directory/etc/nwipe/nwipe.conf" /etc/nwipe/nwipe.conf
             if [ $? != 0 ]; then
                 printf "archive_log.sh: Unable to copy $drive:/etc/nwipe/nwipe.conf to ShredOS's ram disc\n"
             else
