@@ -34,9 +34,13 @@ while [ 1 ]; do
 	fi
 done
 printf "\n"
+
 # archive dmesg.txt and nwipe logs prior to launching nwipe. This is done just
 # in case there are any display issues and we want to take a look at the dmesg data.
-/usr/bin/archive_log.sh
+#
+# archive_log.sh -r also reads the /etc/nwipe/nwipe.conf and /etc/nwipe/customers.csv
+# files from the USB flash drive to ShredOS's ram disc
+/usr/bin/archive_log.sh -r
 
 # initialise
 #
@@ -173,7 +177,13 @@ then
 	fi
 fi
 
-/usr/bin/archive_log.sh
+# Now nwipe has exited, archive dmesg.txt, nwipe logs and PDF certificates to USB
+# flash drive. This is done just in case there are any display issues and we want
+# to take a look at the dmesg data.
+#
+# archive_log.sh -w also writes the /etc/nwipe/nwipe.conf and /etc/nwipe/customers.csv
+# files to the USB flash drive from ShredOS's ram disc.
+/usr/bin/archive_log.sh -w
 
 # If the user specified --autopoweroff as a nwipe option then shutdown now 
 #
