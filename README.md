@@ -26,7 +26,7 @@ NOTE! There may be pre-release versions that are newer than the latest versions 
 ### ShredOS version v2023.08.2_25_x86-64_0.35 (Latest Release)
 | Media | Nwipe Version | File to download |
 | -- | -- | -- |
-| 64bit .img for USB flash drive | v0.35 |  |
+| 64bit .img for USB flash drive | v0.35 | [ShredOS .img 64bit]([ShredOS .img 64bit](https://github.com/PartialVolume/shredos.x86_64/releases/download/v2023.08.2_25.0_x86-64_0.35/shredos-2023.08.2_25.0_x86-64_0.35_20231110.img)) |
 | 64bit .iso for CD/DVD          | v0.35 |  |
 | 32bit .img for USB flash drive | v0.35 |  |
 | 32bit .iso for CD/DVD          | v0.35 |  |
@@ -111,11 +111,7 @@ ShredOS boots very quickly and depending upon the host system can boot in as lit
 The vanilla version of ShredOS boots into nwipe's GUI and shows the available discs that can then be selected for wiping. It does not autonuke your discs at launch, however it is capable of doing that, if you edit the grub.cfg file and specify the appropriate nwipe command line option. Details of configuring nwipe's launch behaviour is shown below [How to run nwipe so you can specify nwipe command line options](https://github.com/PartialVolume/shredos.2020.02/blob/master/README.md#how-to-run-nwipe-so-you-can-specify-nwipe-command-line-options)
 
 ## What do I do after I've erased everything on my disk? What is actually erased?
-> **Warning**
-> Nwipe & therefore ShredOS does not automatically detect HDA (hidden disc areas) i.e the disc reporting a smaller size than it actually is. You should always run hdparm to detect for a HDA (and correct if necessary) before running a wipe.
->
->HPA/DCO detection and correction, along with the automatic creation of PDF certificates will appear in nwipe 0.35 and will be included in the next release of ShredOS.
-		
+
 This paragraph is for those that are not familiar with wiping discs. if you know what you are doing skip to the next section. So you have erased your disc with ShredOS/nwipe and nwipe reported zero errors and the disc was erased. In it's erased state and depending upon the method you used every block on the drive contains either zero's or meaningless random data. In this state the disc won't be recognised by your operating system except at a very low level or by specialised programs. You won't be able to write files to the disc because nwipe has removed everything, absolutely everything, the operating system is gone, all your data is gone, the partition table is gone, the file system gone, the MBR and all the files have been erased without a trace and will never ever be recovered from the disk. The only thing left is a whole load of zeros or random data. To make the disc usable again you will either need to format the disk, which creates a partition table and directory structure or install a new operating system such as Linux or Windows. Of course, if you are just disposing of or reselling the disk then you don't need to do anything else. So if you are reasonably happy that you know what you are doing and you understand that you will need to format the disc then I hope this software does it's job and is useful to you. Before you press that 'S' key to start the wipe, pause and double check you have selected the correct drive/s, something I always do !
 
 ## Nwipe's erasure methods
