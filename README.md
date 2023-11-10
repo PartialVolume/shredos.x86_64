@@ -21,12 +21,17 @@
 
 ## Download the Latest ShredOS .img and .iso files for burning to USB flash drives and CD-R/DVD-R.
 
-> **Warning**
-> v2021.08.2_23_x86-64_0.34 (v23) is missing the AMDGPU, Radeon and Intel firmware and therefore on some systems will not boot to the nwipe program. If you find your system doesn't boot please try the preview version, v2021.08.2_23.1_x86-64_0.34 (v23.1), see [release page](https://github.com/PartialVolume/shredos.x86_64/releases/tag/v2021.08.2_23.1_x86-64_0.34) for the details and  [shredos-2021.08.2_23.1_x86-64_0.34_20230320.img](https://github.com/PartialVolume/shredos.x86_64/releases/download/v2021.08.2_23.1_x86-64_0.34/shredos-2021.08.2_23.1_x86-64_0.34_20230320.img) for the .img file to burn to a USB stick. This pre-release version includes the missing firmware required for DRM graphics. Please leave a comment in [discussions](https://github.com/PartialVolume/shredos.x86_64/discussions/134) on whether it worked (or not), with the preview version (23.1) of ShredOS
-
 NOTE! There may be pre-release versions that are newer than the latest versions listed below, To see all versions, [pre-release & latest](https://github.com/PartialVolume/shredos.x86_64/releases) The latest versions contain a full set of .img & .iso images in 32bit & 64bit while the pre-releases generally only contain a 64bit .img. Which should you use? Well, unless you need either 32 bit images or .iso images I would tend to download the very latest pre-release. Even the pre-releases are subjected to a fair amount of testing before they become a pre-release.
 
-### ShredOS version v2021.08.2_23_x86-64_0.34 (LATEST RELEASE) 
+### ShredOS version v2023.08.2_25_x86-64_0.35 (Latest Release)
+| Media | Nwipe Version | File to download |
+| -- | -- | -- |
+| 64bit .img for USB flash drive | v0.35 |  |
+| 64bit .iso for CD/DVD          | v0.35 |  |
+| 32bit .img for USB flash drive | v0.35 |  |
+| 32bit .iso for CD/DVD          | v0.35 |  |
+
+### ShredOS version v2021.08.2_23_x86-64_0.34 (Previous Release) 
 | Media | Nwipe Version | File to download |
 | -- | -- | -- |
 | 64bit .img for USB flash drive | v0.34 | [ShredOS .img 64bit](https://github.com/PartialVolume/shredos.x86_64/releases/download/v2021.08.2_23_x86-64_0.34/shredos-2021.08.2_23_x86-64_0.34_20221231.img) |
@@ -34,22 +39,19 @@ NOTE! There may be pre-release versions that are newer than the latest versions 
 | 32bit .img for USB flash drive | v0.34 | [ShredOS .img 32bit](https://github.com/PartialVolume/shredos.x86_64/releases/download/v2021.08.2_23_x86-64_0.34/shredos-2021.08.2_23_i586_0.34_32-bit_20221231.img) |
 | 32bit .iso for CD/DVD | v0.34 | [ShredOS .iso 32bit](https://github.com/PartialVolume/shredos.x86_64/releases/download/v2021.08.2_23_x86-64_0.34/shredos-2021.08.2_23_i586_0.34_32-bit_20221231.iso) |
 
-### ShredOS version v2021.08.2_21_x86-64_0.32.023 (PREVIOUS RELEASE)
-| Media | Nwipe Version | File to download |
-| -- | -- | -- |
-| 64bit .img for USB flash drive | v0.32.023 | [ShredOS .img 64bit](https://github.com/PartialVolume/shredos.x86_64/releases/download/v2021.08.2_21_x86-64_0.32.023/shredos-2021.08.2_21_x86-64_0.32.023_20220123.img) |
-| 64bit .iso for CD/DVD | v0.32.023 | [ShredOS .iso 64bit](https://github.com/PartialVolume/shredos.x86_64/releases/download/v2021.08.2_21_x86-64_0.32.023/shredos-2021.08.2_21_x86-64_0.32.023_20220126.iso) |
-| 32bit .img for USB flash drive | v0.32.023 | [ShredOS .img 32bit](https://github.com/PartialVolume/shredos.x86_64/releases/download/v2021.08.2_21_x86-64_0.32.023/shredos-2021.08.2_21_i586_0.32.023_20220126.img) |
-| 32bit .iso for CD/DVD | v0.32.023 | [ShredOS .iso 32bit](https://github.com/PartialVolume/shredos.x86_64/releases/download/v2021.08.2_21_x86-64_0.32.023/shredos-2021.08.2_21_i586_0.32.023_20220126.iso) |
-
 ### For all releases including latest and more recent pre-releases [releases](https://github.com/PartialVolume/shredos.x86_64/releases)
 
 Note: The .img files for burning to USB flash drives support both bios/UEFI booting. The .iso image currently supports legacy bios booting only and not UEFI, however, a bios/UEFI version of the .iso is in development and will be released shortly.
 You can also consider [VENTOY (Open Source tool to create bootable USB drive for ISO/WIM/IMG/VHD(x)/EFI files)](https://github.com/ventoy/Ventoy) as a workaround to avoid bios/UEFI issues.
 		
-#### Demo video showing ShredOS having booted straight into Nwipe where you can then select one or more drives to be erased.
+#### Demo video below: ShredOS automatically displays Nwipe's interactive GUI at boot.
+You can then select one or more drives to be erased, wipe method or pattern to be used, number of rounds, whether a zeros blanking pass is applied, verification options such as last pass, all passes or no verification. ShredOS and nwipe are highly configurable so if you prefer to run nwipe without a GUI then you can configure nwipe by applying nwipe options to the linux command line in grub.cfg on the USB flash drive.
 
 ![Example wipe](/images/example_wipe.gif)
+
+#### Below: Example of ShredOS's (Nwipe) multi page PDF certificate.
+A certificate can optionally be created for each drive erased, the default is to create the certificate, but can be disabled by either an nwipe option applied in grub.cfg or via the nwipe configuration menu. The status of which is saved to the USB stick you booted from, so next time you boot from the USB stick the configuration settings are remembered. The first page of the PDF certificate contains details of the erasure and whether it was succesfully erased, failed due to drive errors, or partially erased due to HPA/DCO hidden sectors. Pages two and three contain the drives smart data.
+![Example Certificate](/images/PDF_certificate_example.gif)
 
 1. [What is ShredOS?](#what-is-shredos)
 1. [What do I do after I've erased everything on my disk? What is actually erased?](#what-do-i-do-after-ive-erased-everything-on-my-disk-what-is-actually-erased)
