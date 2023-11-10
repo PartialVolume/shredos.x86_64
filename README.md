@@ -26,7 +26,7 @@ NOTE! There may be pre-release versions that are newer than the latest versions 
 ### ShredOS version v2023.08.2_25_x86-64_0.35 (Latest Release)
 | Media | Nwipe Version | File to download |
 | -- | -- | -- |
-| 64bit .img for USB flash drive | v0.35 | [ShredOS .img 64bit]([ShredOS .img 64bit](https://github.com/PartialVolume/shredos.x86_64/releases/download/v2023.08.2_25.0_x86-64_0.35/shredos-2023.08.2_25.0_x86-64_0.35_20231110.img)) |
+| 64bit .img for USB flash drive | v0.35 | [ShredOS .img 64bit](https://github.com/PartialVolume/shredos.x86_64/releases/download/v2023.08.2_25.0_x86-64_0.35/shredos-2023.08.2_25.0_x86-64_0.35_20231110.img) |
 | 64bit .iso for CD/DVD          | v0.35 |  |
 | 32bit .img for USB flash drive | v0.35 |  |
 | 32bit .iso for CD/DVD          | v0.35 |  |
