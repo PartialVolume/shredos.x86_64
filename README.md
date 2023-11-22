@@ -405,7 +405,7 @@ set default="0"
 set timeout="0"
 
 menuentry "shredos" {
-	linux /boot/shredos console=tty3 loglevel=3 lftp="open 192.168.1.60; user your-username your-password; cd data; mput nwipe_*.txt"
+	linux /boot/shredos console=tty3 loglevel=3 lftp="open 192.168.1.60; user your-username your-password; cd data; mput nwipe_*.txt; mput *.pdf"
 }
 ```
 **vsftpd configuration for a chrooted server**
