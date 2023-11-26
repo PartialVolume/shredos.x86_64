@@ -21,12 +21,17 @@
 
 ## Download the Latest ShredOS .img and .iso files for burning to USB flash drives and CD-R/DVD-R.
 
-> **Warning**
-> v2021.08.2_23_x86-64_0.34 (v23) is missing the AMDGPU, Radeon and Intel firmware and therefore on some systems will not boot to the nwipe program. If you find your system doesn't boot please try the preview version, v2021.08.2_23.1_x86-64_0.34 (v23.1), see [release page](https://github.com/PartialVolume/shredos.x86_64/releases/tag/v2021.08.2_23.1_x86-64_0.34) for the details and  [shredos-2021.08.2_23.1_x86-64_0.34_20230320.img](https://github.com/PartialVolume/shredos.x86_64/releases/download/v2021.08.2_23.1_x86-64_0.34/shredos-2021.08.2_23.1_x86-64_0.34_20230320.img) for the .img file to burn to a USB stick. This pre-release version includes the missing firmware required for DRM graphics. Please leave a comment in [discussions](https://github.com/PartialVolume/shredos.x86_64/discussions/134) on whether it worked (or not), with the preview version (23.1) of ShredOS
-
 NOTE! There may be pre-release versions that are newer than the latest versions listed below, To see all versions, [pre-release & latest](https://github.com/PartialVolume/shredos.x86_64/releases) The latest versions contain a full set of .img & .iso images in 32bit & 64bit while the pre-releases generally only contain a 64bit .img. Which should you use? Well, unless you need either 32 bit images or .iso images I would tend to download the very latest pre-release. Even the pre-releases are subjected to a fair amount of testing before they become a pre-release.
 
-### ShredOS version v2021.08.2_23_x86-64_0.34 (LATEST RELEASE) 
+### ShredOS version v2023.08.2_25_x86-64_0.35 (Latest Release)
+| Media | Nwipe Version | File to download |
+| -- | -- | -- |
+| 64bit .img for USB flash drive | v0.35 | [ShredOS .img 64bit](https://github.com/PartialVolume/shredos.x86_64/releases/download/v2023.08.2_25.0_x86-64_0.35/shredos-2023.08.2_25.0_x86-64_0.35_20231110.img) |
+| 64bit .iso for CD/DVD          | v0.35 |  |
+| 32bit .img for USB flash drive | v0.35 |  |
+| 32bit .iso for CD/DVD          | v0.35 |  |
+
+### ShredOS version v2021.08.2_23_x86-64_0.34 (Previous Release) 
 | Media | Nwipe Version | File to download |
 | -- | -- | -- |
 | 64bit .img for USB flash drive | v0.34 | [ShredOS .img 64bit](https://github.com/PartialVolume/shredos.x86_64/releases/download/v2021.08.2_23_x86-64_0.34/shredos-2021.08.2_23_x86-64_0.34_20221231.img) |
@@ -34,22 +39,19 @@ NOTE! There may be pre-release versions that are newer than the latest versions 
 | 32bit .img for USB flash drive | v0.34 | [ShredOS .img 32bit](https://github.com/PartialVolume/shredos.x86_64/releases/download/v2021.08.2_23_x86-64_0.34/shredos-2021.08.2_23_i586_0.34_32-bit_20221231.img) |
 | 32bit .iso for CD/DVD | v0.34 | [ShredOS .iso 32bit](https://github.com/PartialVolume/shredos.x86_64/releases/download/v2021.08.2_23_x86-64_0.34/shredos-2021.08.2_23_i586_0.34_32-bit_20221231.iso) |
 
-### ShredOS version v2021.08.2_21_x86-64_0.32.023 (PREVIOUS RELEASE)
-| Media | Nwipe Version | File to download |
-| -- | -- | -- |
-| 64bit .img for USB flash drive | v0.32.023 | [ShredOS .img 64bit](https://github.com/PartialVolume/shredos.x86_64/releases/download/v2021.08.2_21_x86-64_0.32.023/shredos-2021.08.2_21_x86-64_0.32.023_20220123.img) |
-| 64bit .iso for CD/DVD | v0.32.023 | [ShredOS .iso 64bit](https://github.com/PartialVolume/shredos.x86_64/releases/download/v2021.08.2_21_x86-64_0.32.023/shredos-2021.08.2_21_x86-64_0.32.023_20220126.iso) |
-| 32bit .img for USB flash drive | v0.32.023 | [ShredOS .img 32bit](https://github.com/PartialVolume/shredos.x86_64/releases/download/v2021.08.2_21_x86-64_0.32.023/shredos-2021.08.2_21_i586_0.32.023_20220126.img) |
-| 32bit .iso for CD/DVD | v0.32.023 | [ShredOS .iso 32bit](https://github.com/PartialVolume/shredos.x86_64/releases/download/v2021.08.2_21_x86-64_0.32.023/shredos-2021.08.2_21_i586_0.32.023_20220126.iso) |
-
 ### For all releases including latest and more recent pre-releases [releases](https://github.com/PartialVolume/shredos.x86_64/releases)
 
 Note: The .img files for burning to USB flash drives support both bios/UEFI booting. The .iso image currently supports legacy bios booting only and not UEFI, however, a bios/UEFI version of the .iso is in development and will be released shortly.
 You can also consider [VENTOY (Open Source tool to create bootable USB drive for ISO/WIM/IMG/VHD(x)/EFI files)](https://github.com/ventoy/Ventoy) as a workaround to avoid bios/UEFI issues.
 		
-#### Demo video showing ShredOS having booted straight into Nwipe where you can then select one or more drives to be erased.
+#### Demo video below: ShredOS automatically displays Nwipe's interactive GUI at boot.
+You can then select one or more drives to be erased, wipe method or pattern to be used, number of rounds, whether a zeros blanking pass is applied, verification options such as last pass, all passes or no verification. ShredOS and nwipe are highly configurable so if you prefer to run nwipe without a GUI then you can configure nwipe by applying nwipe options to the linux command line in grub.cfg on the USB flash drive.
 
 ![Example wipe](/images/example_wipe.gif)
+
+#### Below: Example of ShredOS's (Nwipe) multi page PDF certificate.
+A certificate can optionally be created for each drive erased, the default is to create the certificate, but can be disabled by either an nwipe option applied in grub.cfg or via the nwipe configuration menu. The status of which is saved to the USB stick you booted from, so next time you boot from the USB stick the configuration settings are remembered. The first page of the PDF certificate contains details of the erasure and whether it was succesfully erased, failed due to drive errors, or partially erased due to HPA/DCO hidden sectors. Pages two and three contain the drives smart data.
+![Example Certificate](/images/PDF_certificate_example.gif)
 
 1. [What is ShredOS?](#what-is-shredos)
 1. [What do I do after I've erased everything on my disk? What is actually erased?](#what-do-i-do-after-ive-erased-everything-on-my-disk-what-is-actually-erased)
@@ -109,11 +111,7 @@ ShredOS boots very quickly and depending upon the host system can boot in as lit
 The vanilla version of ShredOS boots into nwipe's GUI and shows the available discs that can then be selected for wiping. It does not autonuke your discs at launch, however it is capable of doing that, if you edit the grub.cfg file and specify the appropriate nwipe command line option. Details of configuring nwipe's launch behaviour is shown below [How to run nwipe so you can specify nwipe command line options](https://github.com/PartialVolume/shredos.2020.02/blob/master/README.md#how-to-run-nwipe-so-you-can-specify-nwipe-command-line-options)
 
 ## What do I do after I've erased everything on my disk? What is actually erased?
-> **Warning**
-> Nwipe & therefore ShredOS does not automatically detect HDA (hidden disc areas) i.e the disc reporting a smaller size than it actually is. You should always run hdparm to detect for a HDA (and correct if necessary) before running a wipe.
->
->HPA/DCO detection and correction, along with the automatic creation of PDF certificates will appear in nwipe 0.35 and will be included in the next release of ShredOS.
-		
+
 This paragraph is for those that are not familiar with wiping discs. if you know what you are doing skip to the next section. So you have erased your disc with ShredOS/nwipe and nwipe reported zero errors and the disc was erased. In it's erased state and depending upon the method you used every block on the drive contains either zero's or meaningless random data. In this state the disc won't be recognised by your operating system except at a very low level or by specialised programs. You won't be able to write files to the disc because nwipe has removed everything, absolutely everything, the operating system is gone, all your data is gone, the partition table is gone, the file system gone, the MBR and all the files have been erased without a trace and will never ever be recovered from the disk. The only thing left is a whole load of zeros or random data. To make the disc usable again you will either need to format the disk, which creates a partition table and directory structure or install a new operating system such as Linux or Windows. Of course, if you are just disposing of or reselling the disk then you don't need to do anything else. So if you are reasonably happy that you know what you are doing and you understand that you will need to format the disc then I hope this software does it's job and is useful to you. Before you press that 'S' key to start the wipe, pause and double check you have selected the correct drive/s, something I always do !
 
 ## Nwipe's erasure methods
@@ -407,7 +405,7 @@ set default="0"
 set timeout="0"
 
 menuentry "shredos" {
-	linux /boot/shredos console=tty3 loglevel=3 lftp="open 192.168.1.60; user your-username your-password; cd data; mput nwipe_*.txt"
+	linux /boot/shredos console=tty3 loglevel=3 lftp="open 192.168.1.60; user your-username your-password; cd data; mput nwipe_*.txt; mput *.pdf"
 }
 ```
 **vsftpd configuration for a chrooted server**
