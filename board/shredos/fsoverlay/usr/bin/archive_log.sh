@@ -1,11 +1,9 @@
 #!/bin/bash
 #
 # This script will archive the nwipe log file/s, dmesg.txt files and PDF certificates
-# to the first FAT32 formatted partition found, which should normally be the ShredOS
-# USB flash drive. If there is more than one FAT32 drive this script will always
-# archive to the first drive found. This is independant of the mode of operation, the
-# log, dmesg and PDF files will always be written from ShredOS's RAM drive to the USB
-# flash drive.
+# to the first exFAT/FAT32 formatted partition found that is identified as having a
+# matching /boot/version.txt file (ShredOS USB) as the booted ShredOS or in the case of
+# Ventoy the version within the kernel filename that matches the booted ShredOS.
 #
 # It also checks whether /etc/nwipe/nwipe.conf and /etc/nwipe/customers.csv exist
 # on the USB flash drive and assuming mode 0, read (-r argument) has been selected will
@@ -14,7 +12,7 @@
 # /etc/nwipe/nwipe.conf and /etc/nwipe/customers.csv are copied from ShredOS's RAM
 # disc back to the USB flash drive, which is normally done on Nwipe exit.
 #
-# Written by PartialVolume, a component of ShredOS - the disk eraser.
+# Written by PartialVolume, archive_log.sh is a component of ShredOS - the disk eraser.
 
 exit_code=0
 mode=""
@@ -37,17 +35,17 @@ while getopts 'rw' opt; do
   esac
 done
 
-# This is the temporary directory that the FAT32 drive is to be mounted on
+# This is the temporary directory that the exFAT/FAT32 drive is to be mounted on
 archive_drive_directory="/archive_drive"
 
 # The nwipe logs that have been sent are moved into this directory in RAM disk.
 sent_directory="/sent"
 
-# From all the drives on the system, find the first and probably only FAT32 partition
-drive=$(fdisk -l | grep -i '/dev/*' | grep -i FAT32 | awk '{print $1}' | head -n 1)
+# From all the drives on the system, try to locate the ShredOS boot disc
+drive=$(find_shredos_boot_disc.sh)
 
 if [ "$drive" == "" ]; then
-	printf "archive_log.sh: No FAT32 formatted drive found, unable to archive nwipe log file\n"
+	printf "archive_log.sh: No ShredOS/Ventoy exFAT/FAT32 boot drive found, unable to archive nwipe log files to USB\n"
 	exit 1
 else
 	printf "Archiving nwipe logs to $drive\n"
@@ -70,9 +68,9 @@ if [ $status != 0 ] && [ $status != 32 ]; then
     printf "archive_log.sh: Unable to mount the FAT32 partition $drive to $archive_drive_directory\n"
     exit_code=3
 else
-    printf "archive_log.sh: FAT32 partition $drive is now mounted to $archive_drive_directory\n"
+    printf "archive_log.sh: exFAT/FAT32 partition $drive is now mounted to $archive_drive_directory\n"
 
-    # Copy the dmesg.txt and PDF files over to the FAT32 partition
+    # Copy the dmesg.txt and PDF files over to the exFAT/FAT32 partition
     dmesg > dmesg.txt
     cp /dmesg.txt "$archive_drive_directory/"
     if [ $? != 0 ]; then
@@ -81,7 +79,7 @@ else
 	printf "archive_log.sh: Sucessfully copied dmesg.txt to $drive:/\n" 
     fi
 
-    # Copy the PDF certificates over to the FAT32 partition
+    # Copy the PDF certificates over to the exFAT/FAT32 partition
     cp /nwipe_report_*pdf "$archive_drive_directory/"
     if [ $? != 0 ]; then
 	printf "archive_log.sh: Unable to copy the nwipe_report...pdf file to the root of $drive:/\n"
@@ -89,7 +87,7 @@ else
 	printf "archive_log.sh: Sucessfully copied nwipe_report...pdf to $drive:/\n"
     fi
 
-    # Copy the nwipe log files over to the FAT32 partition
+    # Copy the nwipe log files over to the exFAT/FAT32 partition
     cp /nwipe_log* "$archive_drive_directory/"
     if [ $? != 0 ]; then
         printf "archive_log.sh: Unable to copy the nwipe log files to the root of $drive:/\n"

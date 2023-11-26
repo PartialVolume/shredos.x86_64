@@ -585,8 +585,8 @@ make busybox-update-config # save the changes
 #### ../board/shredos/doimg.sh
 doimg.sh is a bash script, the main purpose of which is to generate the .img file located in output/images/. However it is also used to copy the pre-compiled .efi file and other files such as the shredos.ico, autorun.inf for Windows, README.txt. The contents of board/shredos/version.txt is also used to rename the .img file with version info and the current date and time.
 		
-#### ../board/shredos/version.txt
-This file contains the version information as seen in the title on nwipe's title bar, i.e. '2021.08.2_22_x86-64_0.32.023'. This version ingformation is also used when naming the .img file in ../output/images/ /board/shredos/version.txt is manually updated for each new release of ShredOS.
+#### ../board/shredos/fsoverlay/etc/shredos/version.txt
+This file contains the version information as seen in the title on nwipe's title bar, i.e. '2021.08.2_22_x86-64_0.32.023'. This version ingformation is also used when naming the .img file in ../output/images/ ../board/shredos/fsoverlay/etc/shredos/version.txt is manually updated for each new release of ShredOS.
 		
 #### ../board/shredos/fsoverlay/
 This fsoverlay directory contains files and folders that are directly copied into the root filesystem of ShredOS. A example of this is the  ../board/shredos/fsoverlay/etc/inittab file where the tty1 and tty2 virtual terminals are configured. This is where you will find the script `/usr/bin/nwipe_launcher` that automatically starts in tty1 after ShredOS has booted. If you want to place or overwrite a specific file in the root filesystem of ShredOS, the ../board/shredos/fsoverlay/ directory is one way of inserting your own files.
