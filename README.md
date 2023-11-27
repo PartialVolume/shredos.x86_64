@@ -244,7 +244,7 @@ menuentry "shredos" {
 }
 ```
 
-For reference and as of nwipe v0.32.014, listed below are all the options that you can use with nwipe and can place on the kernel command line in grub.cfg as described in the examples above.
+For reference and as of nwipe v0.35, listed below are all the options that you can use with nwipe and can place on the kernel command line in grub.cfg as described in the examples above.
 ```
 Usage: nwipe [options] [device1] [device2] ...
 Options:
@@ -292,10 +292,14 @@ Options:
 
   -l, --logfile=FILE      Filename to log to. Default is STDOUT
 
-  -p, --prng=METHOD       PRNG option (mersenne|twister|isaac)
+  -P, --PDFreportpath=PATH Path to write PDF reports to. Default is "."
+                           If set to "noPDF" no PDF reports are written.
 
-  -q, --quiet             Anonymize logs/GUI by removing serial numbers
-                          XXXXXX = S/N exists, ????? = S/N not obtainable 
+  -p, --prng=METHOD       PRNG option (mersenne|twister|isaac|isaac64)
+
+  -q, --quiet             Anonymize logs and the GUI by removing unique data, i.e.
+                          serial numbers, LU WWN Device ID, and SMBIOS/DMI data
+                          XXXXXX = S/N exists, ????? = S/N not obtainable
 
   -r, --rounds=NUM        Number of times to wipe the device using the selected
                           method (default: 1)
