@@ -173,7 +173,7 @@ Once your USB removable drive is having VENTOY installed, you just have to copy 
 #### How to edit the ShredOS /EFI/BOOT/grub.cfg and boot/grub.cfg files when using Ventoy with ShredOS .img files
 As Ventoy simply requires you to copy the .img file to the root of the Ventoy USB stick, to edit the ShredOS grub.cfg files it's neccessary to unpack the ShredOS .img, edit the files and re-create the .img file that now includes the modified grub files. The procedure below shows you how to do this on a Linux distro.
 
-Create a file on the disc that is slightly larger than the size of the ShredOS .img. In this example we will use shredos-2023.08.2_25.1_x86-64_0.35_20231202.img which is 260646656 bytes in size (260.64MByte, 248.57MiByte). So if we create a empty file that is 270Mbyte in size that should be suuficient. I'm going to go a bit over the top and create a 500MB file for this example but that isn't necessary if all you are doing is editing the grub files
+Create a file on the disc that is slightly larger than the size of the ShredOS .img. In this example we will use shredos-2023.08.2_25.1_x86-64_0.35_20231202.img which is 260646656 bytes in size (260.64MByte, 248.57MiByte). So if we create a empty file that is 270Mbyte in size that should be sufficient. I'm going to go a bit over the top and create a 500MB file for this example but that isn't necessary if all you are doing is editing the grub files
 ```
 >truncate -s 500M loopbackfile.img
 ```
