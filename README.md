@@ -183,7 +183,7 @@ Create a virtual disc, i.e /dev/loopx that uses the file we just created
 ```
 We need to determine what device name our loopbackfile.img is associated with. In our example we will assume losetup returns the device /dev/loop30
 ```
->sudo losetup -a | grep -i loopbackfile1.img
+>sudo losetup -a | grep -i loopbackfile.img
 /dev/loop30
 ```
 We now have a virtual disc called /dev/loop30 that is 270MB in size. Now copy the shredos-2023.08.2_25.1_x86-64_0.35_20231202.img file onto this virtual disc using the dd command
