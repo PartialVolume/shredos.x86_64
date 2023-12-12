@@ -177,7 +177,7 @@ Create a file on the disc that is slightly larger than the size of the ShredOS .
 ```
 >truncate -s 500M loopbackfile.img
 ```
-Next we want create a virtual disc, i.e /dev/loopx that uses the file we just created
+Create a virtual disc, i.e /dev/loopx that uses the file we just created
 ```
 >sudo losetup -fP loopbackfile.img
 ```
