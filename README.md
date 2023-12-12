@@ -205,7 +205,7 @@ Device        Boot Start    End Sectors  Size Id Type
 ```
 Mount the /dev/loop30p1 partition to a folder called virtual_disc
 ```
-mkdir virtual_disc
+>mkdir virtual_disc
 >sudo mount /dev/loop30p1 virtual_disc
 ```
 You can now edit the grub.cfg files
@@ -215,11 +215,11 @@ You can now edit the grub.cfg files
 ```
 Once you have finished making your changes unmount the drive
 ```
-umount virtial_disc
+>sudo umount virtial_disc
 ```
 Create the new ShredOS .img file
 ```
-sudo dd if=/dev/loop30 of=shredos_with_mods.img
+>sudo dd if=/dev/loop30 of=shredos_with_mods.img
 ```
 Copy shredos_with_mods.img to the root of the Ventoy USB stick and boot the Ventoy USB stick. You can confirm your changes to the kernel commmand line by booting ShredOS, switching to a virtual terminal ALT F2, and type `more /proc/cmdline`
 
