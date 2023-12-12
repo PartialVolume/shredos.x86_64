@@ -60,7 +60,7 @@ A certificate can optionally be created for each drive erased, the default is to
    1. [Linux and MAC users](#linux-and-mac-users)
    1. [Windows users](#windows-users)
    1. [Multi OS with VENTOY](#multi-os-with-ventoy)
-   1. [How to edit the ShredOS /EFI/BOOT/grub.cfg and boot/grub.cfg files when using Ventoy with ShredOS .img files](#How-to-edit-the-ShredOS-/EFI/BOOT/grub.cfg-and-boot/grub.cfg-files-when-using-Ventoy-with-ShredOS-.img-files)
+   1. [How to edit the ShredOS /EFI/BOOT/grub.cfg and boot/grub.cfg files when using Ventoy with ShredOS .img files](#how-to-edit-the-shredos-efibootgrubcfg-and-bootgrubcfg-files-when-using-ventoy-with-shredos-img-files)
 1. [A word about the MAC Book Pro](#a-word-about-the-mac-book-pro)
 1. [Having trouble with USB adapters not working/hanging, want to buy one that works properly!](https://github.com/PartialVolume/shredos.x86_64/discussions/128#discussion-4906723)
 1. [Virtual terminals](#virtual-terminals)
@@ -173,24 +173,24 @@ Once your USB removable drive is having VENTOY installed, you just have to copy 
 #### How to edit the ShredOS /EFI/BOOT/grub.cfg and boot/grub.cfg files when using Ventoy with ShredOS .img files
 As Ventoy simply requires you to copy the .img file to the root of the Ventoy USB stick, to edit the ShredOS grub.cfg files it's neccessary to unpack the ShredOS .img, edit the files and re-create the .img file that now includes the modified grub files. The procedure below shows you how to do this on a Linux distro.
 
-**Create a file on the disc that is slightly larger than the size of the ShredOS .img. In this example we will use shredos-2023.08.2_25.1_x86-64_0.35_20231202.img which is 260646656 bytes in size (260.64MByte, 248.57MiByte). So if we create a empty file that is 270Mbyte in size that should be suuficient. I'm going to go a bit over the top and create a 500MB file for this example but that isn't necessary if all you are doing is editing the grub files**
+Create a file on the disc that is slightly larger than the size of the ShredOS .img. In this example we will use shredos-2023.08.2_25.1_x86-64_0.35_20231202.img which is 260646656 bytes in size (260.64MByte, 248.57MiByte). So if we create a empty file that is 270Mbyte in size that should be suuficient. I'm going to go a bit over the top and create a 500MB file for this example but that isn't necessary if all you are doing is editing the grub files
 ```
 >truncate -s 500M loopbackfile.img
 ```
-**Next we want create a virtual disc, i.e /dev/loopx that uses the file we just created**
+Next we want create a virtual disc, i.e /dev/loopx that uses the file we just created
 ```
 >sudo losetup -fP loopbackfile.img
 ```
-**We need to determine what device name our loopbackfile.img is associated with. In our example we will assume losetup returns the device /dev/loop30**
+We need to determine what device name our loopbackfile.img is associated with. In our example we will assume losetup returns the device /dev/loop30
 ```
 >sudo losetup -a | grep -i loopbackfile1.img
 /dev/loop30
 ```
-**We now have a virtual disc called /dev/loop30 that is 270MB in size. Now copy the shredos-2023.08.2_25.1_x86-64_0.35_20231202.img file onto this virtual disc using the dd command**
+We now have a virtual disc called /dev/loop30 that is 270MB in size. Now copy the shredos-2023.08.2_25.1_x86-64_0.35_20231202.img file onto this virtual disc using the dd command
 ```
 >sudo dd if=shredos-2023.08.2_25.1_x86-64_0.35_20231202.img of=/dev/loop30
 ```
-**Determine the partition name of this ShredOS virtual drive. As can be seen below the partition name is /dev/loop30p1**
+Determine the partition name of this ShredOS virtual drive. As can be seen below the partition name is /dev/loop30p1
 ```
 >sudo fdisk -l /dev/loop30
 	Disk /dev/loop30: 500 MiB, 524288000 bytes, 1024000 sectors
@@ -203,25 +203,25 @@ As Ventoy simply requires you to copy the .img file to the root of the Ventoy US
 Device        Boot Start    End Sectors  Size Id Type
 /dev/loop30p1       1263 509075  507813  248M  c W95 FAT32 (LBA)
 ```
-**Mount the /dev/loop30p1 partition to a folder called virtual_disc**
+Mount the /dev/loop30p1 partition to a folder called virtual_disc
 ```
 mkdir virtual_disc
 >sudo mount /dev/loop30p1 virtual_disc
 ```
-**You can now edit the grub.cfg files**
+You can now edit the grub.cfg files
 ```
 >vi virtial_disc/EFI/BOOT/grub.cfg
 >vi virtial_disc/boot/grub.cfg
 ```
-**Once you have finished making your changes unmount the drive**
+Once you have finished making your changes unmount the drive
 ```
 umount virtial_disc
 ```
-**Create the new ShredOS .img file**
+Create the new ShredOS .img file
 ```
 sudo dd if=/dev/loop30 of=shredos_with_mods.img
 ```
-**Copy shredos_with_mods.img to the root of the Ventoy USB stick**
+Copy shredos_with_mods.img to the root of the Ventoy USB stick and boot the Ventoy USB stick. You can confirm your changes to the kernel commmand line by booting ShredOS, switching to a virtual terminal ALT F2, and type `more /proc/cmdline`
 
 ## Virtual Terminals
 ShredOS has three tty terminals, ALT-F1 (Where nwipe is initially launched), ALT-F2 (A virtual terminal), ALT-F3 (console log, login required which is root with no password). Typical use of a virtual terminal might be to run other disk related tools such as hdparm to remove hidden sectors or hexedit to display the contents of the disc as hexadecimal values.
