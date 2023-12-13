@@ -210,8 +210,8 @@ Mount the /dev/loop30p1 partition to a folder called virtual_disc
 ```
 You can now edit the grub.cfg files
 ```
->vi virtial_disc/EFI/BOOT/grub.cfg
->vi virtial_disc/boot/grub.cfg
+>vi virtual_disc/EFI/BOOT/grub.cfg
+>vi virtual_disc/boot/grub.cfg
 ```
 Once you have finished making your changes unmount the drive
 ```
