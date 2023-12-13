@@ -215,7 +215,7 @@ You can now edit the grub.cfg files
 ```
 Once you have finished making your changes unmount the drive
 ```
->sudo umount virtial_disc
+>sudo umount virtual_disc
 ```
 Create the new ShredOS .img file
 ```
