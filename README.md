@@ -373,7 +373,7 @@ Options:
       --nousb             Do NOT show or wipe any USB devices whether in GUI
                           mode, --nogui or --autonuke modes.
 
-  -e, --exclude=DEVICES   Up to ten comma separated devices to be excluded
+  -e, --exclude=DEVICES   Up to thirty comma separated devices to be excluded
                           --exclude=/dev/sdc
                           --exclude=/dev/sdc,/dev/sdd
                           --exclude=/dev/sdc,/dev/sdd,/dev/mapper/cryptswap1
@@ -580,7 +580,7 @@ hdparm has many uses and is a powerfull tool. Although Nwipe will be adding ATA 
 ## Compiling ShredOS and burning to USB stick, the harder way !
 
 The ShredOS system is based on the buildroot tool whos main application is to create operating systems for embedded systems.
-The image (.img) file is approximately 60 MiB and can be written to a USB memory stick with a tool such as dd or Etcher.
+The image (.img) file is approximately 260 MiB and can be written to a USB memory stick with a tool such as dd or Etcher.
 
 ### You can build shredos using the following commands. This example build was compiled on KDE Neon (Ubuntu 20.04).
 
