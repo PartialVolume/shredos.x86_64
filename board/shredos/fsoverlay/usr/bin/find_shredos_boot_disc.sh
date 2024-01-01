@@ -16,9 +16,12 @@ test -d "$drive_dir"
     then
         mkdir "$drive_dir"
     fi
-
-# Search for a supported filesystem, mount it and see if it could be our boot disc
-fdisk -l | grep -i "exfat\|fat32" | awk '{print $1}' | head -n 1 | while read drive ;
+#
+# Search every disc on the system for a exfat or fat32 filesystem, mount each
+# in turn and see if it could be our boot disc by examining the version on the
+# disc against the booted version. Supports vanila ShredOS and Ventoy boot discs.
+#
+fdisk -l | grep -i "exfat\|fat32" | awk '{print $1}' | while read drive ;
 do
 	mount $drive $drive_dir
 
@@ -27,7 +30,7 @@ do
     	if [ $? == 0 ]
     	then
 			version_on_USB=$(cat "$drive_dir/boot/version.txt")
-			if [ $version == $version_on_USB ]
+			if [[ "$version" == "$version_on_USB" ]]
 			then
 				printf "$drive"
 				umount $drive_dir
@@ -46,4 +49,3 @@ do
 
 	umount $drive_dir
 done
-
