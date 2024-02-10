@@ -29,8 +29,8 @@ NOTE! There may be pre-release versions that are newer than the latest versions 
 | v0.35 | [ShredOS .img x86_64bit for USB Vanilla DRM](https://github.com/PartialVolume/shredos.x86_64/releases/download/v2023.08.2_25.0_x86-64_0.35/shredos-2023.08.2_25.0_x86-64_0.35_20231110.img) |
 | v0.35 | [ShredOS .iso x86_64bit for CD/DVD, Ventoy Vanilla DRM](https://github.com/PartialVolume/shredos.x86_64/releases/download/v2023.08.2_25.0_x86-64_0.35/shredos-2023.08.2_25.0_x86-64_0.35_20240207_drm_graphics.iso) |
 | v0.35 | [ShredOS .iso x86_64bit for CD/DVD, Ventoy nomodeset NoDRM](https://github.com/PartialVolume/shredos.x86_64/releases/download/v2023.08.2_25.0_x86-64_0.35/shredos.x86_64-2023.08.2_25.0_x86-64_0.35_nomodeset.iso) |
-| v0.35 | i686_32bit .img for USB flash drive - not available yet |
-| v0.35 | i686_32bit .iso for CD/DVD - not available yet |
+| v0.35 |  ShredOS .img i586_32bit for USB - Available upon request |
+| v0.35 | [ShredOS .iso i586_32bit for CD/DVD](https://github.com/PartialVolume/shredos.x86_64/releases/download/v2023.08.2_25.0_x86-64_0.35/shredos-2023.08.2_25.0_i586_0.35_20240210.iso) |
 
 ### ShredOS version v2021.08.2_23_x86-64_0.34 (Previous Release) 
 | Nwipe Version | File to download |
