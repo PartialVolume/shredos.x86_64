@@ -29,7 +29,7 @@ while (( loop_count_total > 0 )); do
 	fi
 	previous_sha1=$sha1
 	while (( loop_count_check > 0 )); do
-		printf "Waiting for all USB devices to be initialised, timeout $loop_count_total\r"
+		printf "Waiting for all USB devices to be initialised, timeout $loop_count_total \r"
 		((loop_count_total--))
 		((loop_count_check--))
 		sleep 1
@@ -81,20 +81,39 @@ if [ ! -d "exported" ]; then
 		printf "[`date`] FAILED to create the /exported directory\n" 2>&1 | tee -a transfer.log
 	fi
 fi
-printf "nwipe_launcher: Searching for ShredOS/Ventoy exFAT/FAT32 boot drive that matches the booted ShredOS version.\n"
-# From all the drives on the system, try to locate the ShredOS boot disc
-drive=$(find_shredos_boot_disc.sh)
 
-if [ "$drive" == "" ]; then
-	printf "nwipe_launcher: No ShredOS/Ventoy exFAT/FAT32 boot drive found with matching version.\n"
+# Try to locate the ShredOS exFAT/FAT32/FAT16 formatted boot disc. If the program
+# 'find_shredos_boot_disc.sh' can't find the boot disc then it returns the first
+# exFAT/FAT32/FAT16 drive it comes across. If it doesn't find any exFAT/FAT32/FAT16
+# drive then it reurns "".
+#
+printf "[`date`] nwipe_launcher: Searching for exFAT/FAT32/FAT16 USB drive.\n" 2>&1 | tee -a transfer.log
+drive_partition=$(find_shredos_boot_disc.sh)
+
+if [ "$drive_partition" == "" ]; then
+	printf "[`date`] nwipe_launcher: No exFAT/FAT32/FAT16 USB drive found: Unable to archive PDF/logs $drive.\n" 2>&1 | tee -a transfer.log
 else
-	printf "Found a ShredOS/Ventoy exFAT/FAT32 boot drive with the correct version of ShredOS  $drive\n"
+	printf "[`date`] nwipe_launcher: Found a exFAT/FAT32/FAT16 USB drive $drive\n" 2>&1 | tee -a transfer.log
+	if [ -f /boot_device.txt ]
+	then
+		drive=$(cat /boot_device.txt)
+	fi
 fi
 
-shredos_config_string=$(kernel_cmdline_extractor shredos_exclude_boot_disc)
+# Has shredos_exclude_boot_disc="yes" been placed on the kernel command line?
+exclude_boot_disc_cmd=""
+exclude_boot_disc_status=$(kernel_cmdline_extractor shredos_exclude_boot_disc)
 if [ $? == 0 ]
 then
-	exclude_boot_disc=1
+	if [[ "${exclude_boot_disc_status,,}" == "yes" ]]
+	then
+		exclude_boot_disc_cmd="--exclude=$drive"
+	fi
+else
+	if [ -f "/exclude_disc.txt" ]
+	then
+		exclude_boot_disc_cmd="--exclude=$drive"
+	fi
 fi
 
 # ----
@@ -363,9 +382,9 @@ while true
 do
 	if [ $nwipe_options_flag == 0 ]
 	then
-		/usr/bin/nwipe --logfile=$logfile
+		/usr/bin/nwipe --logfile=$logfile $exclude_boot_disc_cmd
 	else
-		/usr/bin/nwipe --logfile=$logfile $nwipe_options_string
+		/usr/bin/nwipe --logfile=$logfile $nwipe_options_string $exclude_boot_disc_cmd
 	fi
 
 	# ----
