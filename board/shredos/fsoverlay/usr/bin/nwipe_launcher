@@ -10,6 +10,12 @@ trap "echo" INT
 previous_sha1=""
 loop_count=0
 
+#Flag indicates whether boot disc should be excluded from wipe and display
+exclude_boot_disc=0
+
+# Flag indicates user specified drives to be excluded from list or autonuke
+exclude_drives=0
+
 # countdown on screen from 30s with numeric digits, checking the sha1 of dmesg every 5 secs
 # will exit countdown before reaching zero if no USB activity for 5 seconds
 loop_count_total=30
@@ -74,6 +80,21 @@ if [ ! -d "exported" ]; then
 	else
 		printf "[`date`] FAILED to create the /exported directory\n" 2>&1 | tee -a transfer.log
 	fi
+fi
+printf "nwipe_launcher: Searching for ShredOS/Ventoy exFAT/FAT32 boot drive that matches the booted ShredOS version.\n"
+# From all the drives on the system, try to locate the ShredOS boot disc
+drive=$(find_shredos_boot_disc.sh)
+
+if [ "$drive" == "" ]; then
+	printf "nwipe_launcher: No ShredOS/Ventoy exFAT/FAT32 boot drive found with matching version.\n"
+else
+	printf "Found a ShredOS/Ventoy exFAT/FAT32 boot drive with the correct version of ShredOS  $drive\n"
+fi
+
+shredos_config_string=$(kernel_cmdline_extractor shredos_exclude_boot_disc)
+if [ $? == 0 ]
+then
+	exclude_boot_disc=1
 fi
 
 # ----
@@ -289,32 +310,45 @@ then
 		echo $nwipe_options_string > nwipe_options.txt
 		sed -i 's/--autopoweroff/--nowait/g' nwipe_options.txt
 		nwipe_options_string=`cat nwipe_options.txt`
+		rm nwipe_options.txt
 	fi
 
-	# In addition, check whether user has specified a /dev/loop0 or /dev/loop1
-	# device and if yes, create 1Mbyte loop devices. These are used for testing.
+	# Check whether user has specified a /dev/loop0 or /dev/loop1 etc
+	# device and if yes, create alternating 500K/1Mbyte loop devices.
+	# These are used for testing by devs. It is suggested a max of 20 devices be
+	# created but they must all be contiguous, i.e no gaps in the sequence
+	# As the loop will stop on the first non existant loop device.
+	# /dev/loop0, /dev/loop1, /dev/loop2, /dev/loop3 is good
+	# /dev/loop0, /dev/loop1, /dev/loop2, /dev/loop4 will create loops 0,1,2 only.
+	# The dev would specify these loop devices in the nwipe_options on
+	# the kernel command line in /boot/grub/grub.cfg and /EFI/BOOT/grub.cfg
 
-	case "$nwipe_options_string" in
-	*/dev/loop0*) createloop0=1 ;;
-	*           ) createloop0=0 ;;
-	esac
+	toggle_size=0
+	loop_n=0
+	while true; do
+		case "$nwipe_options_string" in
+		*/dev/loop$loop_n*) createloop=1 ;;
+		*           	  ) createloop=0 ;;
+		esac
 
-	if [ $createloop0 == 1 ]
-	then
-		truncate -s 1M loopback0.img
-		losetup -fP loopback0.img
-	fi
+		if [ $createloop == 1 ]
+		then
+			if [ $toggle_size == 0 ]
+			then
+				truncate -s 1M loopback$loop_n.img
+				losetup -fP loopback$loop_n.img
+				toggle_size=1
+			else
+				truncate -s 500K loopback$loop_n.img
+				losetup -fP loopback$loop_n.img
+				toggle_size=0
+			fi
+		else
+			break
+		fi
+		((loop_n++))
 
-	case "$nwipe_options_string" in
-	*/dev/loop0*) createloop1=1 ;;
-	*           ) createloop1=0 ;;
-	esac
-
-	if [ $createloop1 == 1 ]
-	then
-		truncate -s 1M loopback1.img
-		losetup -fP loopback1.img
-	fi
+	done
 
 else
 	nwipe_options_flag=0	
