@@ -24,20 +24,21 @@
 NOTE! There may be pre-release versions that are newer than the latest versions listed below, To see all versions, [pre-release & latest](https://github.com/PartialVolume/shredos.x86_64/releases) The latest versions contain a full set of .img & .iso images in 32bit & 64bit while the pre-releases generally only contain a 64bit .img. Which should you use? Well, unless you need either 32 bit images or .iso images I would tend to download the very latest pre-release. Even the pre-releases are subjected to a fair amount of testing before they become a pre-release.
 
 ### ShredOS version v2023.08.2_25_x86-64_0.35 (Latest Release)
-| Media | Nwipe Version | File to download |
-| -- | -- | -- |
-| 64bit .img for USB flash drive | v0.35 | [ShredOS .img 64bit](https://github.com/PartialVolume/shredos.x86_64/releases/download/v2023.08.2_25.0_x86-64_0.35/shredos-2023.08.2_25.0_x86-64_0.35_20231110.img) |
-| 64bit .iso for CD/DVD          | v0.35 |  |
-| 32bit .img for USB flash drive | v0.35 |  |
-| 32bit .iso for CD/DVD          | v0.35 |  |
+| Nwipe Version | File to download |
+| -- | -- |
+| v0.35 | [ShredOS .img x86_64bit for USB Vanilla DRM](https://github.com/PartialVolume/shredos.x86_64/releases/download/v2023.08.2_25.0_x86-64_0.35/shredos-2023.08.2_25.0_x86-64_0.35_20231110.img) |
+| v0.35 | [ShredOS .iso x86_64bit for CD/DVD, Ventoy Vanilla DRM](https://github.com/PartialVolume/shredos.x86_64/releases/download/v2023.08.2_25.0_x86-64_0.35/shredos-2023.08.2_25.0_x86-64_0.35_20240207.iso) |
+| v0.35 | [ShredOS .iso x86_64bit for CD/DVD, Ventoy nomodeset NoDRM](https://github.com/PartialVolume/shredos.x86_64/releases/download/v2023.08.2_25.0_x86-64_0.35/shredos.x86_64-2023.08.2_25.0_x86-64_0.35_nomodeset.iso) |
+| v0.35 | [ShredOS .img i586_32bit for USB Vanilla](https://github.com/PartialVolume/shredos.x86_64/releases/download/v2023.08.2_25.0_x86-64_0.35/shredos-2023.08.2_25.0_i586_0.35_20240219.img) |
+| v0.35 | [ShredOS .iso i586_32bit for CD/DVD](https://github.com/PartialVolume/shredos.x86_64/releases/download/v2023.08.2_25.0_x86-64_0.35/shredos-2023.08.2_25.0_i586_0.35_20240210.iso) |
 
 ### ShredOS version v2021.08.2_23_x86-64_0.34 (Previous Release) 
-| Media | Nwipe Version | File to download |
-| -- | -- | -- |
-| 64bit .img for USB flash drive | v0.34 | [ShredOS .img 64bit](https://github.com/PartialVolume/shredos.x86_64/releases/download/v2021.08.2_23_x86-64_0.34/shredos-2021.08.2_23_x86-64_0.34_20221231.img) |
-| 64bit .iso for CD/DVD | v0.34 | [ShredOS .iso 64bit](https://github.com/PartialVolume/shredos.x86_64/releases/download/v2021.08.2_23_x86-64_0.34/shredos-2021.08.2_23_x86-64_0.34_20221231.iso) |
-| 32bit .img for USB flash drive | v0.34 | [ShredOS .img 32bit](https://github.com/PartialVolume/shredos.x86_64/releases/download/v2021.08.2_23_x86-64_0.34/shredos-2021.08.2_23_i586_0.34_32-bit_20221231.img) |
-| 32bit .iso for CD/DVD | v0.34 | [ShredOS .iso 32bit](https://github.com/PartialVolume/shredos.x86_64/releases/download/v2021.08.2_23_x86-64_0.34/shredos-2021.08.2_23_i586_0.34_32-bit_20221231.iso) |
+| Nwipe Version | File to download |
+| -- | -- |
+| v0.34 | [ShredOS .img x86_64bit for USB flash drive](https://github.com/PartialVolume/shredos.x86_64/releases/download/v2021.08.2_23_x86-64_0.34/shredos-2021.08.2_23_x86-64_0.34_20221231.img) |
+| v0.34 | [ShredOS .iso x86_64bit for CD/DVD, Ventoy ](https://github.com/PartialVolume/shredos.x86_64/releases/download/v2021.08.2_23_x86-64_0.34/shredos-2021.08.2_23_x86-64_0.34_20221231.iso) |
+| v0.34 | [ShredOS .img i686_32bit for USB flash drive](https://github.com/PartialVolume/shredos.x86_64/releases/download/v2021.08.2_23_x86-64_0.34/shredos-2021.08.2_23_i586_0.34_32-bit_20221231.img) |
+| v0.34 | [ShredOS .iso i686_32bit for CD/DVD ](https://github.com/PartialVolume/shredos.x86_64/releases/download/v2021.08.2_23_x86-64_0.34/shredos-2021.08.2_23_i586_0.34_32-bit_20221231.iso) |
 
 ### For all releases including latest and more recent pre-releases [releases](https://github.com/PartialVolume/shredos.x86_64/releases)
 
@@ -170,7 +171,7 @@ Most type of OS supported(Windows/WinPE/Linux/Unix/ChromeOS/Vmware/Xen...)
 
 Once your USB removable drive is having VENTOY installed, you just have to copy the latest .img or .iso version of ShredOS to the root of your Ventoy USB stick
 
-#### How to edit the ShredOS /EFI/BOOT/grub.cfg and boot/grub.cfg files when using Ventoy with ShredOS .img files
+#### How to edit the ShredOS /EFI/BOOT/grub.cfg and boot/grub/grub.cfg files when using Ventoy with ShredOS .img files
 As Ventoy simply requires you to copy the .img file to the root of the Ventoy USB stick, to edit the ShredOS grub.cfg files it's neccessary to unpack the ShredOS .img, edit the files and re-create the .img file that now includes the modified grub files. The procedure below shows you how to do this on a Linux distro.
 
 Create a file on the disc that is slightly larger than the size of the ShredOS .img. In this example we will use shredos-2023.08.2_25.1_x86-64_0.35_20231202.img which is 260646656 bytes in size (260.64MByte, 248.57MiByte). So if we create a empty file that is 270Mbyte in size that should be sufficient. I'm going to go a bit over the top and create a 500MB file for this example but that isn't necessary if all you are doing is editing the grub files
@@ -211,7 +212,7 @@ Mount the /dev/loop30p1 partition to a folder called virtual_disc
 You can now edit the grub.cfg files
 ```
 >vi virtual_disc/EFI/BOOT/grub.cfg
->vi virtual_disc/boot/grub.cfg
+>vi virtual_disc/boot/grub/grub.cfg
 ```
 Once you have finished making your changes unmount the drive
 ```
