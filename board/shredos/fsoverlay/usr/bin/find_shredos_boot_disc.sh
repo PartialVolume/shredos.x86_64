@@ -21,7 +21,7 @@ test -d "$drive_dir"
 # in turn and see if it could be our boot disc by examining the version on the
 # disc against the booted version. Supports vanila ShredOS and Ventoy boot discs.
 #
-fdisk -l | grep -i "exfat\|fat32" | awk '{print $1}' | while read drive ;
+fdisk -l | grep -i "exfat\|fat16\|fat32" | awk '{print $1}' | while read drive ;
 do
 	mount $drive $drive_dir
 
