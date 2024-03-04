@@ -61,10 +61,11 @@ A certificate can optionally be created for each drive erased, the default is to
    1. [Linux and MAC users](#linux-and-mac-users)
    1. [Windows users](#windows-users)
    1. [Multi OS with VENTOY](#multi-os-with-ventoy)
-   1. [How to edit the ShredOS /EFI/BOOT/grub.cfg and boot/grub.cfg files when using Ventoy with ShredOS .img files](#how-to-edit-the-shredos-efibootgrubcfg-and-bootgrubcfg-files-when-using-ventoy-with-shredos-img-files)
+   1. [How to edit the ShredOS /EFI/BOOT/grub.cfg and boot/grub.cfg files when using Ventoy with ShredOS .img files](#how-to-edit-the-shredos-efibootgrubcfg-and-bootgrubgrubcfg-files-when-using-ventoy-with-shredos-img-files)
 1. [A word about the MAC Book Pro](#a-word-about-the-mac-book-pro)
 1. [Having trouble with USB adapters not working/hanging, want to buy one that works properly!](https://github.com/PartialVolume/shredos.x86_64/discussions/128#discussion-4906723)
 1. [Virtual terminals](#virtual-terminals)
+1. [How to exclude the fat formatted shredos boot drive from nwipe interactive and autonuke modes](https://github.com/PartialVolume/shredos.x86_64/edit/master/README.md#how-to-exclude-the-fat-formatted-shredos-boot-drive-from-nwipe-interactive-and-autonuke-modes)
 1. [How to run nwipe so you can specify nwipe command line options](#how-to-run-nwipe-so-you-can-specify-nwipe-command-line-options)
 1. [How to change the default nwipe options so the change persists between reboots](#how-to-change-the-default-nwipe-options-so-the-change-persists-between-reboots)
 1. [How to set the keyboard map using the loadkeys command (see here for persistent change between reboots](#how-to-set-the-keyboard-map-using-the-loadkeys-command-see-here-for-persistent-change-between-reboots)
@@ -73,7 +74,7 @@ A certificate can optionally be created for each drive erased, the default is to
    1. [Transferring nwipe log files to a USB storage device](#transferring-nwipe-log-files-to-a-usb-storage-device)
    1. [Transferring nwipe log files to a ftp server](#transferring-nwipe-log-files-to-a-ftp-server)
 1. [How to wipe drives on headless systems or systems with faulty display hardware. (For use on secure LANs only)](#how-to-wipe-drives-on-headless-systems-or-systems-with-faulty-display-hardware-for-use-on-secure-lans-only)
-1. [Nwipe's font size is too small, How to double the size of the text](#Nwipes-font-size-is-too-small-How-to-double-the-size-of-the-text)
+1. [Nwipe's font size is too small, How to double the size of the text](#nwipes-font-size-is-too-small-how-to-double-the-size-of-the-text)
 1. [Shredos includes the following related programs](#shredos-includes-the-following-related-programs)
    1. [smartmontools](#smartmontools)
    1. [hexedit](#hexedit)
@@ -226,6 +227,21 @@ Copy shredos_with_mods.img to the root of the Ventoy USB stick and boot the Vent
 
 ## Virtual Terminals
 ShredOS has three tty terminals, ALT-F1 (Where nwipe is initially launched), ALT-F2 (A virtual terminal), ALT-F3 (console log, login required which is root with no password). Typical use of a virtual terminal might be to run other disk related tools such as hdparm to remove hidden sectors or hexedit to display the contents of the disc as hexadecimal values.
+
+## How to exclude the FAT formatted ShredOS Boot drive from Nwipe, interactive and autonuke modes
+There are two methods that can be used to exclude the FAT formatted ShredOS boot drive from appearing in nwipe's interactive mode or autonuke modes.
+
+- **Method 1:** The first method is to place the following string `shredos_exclude_boot_disc="yes"` on the kernel command line in /boot/grub/grub.cfg and EFI/BOOT/grub.cfg on the ShredOS boot drive. This method obviously requires access to the grub.cfg file so is particularily suitable if you are creating your ShredOS boot drive using dd, Rufus or a similiar program however it's not possible to use this method if you are copying the .iso or .img file to a Ventoy USB drive as you would need to either unpack, edit the grub.cfg files and repack the .img or build the .iso or .img from source after editing the grub.cfg in the source. So for Ventoy users who want to exclude the FAT formatted ShredOS boot drive you should consider method 2 below.
+```
+set default="0"
+set timeout="0"
+menuentry "shredos" {
+	linux /boot/shredos console=tty3 loglevel=3 shredos_exclude_boot_disc="yes"
+```
+- **Method 2:** The second method is to create a empty file on the ShredOS boot disc at this specific location `/etc/shredos/shredos_exclude_disc`. This method will work irespective of whether you created the ShredOS boot disc with dd, Rufus or copied the .iso/.img to a Ventoy flash drive.
+
+**WARNING** 
+You should not place the string `/etc/shredos/shredos_exclude_disc` on multiple FAT formatted drives or for that matter any drive irrespective of formatting, expecting all the drives with this string to not appear in nwipe or not get wiped in interactive mode. The file `/etc/shredos/shredos_exclude_disc` should only appear on the one and only ShredOS boot drive on the system. Any other drives that contain `/etc/shredos/shredos_exclude_disc` will appear in nwipe and WILL get wiped in autonuke mode.
 
 ## A word about the MAC Book Pro
 Yes, ShredOS will boot on MAC Book Pros, however here's a few tips you may find useful.
