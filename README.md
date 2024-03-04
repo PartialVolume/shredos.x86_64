@@ -65,7 +65,7 @@ A certificate can optionally be created for each drive erased, the default is to
 1. [A word about the MAC Book Pro](#a-word-about-the-mac-book-pro)
 1. [Having trouble with USB adapters not working/hanging, want to buy one that works properly!](https://github.com/PartialVolume/shredos.x86_64/discussions/128#discussion-4906723)
 1. [Virtual terminals](#virtual-terminals)
-1. [How to exclude the fat formatted shredos boot drive from nwipe interactive and autonuke modes](https://github.com/PartialVolume/shredos.x86_64/edit/master/README.md#how-to-exclude-the-fat-formatted-shredos-boot-drive-from-nwipe-interactive-and-autonuke-modes)
+1. [How to exclude the fat formatted shredos boot drive from nwipe interactive and autonuke modes](https://github.com/PartialVolume/shredos.x86_64?tab=readme-ov-file#how-to-exclude-the-fat-formatted-shredos-boot-drive-from-nwipe-interactive-and-autonuke-modes)
 1. [How to run nwipe so you can specify nwipe command line options](#how-to-run-nwipe-so-you-can-specify-nwipe-command-line-options)
 1. [How to change the default nwipe options so the change persists between reboots](#how-to-change-the-default-nwipe-options-so-the-change-persists-between-reboots)
 1. [How to set the keyboard map using the loadkeys command (see here for persistent change between reboots](#how-to-set-the-keyboard-map-using-the-loadkeys-command-see-here-for-persistent-change-between-reboots)
