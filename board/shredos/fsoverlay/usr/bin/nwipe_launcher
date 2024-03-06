@@ -4,6 +4,9 @@
 #
 trap "echo" INT
 
+# ignore the case
+shopt -s nocasematch
+
 # Check dmesg for USB activity, do not proceed until there has been no
 # activity for 5 seconds or automatically proceed after 30 seconds.
 #
@@ -643,9 +646,40 @@ do
 		init 0
 	fi
 
-	printf ""
-	printf "Paused, press a key to restart nwipe."
-	read -rsn1 input
+	exitloop="1"
+	while [ "$exitloop" == "1" ]
+	do
+		printf ""
+		printf "Paused, press r to reboot, s to shutdown, spacebar to restart nwipe.\n"
+		printf ">"
+		read -rsn1 input
+		printf "\n"
+		case $input in
+			R)
+			printf "Reboot\n"
+			shutdown -r now
+			# Waits while shutdown does it's stuff, without this sleep, the message above gets redisplayed.
+			sleep 10
+			;;
+
+			S)
+			printf "Shutdown\n"
+			shutdown -h now
+			# Waits while shutdown does it's stuff, without this sleep, the message above gets redisplayed.
+			sleep 10
+			;;
+
+			'')
+			printf "Restart Nwipe\n"
+			exitloop="0"
+			;;
+
+			*)
+			printf "Unknown command?\n"
+			;;
+		esac
+	done
+
 	sleep 1;
 	printf " 4"
 	sleep 1
