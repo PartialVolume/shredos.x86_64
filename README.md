@@ -16,7 +16,7 @@
 
 #### As well as a 64bit versions, also included are 32bit .img & .iso images of ShredOS that will run on both 32bit and 64bit processors, see [Release Assets](https://github.com/PartialVolume/shredos.x86_64/releases) and the table of download links below. For those that wish to build their own ShredOS from source, rather than just burn the .img/.iso images, instructions for modififing the x86_64 build to generate 32bit code as well as .iso images will be included below in the notes in due course.
 		
-#### For those that just want to get on with using ShredOS, you can download the prebuild .img or .iso images and burn them straight to USB flash drive or CD/DVD. Boot from the USB flash drive or CD/DVD and nwipe will appear ready for you to select your preferred wipe options.
+#### For those that just want to get on with using ShredOS, you can download the pre-built .img or .iso images and burn them straight to USB flash drive or CD/DVD. Boot from the USB flash drive or CD/DVD and nwipe will appear ready for you to select your preferred wipe options.
 [![GitHub all releases](https://img.shields.io/github/downloads/PartialVolume/shredos.x86_64/total?label=Total%20downloads%20x86_64%20all%20releases,%2064%20and%2032bit%20code,%20.iso%20and%20.img%20&style=plastic)](https://github.com/PartialVolume/shredos.x86_64/releases)
 
 ## Download the Latest ShredOS .img and .iso files for burning to USB flash drives and CD-R/DVD-R.
@@ -107,7 +107,7 @@ ShredOS can be used as a software image and booted via the network using a clien
 		
 You can also use ShredOS on headless systems or systems with faulty display hardware as it includes a user enabled telnet server. Further details can be found here. [How to wipe drives on headless systems or systems with faulty or missing display hardware or keyboards](#how-to-wipe-drives-on-headless-systems-or-systems-with-faulty-display-hardware-for-use-on-secure-lans-only)
 
-ShredOS includes the latest Nwipe official release, but in addition includes other disc related utilities such as Smartmontools, hdparm, a hexeditor [hexedit](https://linux.die.net/man/1/hexedit), and, the program loadkeys which can be used for [setting the keyboard layout](https://github.com/PartialVolume/shredos.2020.02/blob/master/README.md#how-to-set-the-keyboard-map-using-the-loadkeys-command-see-here-for-persistent-change-between-reboots). Nwipe automatically starts it's GUI in the first virtual terminal (ALT-F1), hdparm, smartmontools and hexeditor can be run in the second virtual terminal, (ALT-F2). Nwipe will erase drives using a user selectable choice of seven methods. hdparm - amongst many of its options - can be used for wiping a drive by [issueing ATA erase commands to the drive's internal firmware](https://ata.wiki.kernel.org/index.php/ATA_Secure_Erase). This is a planned feature addition to nwipe.
+ShredOS includes the latest Nwipe official release, but in addition includes other disk related utilities such as Smartmontools, hdparm, a hexeditor [hexedit](https://linux.die.net/man/1/hexedit), and, the program loadkeys which can be used for [setting the keyboard layout](https://github.com/PartialVolume/shredos.2020.02/blob/master/README.md#how-to-set-the-keyboard-map-using-the-loadkeys-command-see-here-for-persistent-change-between-reboots). Nwipe automatically starts it's GUI in the first virtual terminal (ALT-F1), hdparm, smartmontools and hexeditor can be run in the second virtual terminal, (ALT-F2). Nwipe will erase drives using a user selectable choice of seven methods. hdparm - amongst many of its options - can be used for wiping a drive by [issueing ATA erase commands to the drive's internal firmware](https://ata.wiki.kernel.org/index.php/ATA_Secure_Erase). This is a planned feature addition to nwipe.
 
 ShredOS boots very quickly and depending upon the host system can boot in as little as 2 seconds (typically 4 to 6 seconds) on modern hardware, while on an old Pentium4 may take 40+ seconds. Nwipe automatically starts in GUI mode and will list the disks present on the host system. In fact, on version of ShredOS earlier than [v2023.08.2_25.0_x86-64_0.35](https://github.com/PartialVolume/shredos.x86_64/releases/tag/v2023.08.2_25.0_x86-64_0.35) nwipe can launch so fast that the USB devices have not yet initialised so the first time nwipe appears it may not show any USB drives, this behaviour has been fixed from version v2023.08.2_25.0_x86-64_0.35 onwards so there will usually be a delay of about 5-10 seconds while the USB devices are initialised. On older versions of ShredOS you would use Control-C to exit and restart nwipe to see any attached USB devices. You can then select the methods by which you want to securely erase the disk/s. Nwipe is able to simultanuosly wipe multiple disks using a threaded software architecture. I have simultaneously wiped 28 loop devices in tests and know of instances where it's been used to simultaneuosly wipe upwards of fifty drives on a rack server.
 		
@@ -115,13 +115,13 @@ The vanilla version of ShredOS boots into nwipe's GUI and shows the available di
 
 ## What do I do after I've erased everything on my disk? What is actually erased?
 
-This paragraph is for those that are not familiar with wiping discs. if you know what you are doing skip to the next section. So you have erased your disc with ShredOS/nwipe and nwipe reported zero errors and the disc was erased. In it's erased state and depending upon the method you used every block on the drive contains either zero's or meaningless random data. In this state the disc won't be recognised by your operating system except at a very low level or by specialised programs. You won't be able to write files to the disc because nwipe has removed everything, absolutely everything, the operating system is gone, all your data is gone, the partition table is gone, the file system gone, the MBR and all the files have been erased without a trace and will never ever be recovered from the disk. The only thing left is a whole load of zeros or random data. To make the disc usable again you will either need to format the disk, which creates a partition table and directory structure or install a new operating system such as Linux or Windows. Of course, if you are just disposing of or reselling the disk then you don't need to do anything else. So if you are reasonably happy that you know what you are doing and you understand that you will need to format the disc then I hope this software does it's job and is useful to you. Before you press that 'S' key to start the wipe, pause and double check you have selected the correct drive/s, something I always do !
+This paragraph is for those that are not familiar with wiping disks. if you know what you are doing skip to the next section. So you have erased your disk with ShredOS/nwipe and nwipe reported zero errors and the disk was erased. In it's erased state and depending upon the method you used every block on the drive contains either zero's or meaningless random data. In this state the disk won't be recognised by your operating system except at a very low level or by specialised programs. You won't be able to write files to the disk because nwipe has removed everything, absolutely everything, the operating system is gone, all your data is gone, the partition table is gone, the file system gone, the MBR and all the files have been erased without a trace and will never ever be recovered from the disk. The only thing left is a whole load of zeros or random data. To make the disk usable again you will either need to format the disk, which creates a partition table and directory structure or install a new operating system such as Linux or Windows. Of course, if you are just disposing of or reselling the disk then you don't need to do anything else. So if you are reasonably happy that you know what you are doing and you understand that you will need to format the disk then I hope this software does it's job and is useful to you. Before you press that 'S' key to start the wipe, pause and double check you have selected the correct drive/s, something I always do !
 
 ## Nwipe's erasure methods
 
 * Fill With Zeros    - Fills the device with zeros (0x00), one round only.
 * Fill With Ones     - Fills the device with ones  (0xFF), one round only.
-* RCMP TSSIT OPS-II  - Royal Candian Mounted Police Technical Security Standard, OPS-II
+* RCMP TSSIT OPS-II  - Royal Canadian Mounted Police Technical Security Standard, OPS-II
 * DoD Short          - The American Department of Defense 5220.22-M short 3 pass wipe (passes 1, 2 & 7).
 * DoD 5220.22M       - The American Department of Defense 5220.22-M full 7 pass wipe.
 * Gutmann Wipe       - Peter Gutmann's method (Secure Deletion of Data from Magnetic and Solid-State Memory).
@@ -144,7 +144,7 @@ Download the latest ShredOS for either 32bit, 64bit, .img or .iso from [here](#d
 
 Check it's not corrupt by running the following command and comparing with the checksum shown in the release notes:
 ```
-$ sha1sum shredos.img.tar.gz (shasum instead of sha1sum if your using a MAC)
+$ sha1sum shredos.img.tar.gz (shasum instead of sha1sum if you're using a MAC)
 (example) sha1 db37ea8526a17898b0fb34a2ec4d254744ef08a1 shredos.img.tar.gz
 ```
 If the image file has a .img.tar.gz extension then use the following commands to extract the .img file. If the file extension simply ends with .img and there is no tar.gz then skip this step.
@@ -175,11 +175,11 @@ Once your USB removable drive is having VENTOY installed, you just have to copy 
 #### How to edit the ShredOS /EFI/BOOT/grub.cfg and boot/grub/grub.cfg files when using Ventoy with ShredOS .img files
 As Ventoy simply requires you to copy the .img file to the root of the Ventoy USB stick, to edit the ShredOS grub.cfg files it's neccessary to unpack the ShredOS .img, edit the files and re-create the .img file that now includes the modified grub files. The procedure below shows you how to do this on a Linux distro.
 
-Create a file on the disc that is slightly larger than the size of the ShredOS .img. In this example we will use shredos-2023.08.2_25.1_x86-64_0.35_20231202.img which is 260646656 bytes in size (260.64MByte, 248.57MiByte). So if we create a empty file that is 270Mbyte in size that should be sufficient. I'm going to go a bit over the top and create a 500MB file for this example but that isn't necessary if all you are doing is editing the grub files
+Create a file on the disk that is slightly larger than the size of the ShredOS .img. In this example we will use shredos-2023.08.2_25.1_x86-64_0.35_20231202.img which is 260646656 bytes in size (260.64MByte, 248.57MiByte). So if we create a empty file that is 270Mbyte in size that should be sufficient. I'm going to go a bit over the top and create a 500MB file for this example but that isn't necessary if all you are doing is editing the grub files
 ```
 >truncate -s 500M loopbackfile.img
 ```
-Create a virtual disc, i.e /dev/loopx that uses the file we just created
+Create a virtual disk, i.e /dev/loopx that uses the file we just created
 ```
 >sudo losetup -fP loopbackfile.img
 ```
@@ -188,7 +188,7 @@ We need to determine what device name our loopbackfile.img is associated with. I
 >sudo losetup -a | grep -i loopbackfile.img
 /dev/loop30
 ```
-We now have a virtual disc called /dev/loop30 that is 270MB in size. Now copy the shredos-2023.08.2_25.1_x86-64_0.35_20231202.img file onto this virtual disc using the dd command
+We now have a virtual disk called /dev/loop30 that is 270MB in size. Now copy the shredos-2023.08.2_25.1_x86-64_0.35_20231202.img file onto this virtual disk using the dd command
 ```
 >sudo dd if=shredos-2023.08.2_25.1_x86-64_0.35_20231202.img of=/dev/loop30
 ```
@@ -226,7 +226,7 @@ Create the new ShredOS .img file
 Copy shredos_with_mods.img to the root of the Ventoy USB stick and boot the Ventoy USB stick. You can confirm your changes to the kernel commmand line by booting ShredOS, switching to a virtual terminal ALT F2, and type `more /proc/cmdline`
 
 ## Virtual Terminals
-ShredOS has three tty terminals, ALT-F1 (Where nwipe is initially launched), ALT-F2 (A virtual terminal), ALT-F3 (console log, login required which is root with no password). Typical use of a virtual terminal might be to run other disk related tools such as hdparm to remove hidden sectors or hexedit to display the contents of the disc as hexadecimal values.
+ShredOS has three tty terminals, ALT-F1 (Where nwipe is initially launched), ALT-F2 (A virtual terminal), ALT-F3 (console log, login required which is root with no password). Typical use of a virtual terminal might be to run other disk related tools such as hdparm to remove hidden sectors or hexedit to display the contents of the disk as hexadecimal values.
 
 ## How to exclude the FAT formatted ShredOS Boot drive from Nwipe, interactive and autonuke modes
 There are two methods that can be used to exclude the FAT formatted ShredOS boot drive from appearing in nwipe's interactive mode or autonuke modes.
@@ -238,7 +238,7 @@ set timeout="0"
 menuentry "shredos" {
 	linux /boot/shredos console=tty3 loglevel=3 shredos_exclude_boot_disc="yes"
 ```
-- **Method 2:** The second method is to create a empty file on the ShredOS boot disc at this specific location `/etc/shredos/shredos_exclude_disc`. This method will work irespective of whether you created the ShredOS boot disc with dd, Rufus or copied the .iso/.img to a Ventoy flash drive.
+- **Method 2:** The second method is to create a empty file on the ShredOS boot disk at this specific location `/etc/shredos/shredos_exclude_disc`. This method will work irespective of whether you created the ShredOS boot disk with dd, Rufus or copied the .iso/.img to a Ventoy flash drive.
 
 **WARNING** 
 You should not place the string `/etc/shredos/shredos_exclude_disc` on multiple FAT formatted drives or for that matter any drive irrespective of formatting, expecting all the drives with this string to not appear in nwipe or not get wiped in interactive mode. The file `/etc/shredos/shredos_exclude_disc` should only appear on the one and only ShredOS boot drive on the system. Any other drives that contain `/etc/shredos/shredos_exclude_disc` will appear in nwipe and WILL get wiped in autonuke mode.
