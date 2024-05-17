@@ -144,6 +144,255 @@ endif
 
 ###############################################################################
 
+comment "Legacy options removed in 2024.02"
+
+config BR2_TOOLCHAIN_EXTERNAL_CODESCAPE_IMG_MIPS
+	bool "Codescape IMG GNU Linux Toolchain 2018.09 has been removed"
+	select BR2_LEGACY
+	help
+	  The Codescape IMG GNU Linux toolchain has been removed, use a
+	  Bootlin toolchain instead.
+
+config BR2_TOOLCHAIN_EXTERNAL_CODESCAPE_MTI_MIPS
+	bool "Codescape MTI GNU Linux Toolchain 2018.09 has been removed"
+	select BR2_LEGACY
+	help
+	  The Codescape MTI GNU Linux toolchain has been removed, use a
+	  Bootlin toolchain instead.
+
+config BR2_TOOLCHAIN_EXTERNAL_CODESOURCERY_AARCH64
+	bool "CodeSourcery AArch64 2014.11 has been removed"
+	select BR2_LEGACY
+	help
+	  The Sourcery CodeBench AArch64 toolchain has been removed,
+	  use an ARM/Bootlin/Linaro toolchain instead.
+
+config BR2_TOOLCHAIN_EXTERNAL_CODESOURCERY_ARM
+	bool "Sourcery CodeBench ARM 2014.05 has been removed"
+	select BR2_LEGACY
+	help
+	  The Sourcery CodeBench ARM toolchain has been removed, use
+	  an ARM/Bootlin/Linaro toolchain instead.
+
+config BR2_PACKAGE_MYSQL
+	bool "mysql virtual package removed"
+	select BR2_LEGACY
+	help
+	  The mysql virtual package has been removed as mariadb is the
+	  only supported mysql variant. Use the mariadb package
+	  instead.
+
+config BR2_PACKAGE_ORACLE_MYSQL
+	bool "oracle mysql removed"
+	select BR2_LEGACY
+	help
+	  Oracle mysql has been removed as the package was
+	  unmaintained. Consider using mariadb instead.
+
+config BR2_PACKAGE_STRONGSWAN_SCEP
+	bool "strongswan SCEP client tool removed"
+	select BR2_LEGACY
+	help
+	  "ipsec scepclient" tool has been removed and replaced by the
+	  pki subcommands "pki --scep" and "pki --scepca" which
+	  implement the new SCEP RFC 8894 standard that was released in
+	  September 2020 and which supports trusted "certificate
+	  renewal" based on the existing client certificate.
+
+config BR2_PACKAGE_SHADOW_UTMPX
+	bool "shadow utmpx removed"
+	select BR2_LEGACY
+	help
+	  UTMPX has been dropped by upstream.
+
+config BR2_PACKAGE_TINYMEMBENCH
+	bool "tinymembench removed"
+	select BR2_LEGACY
+	help
+	  tinymembench has been removed due to being abandoned.
+
+config BR2_PACKAGE_DAVINCI_BOOTCOUNT
+	bool "davinci-bootcount has been renamed"
+	select BR2_LEGACY
+	select BR2_PACKAGE_UBOOT_BOOTCOUNT
+	help
+	  The davinci-bootcount package has been renamed to
+	  uboot-bootcount.
+
+config BR2_PACKAGE_PYTHON_CROSSBAR
+	bool "python-crossbar removed"
+	select BR2_LEGACY
+	help
+	  python-crossbar has been removed. The current package has
+	  not received an update since Sat Oct 9 13:55:06 2021 commit:
+	  33ece2446e25e20929d1c7eefa9f3244a3b79a92 and is not python
+	  3.12.0 compatible.
+
+	  Furthermore, the current version requires at least 42 new
+	  packages worth of depedencies of which several require
+	  patches to be python 3.12.0 compatible. As nobody has
+	  stepped up to maintain the package and its ever-growing list
+	  of dependencies, along with the other problems, it was time
+	  to drop the package.
+
+config BR2_PACKAGE_PYTHON_PYGAME
+	bool "python-pygame removed"
+	select BR2_LEGACY
+	help
+	  python-pygame has been removed due to being abandoned and
+	  the old version no longer building with python 3.12.0.
+
+config BR2_KERNEL_HEADERS_4_14
+	bool "kernel headers version 4.14.x are no longer supported"
+	select BR2_LEGACY
+	help
+	  Version 4.14.x of the Linux kernel headers are no longer
+	  maintained upstream and are now removed.
+
+config BR2_PACKAGE_LIBCAMERA_PIPELINE_RASPBERRYPI
+	bool "libcamera pipeline 'raspberrypi' was renamed to 'rpi/vc4'"
+	depends on BR2_arm || BR2_aarch64
+	depends on BR2_USE_WCHAR
+	select BR2_LEGACY
+	select BR2_PACKAGE_LIBCAMERA_PIPELINE_RPI_VC4
+	help
+	  Since version 0.1.0, the pipeline option 'raspberrypi' was
+	  renamed to 'rpi/vc4'.
+
+config BR2_GDB_VERSION_11
+	bool "gdb 11.x removed"
+	select BR2_LEGACY
+	help
+	  GDB 11.x has been removed, use a newer version.
+
+config BR2_PACKAGE_LIBMPD
+	bool "libmpd package was removed"
+	select BR2_LEGACY
+	help
+	  The libmpd package was only used by gmpc, both of which are
+	  no longer maintained upstream.
+
+config BR2_PACKAGE_GMPC
+	bool "gmpc package was removed"
+	select BR2_LEGACY
+	help
+	  The gmpc package was removed because it was unmaintained,
+	  and still using the old libsoup2 library.
+
+config BR2_PACKAGE_FLICKCURL
+	bool "flickcurl package was removed"
+	select BR2_LEGACY
+	help
+	  The flickcurl package was removed because it was
+	  unmaintained upstream and causing build failures.
+
+config BR2_PACKAGE_ONEVPL
+	bool "onevpl package was renamed"
+	select BR2_LEGACY
+	select BR2_PACKAGE_LIBVPL
+
+config BR2_KERNEL_HEADERS_6_5
+	bool "kernel headers version 6.5.x are no longer supported"
+	select BR2_LEGACY
+	help
+	  Version 6.5.x of the Linux kernel headers are no longer
+	  maintained upstream and are now removed.
+
+config BR2_PACKAGE_WATCHDOGD_GENERIC_POLL
+	int "watchdogd generic poll has been replaced"
+	default 0
+	help
+	  The generic script poll interval has been replaced upstream
+	  with a boolean on/off.  Your configuration has been migrated.
+
+	  Set this legacy option to 0 here to remove the warning.
+
+# Note: BR2_PACKAGE_WATCHDOGD_*_POLL_WRAP referenced in package/watchdogd/Config.in
+config BR2_PACKAGE_WATCHDOGD_GENERIC_POLL_WRAP
+	bool
+	default y if BR2_PACKAGE_WATCHDOGD_GENERIC_POLL != 0
+	select BR2_LEGACY
+
+config BR2_PACKAGE_WATCHDOGD_LOADAVG_POLL
+	int "watchdogd loadavg poll has been replaced"
+	default 0
+	help
+	  The CPU load average poll interval has been replaced upstream
+	  with a boolean on/off.  Your configuration has been migrated.
+
+	  Set this legacy option to 0 here to remove the warning.
+
+# Note: BR2_PACKAGE_WATCHDOGD_*_POLL_WRAP referenced in package/watchdogd/Config.in
+config BR2_PACKAGE_WATCHDOGD_LOADAVG_POLL_WRAP
+	bool
+	default y if BR2_PACKAGE_WATCHDOGD_LOADAVG_POLL != 0
+	select BR2_LEGACY
+
+config BR2_PACKAGE_WATCHDOGD_FILENR_POLL
+	int "watchdogd filenr poll has been replaced"
+	default 0
+	help
+	  The file descriptor leak poll has been replaced upstream with
+	  a boolean on/off.  Your configuration has been migrated.
+
+	  Set this legacy option to 0 here to remove the warning.
+
+# Note: BR2_PACKAGE_WATCHDOGD_*_POLL_WRAP referenced in package/watchdogd/Config.in
+config BR2_PACKAGE_WATCHDOGD_FILENR_POLL_WRAP
+	bool
+	default y if BR2_PACKAGE_WATCHDOGD_FILENR_POLL != 0
+	select BR2_LEGACY
+
+config BR2_PACKAGE_WATCHDOGD_MEMINFO_POLL
+	int "watchdogd meminfo poll has been replaced"
+	default 0
+	help
+	  The memleak detector poll interval has been replaced upstream
+	  with a boolean on/off.  Your configuration has been migrated.
+
+	  Set this legacy option to 0 here to remove the warning.
+
+# Note: BR2_PACKAGE_WATCHDOGD_*_POLL_WRAP referenced in package/watchdogd/Config.in
+config BR2_PACKAGE_WATCHDOGD_MEMINFO_POLL_WRAP
+	bool
+	default y if BR2_PACKAGE_WATCHDOGD_MEMINFO_POLL != 0
+	select BR2_LEGACY
+
+comment "Legacy options removed in 2023.11"
+
+config BR2_PACKAGE_PYTHON_PYXB
+	bool "python-pyxb removed"
+	select BR2_LEGACY
+	help
+	  python-pyxb has been removed due to being abandoned and
+	  distutils no longer being supported in python 3.12.0.
+
+config BR2_PACKAGE_OPENJDK_VERSION_11
+	bool "openjdk 11 has been removed"
+	select BR2_LEGACY
+	help
+	  Version 11 of OpenJDK is no longer supported, version 17
+	  should now be used as the new LTS release.
+
+config BR2_KERNEL_HEADERS_6_4
+	bool "kernel headers version 6.4.x are no longer supported"
+	select BR2_LEGACY
+	help
+	  Version 6.4.x of the Linux kernel headers are no longer
+	  maintained upstream and are now removed.
+
+config BR2_PACKAGE_GOOGLE_MATERIAL_DESIGN_ICONS
+	bool "google-material-design-icons removed"
+	select BR2_LEGACY
+	help
+	  The google-material-design-icons package has been removed.
+
+config BR2_GDB_VERSION_10
+	bool "gdb 10.x removed"
+	select BR2_LEGACY
+	help
+	  gdb 10.x has been removed, use a newer version.
+
 comment "Legacy options removed in 2023.08"
 
 config BR2_TARGET_LPC32XXCDL

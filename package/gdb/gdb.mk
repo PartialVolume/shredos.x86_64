@@ -8,7 +8,7 @@ GDB_VERSION = $(call qstrip,$(BR2_GDB_VERSION))
 GDB_SITE = $(BR2_GNU_MIRROR)/gdb
 GDB_SOURCE = gdb-$(GDB_VERSION).tar.xz
 
-ifeq ($(BR2_arc),y)
+ifeq ($(GDB_VERSION),arc-2023.09-release)
 GDB_SITE = $(call github,foss-for-synopsys-dwc-arc-processors,binutils-gdb,$(GDB_VERSION))
 GDB_SOURCE = gdb-$(GDB_VERSION).tar.gz
 GDB_FROM_GIT = y
@@ -56,11 +56,8 @@ GDB_DEPENDENCIES += host-flex host-bison
 HOST_GDB_DEPENDENCIES += host-flex host-bison
 endif
 
-# All newer versions of GDB need host-gmp, so it's only for older
-# versions that the dependency can be avoided.
-ifeq ($(BR2_GDB_VERSION_10)$(BR2_arc),)
+# All newer versions of GDB need host-gmp
 HOST_GDB_DEPENDENCIES += host-gmp
-endif
 
 # When gdb sources are fetched from the binutils-gdb repository, they
 # also contain the binutils sources, but binutils shouldn't be built,
@@ -121,8 +118,10 @@ GDB_MAKE_ENV += \
 GDB_CONF_ENV += gdb_cv_prfpregset_t_broken=no
 GDB_MAKE_ENV += gdb_cv_prfpregset_t_broken=no
 
-# The shared only build is not supported by gdb, so enable static build for
-# build-in libraries with --enable-static.
+# We want the built-in libraries of gdb (libbfd, libopcodes) to be
+# built and linked statically, as we do not install them on the
+# target, to not clash with the ones potentially installed by
+# binutils. This is why we pass --enable-static --disable-shared.
 GDB_CONF_OPTS = \
 	--without-uiout \
 	--disable-gdbtk \
@@ -132,7 +131,7 @@ GDB_CONF_OPTS = \
 	--without-included-gettext \
 	--disable-werror \
 	--enable-static \
-	--without-mpfr \
+	--disable-shared \
 	--disable-source-highlight
 
 ifeq ($(BR2_PACKAGE_GDB_DEBUGGER),y)
@@ -156,12 +155,22 @@ GDB_CONF_OPTS += \
 endif
 
 # Starting from GDB 11.x, gmp is needed as a dependency to build full
-# gdb. So we avoid the dependency only for GDB 10.x and the special
-# version used on ARC.
-ifeq ($(BR2_GDB_VERSION_10)$(BR2_arc):$(BR2_PACKAGE_GDB_DEBUGGER),:y)
+# gdb.
+ifeq ($(BR2_PACKAGE_GDB_DEBUGGER),y)
 GDB_CONF_OPTS += \
 	--with-libgmp-prefix=$(STAGING_DIR)/usr
 GDB_DEPENDENCIES += gmp
+endif
+
+# Starting from GDB 14.x, mpfr is needed as a dependency to build full
+# gdb.
+# GDB fork from ARC GNU tools 2023.09 is based on GDB14 branch and so
+# requires MPFR as well.
+ifeq ($(BR2_GDB_VERSION_14)$(BR2_arc):$(BR2_PACKAGE_GDB_DEBUGGER),y:y)
+GDB_DEPENDENCIES += mpfr
+GDB_CONF_OPTS += --with-mpfr=$(STAGING_DIR)
+else
+GDB_CONF_OPTS += --without-mpfr
 endif
 
 ifeq ($(BR2_PACKAGE_GDB_SERVER),y)
@@ -169,13 +178,6 @@ GDB_CONF_OPTS += --enable-gdbserver
 GDB_DEPENDENCIES += $(TARGET_NLS_DEPENDENCIES)
 else
 GDB_CONF_OPTS += --disable-gdbserver
-endif
-
-# When gdb is built as C++ application for ARC it segfaults at runtime
-# So we pass --disable-build-with-cxx config option to force gdb not to
-# be built as C++ app.
-ifeq ($(BR2_arc),y)
-GDB_CONF_OPTS += --disable-build-with-cxx
 endif
 
 # gdb 7.12+ by default builds with a C++ compiler, which doesn't work
@@ -248,10 +250,14 @@ endif
 # A few notes:
 #  * --target, because we're doing a cross build rather than a real
 #    host build.
-#  * --enable-static because gdb really wants to use libbfd.a
+#  * --enable-static --disable-shared because we want host gdb to
+#    build and link against a static version of libbfd and
+#    libopcodes, because we don't install the shared variants of
+#    those libraries in $(HOST_DIR), as it might clash with binutils
 HOST_GDB_CONF_OPTS = \
 	--target=$(GNU_TARGET_NAME) \
 	--enable-static \
+	--disable-shared \
 	--without-uiout \
 	--disable-gdbtk \
 	--without-x \
@@ -260,9 +266,18 @@ HOST_GDB_CONF_OPTS = \
 	--without-included-gettext \
 	--with-system-zlib \
 	--with-curses \
-	--without-mpfr \
 	--disable-source-highlight \
 	$(GDB_DISABLE_BINUTILS_CONF_OPTS)
+
+# GDB newer than 14.x need host-mpfr
+# GDB fork from ARC GNU tools 2023.09 is based on GDB14 branch and so
+# requires MPFR as well.
+ifeq ($(BR2_GDB_VERSION_14)$(BR2_arc),y)
+HOST_GDB_DEPENDENCIES += host-mpfr
+HOST_GDB_CONF_OPTS += --with-mpfr=$(HOST_DIR)
+else
+HOST_GDB_CONF_OPTS += --without-mpfr
+endif
 
 ifeq ($(BR2_PACKAGE_HOST_GDB_TUI),y)
 HOST_GDB_CONF_OPTS += --enable-tui

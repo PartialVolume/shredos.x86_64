@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-GST1_PLUGINS_GOOD_VERSION = 1.22.6
+GST1_PLUGINS_GOOD_VERSION = 1.22.9
 GST1_PLUGINS_GOOD_SOURCE = gst-plugins-good-$(GST1_PLUGINS_GOOD_VERSION).tar.xz
 GST1_PLUGINS_GOOD_SITE = https://gstreamer.freedesktop.org/src/gst-plugins-good
 GST1_PLUGINS_GOOD_LICENSE_FILES = COPYING
@@ -60,7 +60,7 @@ endif
 
 ifeq ($(BR2_PACKAGE_GST1_PLUGINS_GOOD_ADAPTIVEMUX2),y)
 GST1_PLUGINS_GOOD_CONF_OPTS += -Dadaptivedemux2=enabled
-GST1_PLUGINS_GOOD_DEPENDENCIES += libsoup libxml2
+GST1_PLUGINS_GOOD_DEPENDENCIES += libsoup3 libxml2
 else
 GST1_PLUGINS_GOOD_CONF_OPTS += -Dadaptivedemux2=disabled
 endif
@@ -453,7 +453,7 @@ endif
 
 ifeq ($(BR2_PACKAGE_GST1_PLUGINS_GOOD_PLUGIN_SOUPHTTPSRC),y)
 GST1_PLUGINS_GOOD_CONF_OPTS += -Dsoup=enabled
-GST1_PLUGINS_GOOD_DEPENDENCIES += libsoup
+GST1_PLUGINS_GOOD_DEPENDENCIES += libsoup3
 else
 GST1_PLUGINS_GOOD_CONF_OPTS += -Dsoup=disabled
 endif

@@ -4,11 +4,11 @@
 #
 ################################################################################
 
-LSOF_VERSION = 4.98.0
+LSOF_VERSION = 4.99.3
 LSOF_SITE = $(call github,lsof-org,lsof,$(LSOF_VERSION))
 LSOF_LICENSE = lsof license
 LSOF_LICENSE_FILES = COPYING
-LSOF_CPE_ID_VENDOR = lsof_project
+LSOF_CPE_ID_VALID = YES
 
 ifeq ($(BR2_PACKAGE_LIBTIRPC),y)
 LSOF_DEPENDENCIES += libtirpc
@@ -16,14 +16,14 @@ endif
 
 ifeq ($(BR2_USE_WCHAR),)
 define LSOF_CONFIGURE_WCHAR_FIXUPS
-	$(SED) 's,^#define[[:space:]]*HASWIDECHAR.*,#undef HASWIDECHAR,' \
+	$(SED) 's,^#[[:space:]]*define HASWIDECHAR.*,#undef HASWIDECHAR,' \
 		$(@D)/machine.h
 endef
 endif
 
 ifeq ($(BR2_ENABLE_LOCALE),)
 define LSOF_CONFIGURE_LOCALE_FIXUPS
-	$(SED) 's,^#define[[:space:]]*HASSETLOCALE.*,#undef HASSETLOCALE,' \
+	$(SED) 's,^#[[:space:]]*define HASSETLOCALE.*,#undef HASSETLOCALE,' \
 		$(@D)/machine.h
 endef
 endif

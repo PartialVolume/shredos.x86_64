@@ -10,28 +10,20 @@ Table of Contents
 
  
 I. Getting started
-
     1. About Buildroot
     2. System requirements
-
         2.1. Mandatory packages
         2.2. Optional packages
-
     3. Getting Buildroot
     4. Buildroot quick start
     5. Community resources
-
 II. User guide
-
     6. Buildroot configuration
-
         6.1. Cross-compilation toolchain
         6.2. /dev management
         6.3. init system
-
     7. Configuration of other components
     8. General Buildroot usage
-
         8.1. make tips
         8.2. Understanding when a full rebuild is necessary
         8.3. Understanding how to rebuild packages
@@ -45,9 +37,7 @@ II. User guide
         8.11. Graphing the filesystem size contribution of packages
         8.12. Top-level parallel build
         8.13. Advanced usage
-
     9. Project-specific customization
-
         9.1. Recommended directory structure
         9.2. Keeping customizations outside of Buildroot
         9.3. Storing the Buildroot configuration
@@ -55,54 +45,42 @@ II. User guide
         9.5. Customizing the generated target filesystem
         9.6. Adding custom user accounts
         9.7. Customization after the images have been created
-        9.8. Adding project-specific patches
+        9.8. Adding project-specific patches and hashes
         9.9. Adding project-specific packages
         9.10. Quick guide to storing your project-specific
-            customizations
-
+        customizations
     10. Integration topics
-
         10.1. Systemd
         10.2. Using SELinux in Buildroot
-
     11. Frequently Asked Questions & Troubleshooting
-
         11.1. The boot hangs after Starting network…
         11.2. Why is there no compiler on the target?
         11.3. Why are there no development files on the target?
         11.4. Why is there no documentation on the target?
         11.5. Why are some packages not visible in the Buildroot
-            config menu?
+        config menu?
         11.6. Why not use the target directory as a chroot directory?
         11.7. Why doesn’t Buildroot generate binary packages (.deb,
-            .ipkg…)?
+        .ipkg…)?
         11.8. How to speed-up the build process?
-
+        11.9. How does Buildroot support Y2038?
     12. Known issues
     13. Legal notice and licensing
-
         13.1. Complying with open source licenses
         13.2. Complying with the Buildroot license
-
     14. Beyond Buildroot
-
         14.1. Boot the generated images
         14.2. Chroot
-
 III. Developer guide
-
     15. How Buildroot works
     16. Coding style
-
         16.1. Config.in file
         16.2. The .mk file
         16.3. The genimage.cfg file
         16.4. The documentation
         16.5. Support scripts
-
     17. Adding support for a particular board
     18. Adding new packages to Buildroot
-
         18.1. Package directory
         18.2. Config files
         18.3. The .mk file
@@ -116,7 +94,7 @@ III. Developer guide
         18.11. Infrastructure for Perl/CPAN packages
         18.12. Infrastructure for virtual packages
         18.13. Infrastructure for packages using kconfig for
-            configuration files
+        configuration files
         18.14. Infrastructure for rebar-based packages
         18.15. Infrastructure for Waf-based packages
         18.16. Infrastructure for Meson-based packages
@@ -130,18 +108,14 @@ III. Developer guide
         18.24. Gettext integration and interaction with packages
         18.25. Tips and tricks
         18.26. Conclusion
-
     19. Patching a package
-
         19.1. Providing patches
         19.2. How patches are applied
         19.3. Format and licensing of the package patches
         19.4. Additional patch documentation
-
     20. Download infrastructure
     21. Debugging Buildroot
     22. Contributing to Buildroot
-
         22.1. Reproducing, analyzing and fixing bugs
         22.2. Analyzing and fixing autobuild failures
         22.3. Reviewing and testing patches
@@ -149,25 +123,19 @@ III. Developer guide
         22.5. Submitting patches
         22.6. Reporting issues/bugs or getting help
         22.7. Using the runtime tests framework
-
     23. DEVELOPERS file and get-developers
     24. Release Engineering
-
         24.1. Releases
         24.2. Development
-
 IV. Appendix
-
     25. Makedev syntax documentation
     26. Makeusers syntax documentation
-
         26.1. Caveat with automatic UIDs and GIDs
-
     27. Migrating from older Buildroot versions
-
         27.1. General approach
         27.2. Migrating to 2016.11
         27.3. Migrating to 2017.08
+        27.4. Migrating to 2023.11
 
 List of Examples
 
@@ -179,13 +147,13 @@ List of Examples
 
 ---------------------------------------------------------------------
 
-Buildroot 2023.08.2 manual generated on 2023-10-15 21:10:50 UTC from
-git revision fe50c054bc
+Buildroot ${BR2_VERSION%%-git*} manual generated on 2024-05-07
+08:28:22 UTC from git revision 0155095c55
 
 The Buildroot manual is written by the Buildroot developers. It is
 licensed under the GNU General Public License, version 2. Refer to
 the COPYING [http://git.buildroot.org/buildroot/tree/COPYING?id=
-fe50c054bce7fb9b2e073b9c1bc78dd8a187289a] file in the Buildroot
+0155095c558e915d6c5261a4d8cb4ec9ee9953a7] file in the Buildroot
 sources for the full text of this license.
 
 Copyright © The Buildroot developers <>
@@ -196,10 +164,8 @@ Table of Contents
 
 1. About Buildroot
 2. System requirements
-
     2.1. Mandatory packages
     2.2. Optional packages
-
 3. Getting Buildroot
 4. Buildroot quick start
 5. Community resources
@@ -298,16 +264,14 @@ vary between distributions).
     using wget from ftp, http or https locations. A few packages are
     only available through a version control system. Moreover,
     Buildroot is capable of downloading sources via other tools, like
-    rsync or scp (refer to Chapter 20, Download infrastructure for
-    more details). If you enable packages using any of these methods,
-    you will need to install the corresponding tool on the host
-    system:
+    git or scp (refer to Chapter 20, Download infrastructure for more
+    details). If you enable packages using any of these methods, you
+    will need to install the corresponding tool on the host system:
 
       + bazaar
       + cvs
       + git
       + mercurial
-      + rsync
       + scp
       + sftp
       + subversion
@@ -541,14 +505,11 @@ Part II. User guide
 Table of Contents
 
 6. Buildroot configuration
-
     6.1. Cross-compilation toolchain
     6.2. /dev management
     6.3. init system
-
 7. Configuration of other components
 8. General Buildroot usage
-
     8.1. make tips
     8.2. Understanding when a full rebuild is necessary
     8.3. Understanding how to rebuild packages
@@ -562,9 +523,7 @@ Table of Contents
     8.11. Graphing the filesystem size contribution of packages
     8.12. Top-level parallel build
     8.13. Advanced usage
-
 9. Project-specific customization
-
     9.1. Recommended directory structure
     9.2. Keeping customizations outside of Buildroot
     9.3. Storing the Buildroot configuration
@@ -572,36 +531,29 @@ Table of Contents
     9.5. Customizing the generated target filesystem
     9.6. Adding custom user accounts
     9.7. Customization after the images have been created
-    9.8. Adding project-specific patches
+    9.8. Adding project-specific patches and hashes
     9.9. Adding project-specific packages
     9.10. Quick guide to storing your project-specific customizations
-
 10. Integration topics
-
     10.1. Systemd
     10.2. Using SELinux in Buildroot
-
 11. Frequently Asked Questions & Troubleshooting
-
     11.1. The boot hangs after Starting network…
     11.2. Why is there no compiler on the target?
     11.3. Why are there no development files on the target?
     11.4. Why is there no documentation on the target?
     11.5. Why are some packages not visible in the Buildroot config
-        menu?
+    menu?
     11.6. Why not use the target directory as a chroot directory?
     11.7. Why doesn’t Buildroot generate binary packages (.deb,
-        .ipkg…)?
+    .ipkg…)?
     11.8. How to speed-up the build process?
-
+    11.9. How does Buildroot support Y2038?
 12. Known issues
 13. Legal notice and licensing
-
     13.1. Complying with open source licenses
     13.2. Complying with the Buildroot license
-
 14. Beyond Buildroot
-
     14.1. Boot the generated images
     14.2. Chroot
 
@@ -2720,17 +2672,17 @@ Post-build scripts (BR2_ROOTFS_POST_BUILD_SCRIPT)
 
     In addition, you may also use these environment variables:
 
-      + BR2_CONFIG: the path to the Buildroot .config file
-      + CONFIG_DIR: the directory containing the .config file, and
+      o BR2_CONFIG: the path to the Buildroot .config file
+      o CONFIG_DIR: the directory containing the .config file, and
         therefore the top-level Buildroot Makefile to use (which is
         correct for both in-tree and out-of-tree builds)
-      + HOST_DIR, STAGING_DIR, TARGET_DIR: see Section 18.6.2,
+      o HOST_DIR, STAGING_DIR, TARGET_DIR: see Section 18.6.2,
         “generic-package reference”
-      + BUILD_DIR: the directory where packages are extracted and
+      o BUILD_DIR: the directory where packages are extracted and
         built
-      + BINARIES_DIR: the place where all binary files (aka images)
+      o BINARIES_DIR: the place where all binary files (aka images)
         are stored
-      + BASE_DIR: the base output directory
+      o BASE_DIR: the base output directory
 
 Below three more methods of customizing the target filesystem are
 described, but they are not recommended.
@@ -2900,7 +2852,9 @@ action requiring root permissions in one of these scripts will
 require special handling (usage of fakeroot or sudo), which is left
 to the script developer.
 
-9.8. Adding project-specific patches
+9.8. Adding project-specific patches and hashes
+
+9.8.1. Providing extra patches
 
 It is sometimes useful to apply extra patches to packages - on top of
 those provided in Buildroot. This might be used to support custom
@@ -2952,6 +2906,30 @@ are available at a URL. Note: BR2_LINUX_KERNEL_PATCH specifies kernel
 patches that are applied after patches available in
 BR2_GLOBAL_PATCH_DIR, as it is done from a post-patch hook of the
 Linux package.
+
+9.8.2. Providing extra hashes
+
+Buildroot bundles a list of hashes against which it checks the
+integrity of the downloaded archives, or of those it generates
+locally from VCS checkouts. However, it can only do so for the known
+versions; for packages where it is possible to specify a custom
+version (e.g. a custom version string, a remote tarball URL, or a VCS
+repository location and changeset), Buildroot can’t carry hashes for
+those.
+
+For users concerned with the integrity of such downloads, it is
+possible to provide a list of hashes that Buildroot can use to check
+arbitrary downloaded files. Those extra hashes are looked up
+similarly to the extra patches (above); for each directory in
+BR2_GLOBAL_PATCH_DIR, the first file to exist is used to check a
+package download:
+
+  * <global-patch-dir>/<packagename>/<packageversion>/
+    <packagename>.hash
+  * <global-patch-dir>/<packagename>/<packagename>.hash
+
+The utils/add-custom-hashes script can be used to generate these
+files.
 
 9.9. Adding project-specific packages
 
@@ -3400,6 +3378,30 @@ help reduce the build time:
   * Experiment with top-level parallel build, see Section 8.12,
     “Top-level parallel build”.
 
+11.9. How does Buildroot support Y2038?
+
+There are multiple situations to consider:
+
+  * On 64-bit architectures, there is no problem, as time_t has
+    always been 64-bit.
+  * On 32-bit architectures, the situation depends on the C library:
+
+      + With uclibc-ng, there is no support for 64-bit time_t on
+        32-bit architectures, so systems using uclibc-ng on 32-bit
+        platforms will not be Y2038 compatible.
+      + With musl, 64-bit time_t has always been used on 32-bit
+        architectures, so systems using musl on 32-bit platforms are
+        Y2038 compatible.
+      + With glibc, 64-bit time_t on 32-bit architectures is enabled
+        by the Buildroot option BR2_TIME_BITS_64. With this option
+        enabled, systems using glibc on 32-bit platforms are Y2038
+        compatible.
+
+Note that the above only comments about the capabilities of the C
+library. Individual user-space libraries or applications, even when
+built in a Y2038-compatible setup, can exhibit incorrect behavior if
+they do not make correct use of the time APIs and types.
+
 Chapter 12. Known issues
 
   * It is not possible to pass extra linker options via
@@ -3589,16 +3591,13 @@ Table of Contents
 
 15. How Buildroot works
 16. Coding style
-
     16.1. Config.in file
     16.2. The .mk file
     16.3. The genimage.cfg file
     16.4. The documentation
     16.5. Support scripts
-
 17. Adding support for a particular board
 18. Adding new packages to Buildroot
-
     18.1. Package directory
     18.2. Config files
     18.3. The .mk file
@@ -3612,7 +3611,7 @@ Table of Contents
     18.11. Infrastructure for Perl/CPAN packages
     18.12. Infrastructure for virtual packages
     18.13. Infrastructure for packages using kconfig for
-        configuration files
+    configuration files
     18.14. Infrastructure for rebar-based packages
     18.15. Infrastructure for Waf-based packages
     18.16. Infrastructure for Meson-based packages
@@ -3626,18 +3625,14 @@ Table of Contents
     18.24. Gettext integration and interaction with packages
     18.25. Tips and tricks
     18.26. Conclusion
-
 19. Patching a package
-
     19.1. Providing patches
     19.2. How patches are applied
     19.3. Format and licensing of the package patches
     19.4. Additional patch documentation
-
 20. Download infrastructure
 21. Debugging Buildroot
 22. Contributing to Buildroot
-
     22.1. Reproducing, analyzing and fixing bugs
     22.2. Analyzing and fixing autobuild failures
     22.3. Reviewing and testing patches
@@ -3645,10 +3640,8 @@ Table of Contents
     22.5. Submitting patches
     22.6. Reporting issues/bugs or getting help
     22.7. Using the runtime tests framework
-
 23. DEVELOPERS file and get-developers
 24. Release Engineering
-
     24.1. Releases
     24.2. Development
 
@@ -4378,9 +4371,9 @@ different way, using different infrastructures:
     infrastructure must be used for new packages that rely on CMake.
     We cover them through a tutorial and reference.
   * Makefiles for Python modules: We have a dedicated infrastructure
-    for Python modules that use the distutils, flit, pep517 or
-    setuptools mechanisms. We cover them through a tutorial and a
-    reference.
+    for Python modules that use the flit, pep517, setuptools,
+    setuptools-rust or maturin mechanisms. We cover them through a
+    tutorial and a reference.
   * Makefiles for Lua modules: We have a dedicated infrastructure for
     Lua modules available through the LuaRocks web site. We cover
     them through a tutorial and a reference.
@@ -4481,11 +4474,17 @@ this typically indicates that the .hash file is wrong but the
 downloaded file is probably OK.
 
 Hashes are currently checked for files fetched from http/ftp servers,
-Git repositories, files copied using scp and local files. Hashes are
-not checked for other version control systems (such as Subversion,
-CVS, etc.) because Buildroot currently does not generate reproducible
-tarballs when source code is fetched from such version control
-systems.
+Git or subversion repositories, files copied using scp and local
+files. Hashes are not checked for other version control systems (such
+as CVS, mercurial) because Buildroot currently does not generate
+reproducible tarballs when source code is fetched from such version
+control systems.
+
+Additionally, for packages for which it is possible to specify a
+custom version (e.g. a custom version string, a remote tarball URL,
+or a VCS repository location and changeset), Buildroot can’t carry
+hashes for those. It is however possible to provide a list of extra
+hashes that can cover such cases.
 
 Hashes should only be added in .hash files for files that are
 guaranteed to be stable. For example, patches auto-generated by
@@ -4913,6 +4912,9 @@ information is (assuming the package name is libfoo) :
     Git LFS to store large files out of band. This is only available
     for packages downloaded with git (i.e. when LIBFOO_SITE_METHOD=
     git).
+  * LIBFOO_SVN_EXTERNALS can be set to YES to create an archive with
+    the svn external references. This is only available for packages
+    downloaded with subversion.
   * LIBFOO_STRIP_COMPONENTS is the number of leading components
     (directories) that tar must strip from file names on extraction.
     The tarball for most packages has one leading component named "
@@ -5058,15 +5060,18 @@ information is (assuming the package name is libfoo) :
     affect the Buildroot package. A Makefile comment must always
     precede the addition of a CVE to this variable. Example:
 
-# 0001-fix-cve-2020-12345.patch
-LIBFOO_IGNORE_CVES += CVE-2020-12345
-# only when built with libbaz, which Buildroot doesn't support
-LIBFOO_IGNORE_CVES += CVE-2020-54321
+    # 0001-fix-cve-2020-12345.patch
+    LIBFOO_IGNORE_CVES += CVE-2020-12345
+    # only when built with libbaz, which Buildroot doesn't support
+    LIBFOO_IGNORE_CVES += CVE-2020-54321
 
   * LIBFOO_CPE_ID_* variables is a set of variables that allows the
     package to define its CPE identifier [https://nvd.nist.gov/
     products/cpe]. The available variables are:
 
+      + LIBFOO_CPE_ID_VALID, if set to YES, specifies that the
+        default values for each of the following variables is
+        appropriate, and generates a valid CPE ID.
       + LIBFOO_CPE_ID_PREFIX, specifies the prefix of the CPE
         identifier, i.e the first three fields. When not defined, the
         default value is cpe:2.3:a.
@@ -5428,6 +5433,9 @@ typical packages will therefore only use a few of them.
     the root of the tree extracted by the tarball. If
     HOST_LIBFOO_SUBDIR is not specified, it defaults to
     LIBFOO_SUBDIR.
+  * LIBFOO_CMAKE_BACKEND specifies the cmake backend to use, one of
+    make (to use the GNU Makefiles generator, the default) or ninja
+    (to use the Ninja generator).
   * LIBFOO_CONF_ENV, to specify additional environment variables to
     pass to CMake. By default, empty.
   * LIBFOO_CONF_OPTS, to specify additional configure options to pass
@@ -5442,6 +5450,9 @@ typical packages will therefore only use a few of them.
       + BUILD_DOC, BUILD_DOCS are disabled;
       + BUILD_EXAMPLE, BUILD_EXAMPLES are disabled;
       + BUILD_TEST, BUILD_TESTS, BUILD_TESTING are disabled.
+  * LIBFOO_BUILD_ENV and LIBFOO_BUILD_OPTS to specify additional
+    environment variables, or command line options, to pass to the
+    backend at build time.
   * LIBFOO_SUPPORTS_IN_SOURCE_BUILD = NO should be set when the
     package cannot be built inside the source tree but needs a
     separate build directory.
@@ -5489,8 +5500,8 @@ still possible to customize what is done in any particular step:
 18.9. Infrastructure for Python packages
 
 This infrastructure applies to Python packages that use the standard
-Python setuptools or pep517 mechanisms as their build system,
-generally recognizable by the usage of a setup.py script or
+Python setuptools, pep517, flit or maturin mechanisms as their build
+system, generally recognizable by the usage of a setup.py script or
 pyproject.toml file.
 
 18.9.1. python-package tutorial
@@ -5511,7 +5522,7 @@ an example :
 11: PYTHON_FOO_LICENSE_FILES = LICENSE
 12: PYTHON_FOO_ENV = SOME_VAR=1
 13: PYTHON_FOO_DEPENDENCIES = libmad
-14: PYTHON_FOO_SETUP_TYPE = distutils
+14: PYTHON_FOO_SETUP_TYPE = setuptools
 15:
 16: $(eval $(python-package))
 
@@ -5532,8 +5543,9 @@ On line 13, we declare our dependencies, so that they are built
 before the build process of our package starts.
 
 On line 14, we declare the specific Python build system being used.
-In this case the distutils Python build system is used. The four
-supported ones are distutils, flit, pep517 and setuptools.
+In this case the setuptools Python build system is used. The five
+supported ones are flit, pep517, setuptools, setuptools-rust and
+maturin.
 
 Finally, on line 16, we invoke the python-package macro that
 generates all the Makefile rules that actually allow the package to
@@ -5568,21 +5580,21 @@ Note that:
     PYTHON_FOO_DEPENDENCIES variable of a package, since these basic
     dependencies are automatically added as needed by the Python
     package infrastructure.
-  * Similarly, it is not needed to add host-setuptools to
+  * Similarly, it is not needed to add host-python-setuptools to
     PYTHON_FOO_DEPENDENCIES for setuptools-based packages, since it’s
     automatically added by the Python infrastructure as needed.
 
 One variable specific to the Python infrastructure is mandatory:
 
   * PYTHON_FOO_SETUP_TYPE, to define which Python build system is
-    used by the package. The four supported values are distutils,
-    flit, pep517 and setuptools. If you don’t know which one is used
-    in your package, look at the setup.py or pyproject.toml file in
-    your package source code, and see whether it imports things from
-    the distutils, flit module or the setuptools module. If the
-    package is using a pyproject.toml file without any build-system
-    requires and with a local in-tree backend-path one should use
-    pep517.
+    used by the package. The five supported values are flit, pep517
+    and setuptools, setuptools-rust and maturin. If you don’t know
+    which one is used in your package, look at the setup.py or
+    pyproject.toml file in your package source code, and see whether
+    it imports things from the flit module or the setuptools module.
+    If the package is using a pyproject.toml file without any
+    build-system requires and with a local in-tree backend-path one
+    should use pep517.
 
 A few additional variables, specific to the Python infrastructure,
 can optionally be defined, depending on the package’s needs. Many of
@@ -5596,41 +5608,26 @@ therefore only use a few of them, or none.
     the tarball. If HOST_PYTHON_FOO_SUBDIR is not specified, it
     defaults to PYTHON_FOO_SUBDIR.
   * PYTHON_FOO_ENV, to specify additional environment variables to
-    pass to the Python setup.py script (for distutils/setuptools
-    packages) or the support/scripts/pyinstaller.py script (for flit/
-    pep517 packages) for both the build and install steps. Note that
-    the infrastructure is automatically passing several standard
-    variables, defined in PKG_PYTHON_DISTUTILS_ENV (for distutils
-    target packages), HOST_PKG_PYTHON_DISTUTILS_ENV (for distutils
-    host packages), PKG_PYTHON_SETUPTOOLS_ENV (for setuptools target
-    packages), HOST_PKG_PYTHON_SETUPTOOLS_ENV (for setuptools host
-    packages), PKG_PYTHON_PEP517_ENV (for flit/pep517 target
+    pass to the Python setup.py script (for setuptools packages) or
+    the support/scripts/pyinstaller.py script (for flit/pep517
+    packages) for both the build and install steps. Note that the
+    infrastructure is automatically passing several standard
+    variables, defined in PKG_PYTHON_SETUPTOOLS_ENV (for setuptools
+    target packages), HOST_PKG_PYTHON_SETUPTOOLS_ENV (for setuptools
+    host packages), PKG_PYTHON_PEP517_ENV (for flit/pep517 target
     packages) and HOST_PKG_PYTHON_PEP517_ENV (for flit/pep517 host
     packages).
   * PYTHON_FOO_BUILD_OPTS, to specify additional options to pass to
     the Python setup.py script during the build step, this generally
-    only makes sense to use for distutils/setuptools based packages
-    as flit/pep517 based packages do not pass these options to a
-    setup.py script but instead pass them to support/scripts/
-    pyinstaller.py. For target distutils packages, the
-    PKG_PYTHON_DISTUTILS_BUILD_OPTS options are already passed
-    automatically by the infrastructure.
+    only makes sense to use for setuptools based packages as flit/
+    pep517 based packages do not pass these options to a setup.py
+    script but instead pass them to support/scripts/pyinstaller.py.
   * PYTHON_FOO_INSTALL_TARGET_OPTS, PYTHON_FOO_INSTALL_STAGING_OPTS,
     HOST_PYTHON_FOO_INSTALL_OPTS to specify additional options to
-    pass to the Python setup.py script (for distutils/setuptools
-    packages) or support/scripts/pyinstaller.py (for flit/pep517
-    packages) during the target installation step, the staging
-    installation step or the host installation, respectively. Note
-    that the infrastructure is automatically passing some options,
-    defined in PKG_PYTHON_DISTUTILS_INSTALL_TARGET_OPTS or
-    PKG_PYTHON_DISTUTILS_INSTALL_STAGING_OPTS (for target distutils
-    packages), HOST_PKG_PYTHON_DISTUTILS_INSTALL_OPTS (for host
-    distutils packages), PKG_PYTHON_SETUPTOOLS_INSTALL_TARGET_OPTS or
-    PKG_PYTHON_SETUPTOOLS_INSTALL_STAGING_OPTS (for target setuptools
-    packages), HOST_PKG_PYTHON_SETUPTOOLS_INSTALL_OPTS (for host
-    setuptools packages) and PKG_PYTHON_PEP517_INSTALL_TARGET_OPTS or
-    PKG_PYTHON_PEP517_INSTALL_STAGING_OPTS (for target flit/pep517
-    packages).
+    pass to the Python setup.py script (for setuptools packages) or
+    support/scripts/pyinstaller.py (for flit/pep517 packages) during
+    the target installation step, the staging installation step or
+    the host installation, respectively.
 
 With the Python infrastructure, all the steps required to build and
 install the packages are already defined, and they generally work
@@ -7551,8 +7548,8 @@ Notes
 
 The BR2_GLOBAL_PATCH_DIR configuration file option can be used to
 specify a space separated list of one or more directories containing
-global package patches. See Section 9.8, “Adding project-specific
-patches” for details.
+global package patches. See Section 9.8.1, “Providing extra patches”
+for details.
 
 19.2. How patches are applied
 
@@ -7957,8 +7954,8 @@ by a plus + sign. E.g.:
     Your-Name Your-Surname
     <your-name.your-surname+companyname@mail.com>
 
-  * for an individual who sponsored who sponsored the submitted work,
-    use their name and surname:
+  * for an individual who sponsored the submitted work, use their
+    name and surname:
 
     Your-Name Your-Surname
     <your-name.your-surname+their-name.their-surname@mail.com>
@@ -8053,12 +8050,21 @@ And then just do:
 $ git send-email origin/master
 
 Note that git should be configured to use your mail account. To
-configure git, see man git-send-email or google it.
+configure git, see man git-send-email or https://git-send-email.io/.
 
 If you do not use git send-email, make sure posted patches are not
 line-wrapped, otherwise they cannot easily be applied. In such a
 case, fix your e-mail client, or better yet, learn to use git
 send-email.
+
+https://sr.ht also has a light-weight UI for preparing patchseries
+[https://man.sr.ht/git.sr.ht/#sending-patches-upstream] and can also
+send out the patches for you. There are a few drawbacks to this, as
+you cannot edit your patches' status in Patchwork and you currently
+can’t edit your display name with which the match emails are sent out
+but it is an option if you cannot get git send-email to work with
+your mail provider (i.e. O365); it shall not be considered the
+official way of sending patches, but just a fallback.
 
 22.5.3. Cover letter
 
@@ -8479,14 +8485,12 @@ Table of Contents
 
 25. Makedev syntax documentation
 26. Makeusers syntax documentation
-
     26.1. Caveat with automatic UIDs and GIDs
-
 27. Migrating from older Buildroot versions
-
     27.1. General approach
     27.2. Migrating to 2016.11
     27.3. Migrating to 2017.08
+    27.4. Migrating to 2023.11
 
 Chapter 25. Makedev syntax documentation
 
@@ -8509,14 +8513,20 @@ There are a few non-trivial blocks:
   * name is the path to the file you want to create/modify
   * type is the type of the file, being one of:
 
-      + f: a regular file
-      + d: a directory
-      + r: a directory recursively
-      + c: a character device file
-      + b: a block device file
-      + p: a named pipe
+      + f: a regular file, which must already exist
+      + F: a regular file, which is ignored and not created if
+        missing
+      + d: a directory, which is created, as well as its parents, if
+        missing
+      + r: a directory recursively, which must already exist
+      + c: a character device file, which parent directory must exist
+      + b: a block device file, which parent directory must exist
+      + p: a named pipe, which parent directory must exist
   * mode are the usual permissions settings (only numerical values
-    are allowed)
+    are allowed); for type d, the mode of existing parents is not
+    changed, but the mode of created parents is set; for types f, F,
+    and r, mode can also be set to -1 to not change the mode (and
+    only change uid and gid)
   * uid and gid are the UID and GID to set on this file; can be
     either numerical values or actual names
   * major and minor are here for device files, set to - for other
@@ -8525,19 +8535,19 @@ There are a few non-trivial blocks:
     files, and can be reduced to a loop, beginning at start,
     incrementing its counter by inc until it reaches count
 
-Let’s say you want to change the permissions of a given file; using
-this syntax, you will need to write:
+Let’s say you want to change the ownership and permissions of a given
+file; using this syntax, you will need to write:
 
 /usr/bin/foo f 755 0 0 - - - - -
 /usr/bin/bar f 755 root root - - - - -
 /data/buz f 644 buz-user buz-group - - - - -
+/data/baz f -1 baz-user baz-group - - - - -
 
-Alternatively, if you want to change owner/permission of a directory
-recursively, you can write (to set UID to foo, GID to bar and access
-rights to rwxr-x--- for the directory /usr/share/myapp and all files
-and directories below it):
+Alternatively, if you want to change owner of a directory
+recursively, you can write (to set UID to foo and GID to bar for the
+directory /usr/share/myapp and all files and directories below it):
 
-/usr/share/myapp r 750 foo bar - - - - -
+/usr/share/myapp r -1 foo bar - - - - -
 
 On the other hand, if you want to create the device file /dev/hda and
 the corresponding 15 files for the partitions, you will need for /dev
@@ -8755,4 +8765,38 @@ library in $(HOST_DIR)/lib, it must have an RPATH pointing to that
 directory.
 
 An RPATH pointing to $(HOST_DIR)/usr/lib is no longer accepted.
+
+27.4. Migrating to 2023.11
+
+Before Buildroot 2023.11, the subversion download backend
+unconditionally retrieved the external references (objects with an
+svn:externals property). Starting with 2023.11, externals are no
+longer retrieved by default; if you need them, set
+LIBFOO_SVN_EXTERNALS to YES. This change implies that:
+
+  * the generated archive content may change, and thus the hashes may
+    need to be updated appropriately;
+  * the archive version suffix has been updated to -br3, so the hash
+    files must be updated appropriately.
+
+Before Buildroot 2023.11, it was possible (but undocumented and
+unused) to apply architecture-specific patches, by prefixing the
+patch filename with the architecture, e.g.
+0001-some-changes.patch.arm and such a patch would only be applied
+for that architecture. With Buildroot 2023.11, this is no longer
+supported, and such patches are no longer applied at all.
+
+If you still need per-architecture patches, then you may provide a
+pre-patch hook that copies the patches applicable to the configured
+architecture, e.g.:
+
+define LIBFOO_ARCH_PATCHES
+    $(foreach p,$(wildcard $(LIBFOO_PKGDIR)/*.patch.$(ARCH)), \
+        cp -f $(p) $(patsubst %.$(ARCH),%,$(p))
+    )
+endef
+LIBFOO_PRE_PATCH_HOOKS += LIBFOO_ARCH_PATCHES
+
+Note that no package in Buildroot has architecture-specific patches,
+and that such patches will most probably not be accepted.
 

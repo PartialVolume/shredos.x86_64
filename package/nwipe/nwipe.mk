@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-NWIPE_VERSION = v0.35
+NWIPE_VERSION = v0.37
 NWIPE_SITE = $(call github,martijnvanbrummelen,nwipe,$(NWIPE_VERSION))
 NWIPE_DEPENDENCIES = ncurses parted dmidecode coreutils
 

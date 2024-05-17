@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-LIBWEBSOCKETS_VERSION = 4.3.2
+LIBWEBSOCKETS_VERSION = 4.3.3
 LIBWEBSOCKETS_SITE = $(call github,warmcat,libwebsockets,v$(LIBWEBSOCKETS_VERSION))
 LIBWEBSOCKETS_LICENSE = MIT with exceptions
 LIBWEBSOCKETS_LICENSE_FILES = LICENSE
@@ -42,7 +42,7 @@ LIBWEBSOCKETS_CONF_OPTS += \
 	-DLWS_WITH_SSL=ON \
 	-DLWS_WITH_MBEDTLS=ON \
 	-DLWS_WITH_WOLFSSL=OFF
-else ifeq ($(BR2_PACKAGE_WOLFSSL),y)
+else ifeq ($(BR2_PACKAGE_WOLFSSL_ALL),y)
 LIBWEBSOCKETS_DEPENDENCIES += host-pkgconf wolfssl
 LIBWEBSOCKETS_CONF_OPTS += \
 	-DLWS_WITH_SSL=ON \
