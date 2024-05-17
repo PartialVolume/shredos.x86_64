@@ -6,15 +6,22 @@
 
 # When updating the version, check whether the list of supported targets
 # needs to be updated.
-QEMU_VERSION = 8.0.3
+QEMU_VERSION = 8.1.1
 QEMU_SOURCE = qemu-$(QEMU_VERSION).tar.xz
 QEMU_SITE = https://download.qemu.org
+QEMU_SELINUX_MODULES = qemu virt
 QEMU_LICENSE = GPL-2.0, LGPL-2.1, MIT, BSD-3-Clause, BSD-2-Clause, Others/BSD-1c
 QEMU_LICENSE_FILES = COPYING COPYING.LIB
 # NOTE: there is no top-level license file for non-(L)GPL licenses;
 #       the non-(L)GPL license texts are specified in the affected
 #       individual source files.
 QEMU_CPE_ID_VENDOR = qemu
+
+# Need to ignore the following CVEs because the CPE database does
+# not have an entry for the 8.1.1 version yet.
+QEMU_IGNORE_CVES += CVE-2023-4135
+QEMU_IGNORE_CVES += CVE-2023-3354
+QEMU_IGNORE_CVES += CVE-2023-3180
 
 #-------------------------------------------------------------
 
@@ -26,6 +33,7 @@ QEMU_DEPENDENCIES = \
 	host-meson \
 	host-pkgconf \
 	host-python3 \
+	host-python-distlib \
 	libglib2 \
 	zlib
 
@@ -159,6 +167,12 @@ else
 QEMU_OPTS += --disable-fdt
 endif
 
+ifeq ($(BR2_PACKAGE_QEMU_TRACING),y)
+QEMU_OPTS += --enable-trace-backends=log
+else
+QEMU_OPTS += --enable-trace-backends=nop
+endif
+
 ifeq ($(BR2_PACKAGE_QEMU_TOOLS),y)
 QEMU_OPTS += --enable-tools
 else
@@ -234,6 +248,13 @@ else
 QEMU_OPTS += --disable-numa
 endif
 
+ifeq ($(BR2_PACKAGE_PIPEWIRE),y)
+QEMU_OPTS += --enable-pipewire
+QEMU_DEPENDENCIES += pipewire
+else
+QEMU_OPTS += --disable-pipewire
+endif
+
 ifeq ($(BR2_PACKAGE_SPICE),y)
 QEMU_OPTS += --enable-spice
 QEMU_DEPENDENCIES += spice
@@ -272,7 +293,7 @@ define QEMU_CONFIGURE_CMDS
 			--prefix=/usr \
 			--cross-prefix=$(TARGET_CROSS) \
 			--audio-drv-list= \
-			--meson=$(HOST_DIR)/bin/meson \
+			--python=$(HOST_DIR)/bin/python3 \
 			--ninja=$(HOST_DIR)/bin/ninja \
 			--disable-alsa \
 			--disable-bpf \
@@ -313,7 +334,7 @@ define QEMU_CONFIGURE_CMDS
 			--enable-attr \
 			--enable-kvm \
 			--enable-vhost-net \
-			--with-git-submodules=ignore \
+			--disable-download \
 			--disable-hexagon-idef-parser \
 			$(QEMU_OPTS)
 endef
@@ -339,6 +360,7 @@ HOST_QEMU_DEPENDENCIES = \
 	host-pixman \
 	host-pkgconf \
 	host-python3 \
+	host-python-distlib \
 	host-slirp \
 	host-zlib
 
@@ -458,7 +480,7 @@ define HOST_QEMU_CONFIGURE_CMDS
 		--host-cc="$(HOSTCC)" \
 		--extra-cflags="$(HOST_QEMU_CFLAGS)" \
 		--extra-ldflags="$(HOST_LDFLAGS)" \
-		--meson=$(HOST_DIR)/bin/meson \
+		--python=$(HOST_DIR)/bin/python3 \
 		--ninja=$(HOST_DIR)/bin/ninja \
 		--disable-alsa \
 		--disable-bpf \
@@ -476,6 +498,7 @@ define HOST_QEMU_CONFIGURE_CMDS
 		--disable-netmap \
 		--disable-oss \
 		--disable-pa \
+		--disable-pipewire \
 		--disable-sdl \
 		--disable-selinux \
 		--disable-vde \

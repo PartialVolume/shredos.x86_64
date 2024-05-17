@@ -4,15 +4,15 @@
 #
 ################################################################################
 
-ZFS_VERSION = 2.1.12
+ZFS_VERSION = 2.2.2
 ZFS_SITE = https://github.com/openzfs/zfs/releases/download/zfs-$(ZFS_VERSION)
-ZFS_PATCH = https://github.com/openzfs/zfs/commit/bc3f12bfac152a0c28951cec92340ba14f9ccee9.patch
+ZFS_SELINUX_MODULES = zfs
 ZFS_LICENSE = CDDL
 ZFS_LICENSE_FILES = LICENSE COPYRIGHT
 ZFS_CPE_ID_VENDOR = openzfs
 ZFS_CPE_ID_PRODUCT = openzfs
 
-# 0001-removal-of-LegacyVersion-broke-ax_python_dev.m4.patch
+# 0001-config-user-check-for-aio.h.patch
 ZFS_AUTORECONF = YES
 
 ZFS_DEPENDENCIES = libaio openssl udev util-linux zlib libcurl linux
@@ -57,6 +57,14 @@ ZFS_CONF_OPTS += --enable-pam
 else
 ZFS_CONF_OPTS += --disable-pam
 endif
+
+# Sets the environment for the `make` that will be run ZFS autotools checks.
+ZFS_CONF_ENV += \
+	ARCH=$(KERNEL_ARCH) \
+	CROSS_COMPILE="$(TARGET_CROSS)"
+ZFS_MAKE_ENV += \
+	ARCH=$(KERNEL_ARCH) \
+	CROSS_COMPILE="$(TARGET_CROSS)"
 
 # ZFS userland tools are unfunctional without the Linux kernel modules.
 ZFS_MODULE_SUBDIRS = \

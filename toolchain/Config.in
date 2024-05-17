@@ -34,7 +34,6 @@ config BR2_TOOLCHAIN_USES_MUSL
 	select BR2_TOOLCHAIN_HAS_THREADS
 	select BR2_TOOLCHAIN_HAS_THREADS_DEBUG
 	select BR2_TOOLCHAIN_HAS_THREADS_NPTL
-	select BR2_TOOLCHAIN_HAS_UCONTEXT
 	select BR2_TOOLCHAIN_SUPPORTS_PIE if !BR2_STATIC_LIBS
 
 choice
@@ -302,6 +301,8 @@ config BR2_TOOLCHAIN_HAS_SSP_STRONG
 	bool
 	default y if BR2_TOOLCHAIN_HAS_SSP && BR2_TOOLCHAIN_GCC_AT_LEAST_4_9
 
+# This boolean is true if the toolchain provides a full featured
+# ucontext implementation with ucontext_t and {get,make,set}context
 config BR2_TOOLCHAIN_HAS_UCONTEXT
 	bool
 
@@ -636,6 +637,14 @@ config BR2_TOOLCHAIN_HEADERS_AT_LEAST_6_3
 config BR2_TOOLCHAIN_HEADERS_AT_LEAST_6_4
 	bool
 	select BR2_TOOLCHAIN_HEADERS_AT_LEAST_6_3
+
+config BR2_TOOLCHAIN_HEADERS_AT_LEAST_6_5
+	bool
+	select BR2_TOOLCHAIN_HEADERS_AT_LEAST_6_4
+
+config BR2_TOOLCHAIN_HEADERS_AT_LEAST_6_6
+	bool
+	select BR2_TOOLCHAIN_HEADERS_AT_LEAST_6_5
 	select BR2_TOOLCHAIN_HEADERS_LATEST
 
 # This should be selected by the latest version, above, to indicate that
@@ -649,6 +658,8 @@ config BR2_TOOLCHAIN_HEADERS_LATEST
 # stops affecting a value on the first matching default.
 config BR2_TOOLCHAIN_HEADERS_AT_LEAST
 	string
+	default "6.6"  if BR2_TOOLCHAIN_HEADERS_AT_LEAST_6_6
+	default "6.5"  if BR2_TOOLCHAIN_HEADERS_AT_LEAST_6_5
 	default "6.4"  if BR2_TOOLCHAIN_HEADERS_AT_LEAST_6_4
 	default "6.3"  if BR2_TOOLCHAIN_HEADERS_AT_LEAST_6_3
 	default "6.2"  if BR2_TOOLCHAIN_HEADERS_AT_LEAST_6_2
@@ -875,7 +886,6 @@ config BR2_TOOLCHAIN_HAS_SYNC_8
 config BR2_TOOLCHAIN_HAS_LIBATOMIC
 	bool
 	default y if BR2_TOOLCHAIN_GCC_AT_LEAST_4_8 && \
-		!BR2_TOOLCHAIN_EXTERNAL_CODESOURCERY_AARCH64 && \
 		BR2_TOOLCHAIN_HAS_THREADS && \
 		!BR2_BINFMT_FLAT
 
@@ -912,5 +922,16 @@ config BR2_TOOLCHAIN_HAS_LIBQUADMATH
 	bool
 	default y if BR2_i386 || BR2_x86_64
 	default y if BR2_POWERPC_CPU_HAS_VSX
+
+comment "Bare metal toolchain"
+
+config BR2_TOOLCHAIN_BARE_METAL_BUILDROOT
+	bool "Build a bare metal toolchain"
+	select BR2_PACKAGE_NEWLIB_BARE_METAL
+	help
+	  Select if you need a bare-metal toolchain for building
+	  platform specific firmware images.
+
+source "toolchain/toolchain-bare-metal-buildroot/Config.in"
 
 endmenu

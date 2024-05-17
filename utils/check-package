@@ -69,7 +69,7 @@ def parse_args():
                         help='override the default list of ignored warnings')
 
     parser.add_argument("--manual-url", action="store",
-                        default="http://nightly.buildroot.org/",
+                        default="https://nightly.buildroot.org/",
                         help="default: %(default)s")
     parser.add_argument("--verbose", "-v", action="count", default=0)
     parser.add_argument("--quiet", "-q", action="count", default=0)
@@ -233,16 +233,18 @@ def check_file_using_lib(fname):
         nwarnings += warn
 
     lastline = ""
-    for lineno, text in enumerate(open(fname, "r", errors="surrogateescape").readlines()):
-        nlines += 1
-        for name, cf in objects:
-            if cf.disable.search(lastline):
-                continue
-            warn, fail = print_warnings(cf.check_line(lineno + 1, text), name in xfail)
-            if fail > 0:
-                failed.add(name)
-            nwarnings += warn
-        lastline = text
+    with open(fname, "r", errors="surrogateescape") as f:
+        for lineno, text in enumerate(f):
+            nlines += 1
+            for name, cf in objects:
+                if cf.disable.search(lastline):
+                    continue
+                line_sts = cf.check_line(lineno + 1, text)
+                warn, fail = print_warnings(line_sts, name in xfail)
+                if fail > 0:
+                    failed.add(name)
+                nwarnings += warn
+            lastline = text
 
     for name, cf in objects:
         warn, fail = print_warnings(cf.after(), name in xfail)

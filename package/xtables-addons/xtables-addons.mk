@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-XTABLES_ADDONS_VERSION = 3.22
+XTABLES_ADDONS_VERSION = 3.24
 XTABLES_ADDONS_SOURCE = xtables-addons-$(XTABLES_ADDONS_VERSION).tar.xz
 XTABLES_ADDONS_SITE = https://inai.de/files/xtables-addons
 XTABLES_ADDONS_DEPENDENCIES = iptables linux host-pkgconf
@@ -13,7 +13,6 @@ XTABLES_ADDONS_LICENSE_FILES = LICENSE
 
 XTABLES_ADDONS_CONF_OPTS = \
 	--with-kbuild="$(LINUX_DIR)" \
-	--with-xtables="$(STAGING_DIR)/usr" \
 	--with-xtlibdir="/usr/lib/xtables"
 
 define XTABLES_ADDONS_BUILD_CMDS

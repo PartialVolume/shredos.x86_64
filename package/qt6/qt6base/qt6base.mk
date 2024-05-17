@@ -7,6 +7,10 @@
 QT6BASE_VERSION = $(QT6_VERSION)
 QT6BASE_SITE = $(QT6_SITE)
 QT6BASE_SOURCE = qtbase-$(QT6_SOURCE_TARBALL_PREFIX)-$(QT6BASE_VERSION).tar.xz
+QT6BASE_CPE_ID_VENDOR = qt
+QT6BASE_CPE_ID_PRODUCT = qt
+
+QT6BASE_CMAKE_BACKEND = ninja
 
 QT6BASE_LICENSE = \
 	GPL-2.0+ or LGPL-3.0, \
@@ -29,7 +33,6 @@ QT6BASE_LICENSE_FILES = \
 	LICENSES/Qt-GPL-exception-1.0.txt
 
 QT6BASE_DEPENDENCIES = \
-	host-ninja \
 	host-qt6base \
 	double-conversion \
 	libb2 \
@@ -38,7 +41,6 @@ QT6BASE_DEPENDENCIES = \
 QT6BASE_INSTALL_STAGING = YES
 
 QT6BASE_CONF_OPTS = \
-	-GNinja \
 	-DQT_HOST_PATH=$(HOST_DIR) \
 	-DFEATURE_concurrent=OFF \
 	-DFEATURE_xml=OFF \
@@ -76,26 +78,12 @@ QT6BASE_CONF_OPTS += \
 	-DFEATURE_avx512vl=OFF \
 	-DFEATURE_vaes=OFF
 
-define QT6BASE_BUILD_CMDS
-	$(TARGET_MAKE_ENV) $(BR2_CMAKE) --build $(QT6BASE_BUILDDIR)
-endef
-
-define QT6BASE_INSTALL_STAGING_CMDS
-	$(TARGET_MAKE_ENV) DESTDIR=$(STAGING_DIR) $(BR2_CMAKE) --install $(QT6BASE_BUILDDIR)
-endef
-
-define QT6BASE_INSTALL_TARGET_CMDS
-	$(TARGET_MAKE_ENV) DESTDIR=$(TARGET_DIR) $(BR2_CMAKE) --install $(QT6BASE_BUILDDIR)
-endef
-
 HOST_QT6BASE_DEPENDENCIES = \
-	host-ninja \
 	host-double-conversion \
 	host-libb2 \
 	host-pcre2 \
 	host-zlib
 HOST_QT6BASE_CONF_OPTS = \
-	-GNinja \
 	-DFEATURE_gui=OFF \
 	-DFEATURE_concurrent=OFF \
 	-DFEATURE_xml=ON \
@@ -109,14 +97,6 @@ HOST_QT6BASE_CONF_OPTS = \
 	-DFEATURE_system_libb2=ON \
 	-DFEATURE_system_pcre2=ON \
 	-DFEATURE_system_zlib=ON
-
-define HOST_QT6BASE_BUILD_CMDS
-	$(HOST_MAKE_ENV) $(BR2_CMAKE) --build $(HOST_QT6BASE_BUILDDIR)
-endef
-
-define HOST_QT6BASE_INSTALL_CMDS
-	$(HOST_MAKE_ENV) $(BR2_CMAKE) --install $(HOST_QT6BASE_BUILDDIR)
-endef
 
 # Conditional blocks below are ordered by alphabetic ordering of the
 # BR2_PACKAGE_* option.
@@ -148,6 +128,13 @@ QT6BASE_CONF_OPTS += \
 	-DFEATURE_freetype=ON \
 	-DFEATURE_vulkan=OFF
 QT6BASE_DEPENDENCIES += freetype
+
+ifeq ($(BR2_PACKAGE_QT6BASE_VULKAN),y)
+QT6BASE_DEPENDENCIES   += vulkan-headers vulkan-loader
+QT6BASE_CONFIGURE_OPTS += -DFEATURE_vulkan=ON
+else
+QT6BASE_CONFIGURE_OPTS += -DFEATURE_vulkan=OFF
+endif
 
 ifeq ($(BR2_PACKAGE_QT6BASE_LINUXFB),y)
 QT6BASE_CONF_OPTS += -DFEATURE_linuxfb=ON
@@ -326,7 +313,7 @@ QT6BASE_CONF_OPTS += -DFEATURE_sql_db2=OFF -DFEATURE_sql_ibase=OFF -DFEATURE_sql
 
 ifeq ($(BR2_PACKAGE_QT6BASE_MYSQL),y)
 QT6BASE_CONF_OPTS += -DFEATURE_sql_mysql=ON
-QT6BASE_DEPENDENCIES += mysql
+QT6BASE_DEPENDENCIES += mariadb
 else
 QT6BASE_CONF_OPTS += -DFEATURE_sql_mysql=OFF
 endif
@@ -380,6 +367,11 @@ QT6BASE_DEPENDENCIES += zstd
 else
 QT6BASE_CONF_OPTS += -DFEATURE_zstd=OFF
 endif
+
+define QT6BASE_RM_USR_MKSPECS
+	$(Q)rm -rf $(TARGET_DIR)/usr/mkspecs
+endef
+QT6BASE_TARGET_FINALIZE_HOOKS += QT6BASE_RM_USR_MKSPECS
 
 $(eval $(cmake-package))
 $(eval $(host-cmake-package))

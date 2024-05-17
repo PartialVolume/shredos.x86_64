@@ -639,6 +639,19 @@ do
 	fi
 		printf "______________________________________________________________________________\n" 2>&1  | tee -a transfer.log
 
+	# If the user has specified `shredos_autoreboot=enable` on the kernel command line
+	#
+	autoreboot=$(kernel_cmdline_extractor shredos_autoreboot)
+	if [ $? == 0 ]
+	then
+		if [ "$autoreboot" == "enable" ]
+		then
+			shutdown -r now
+			# Waits while shutdown does it's stuff, without this sleep, the message above gets redisplayed.
+			sleep 10
+		fi
+	fi
+
 	# If the user specified --autopoweroff as a nwipe option then shutdown now
 	#
 	if [ $autopoweroff == 1 ]

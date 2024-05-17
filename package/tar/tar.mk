@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-TAR_VERSION = 1.35
+TAR_VERSION = 1.34
 TAR_SOURCE = tar-$(TAR_VERSION).tar.xz
 TAR_SITE = $(BR2_GNU_MIRROR)/tar
 # busybox installs in /bin, so we need tar to install as well in /bin
@@ -13,6 +13,11 @@ TAR_CONF_OPTS = --exec-prefix=/
 TAR_LICENSE = GPL-3.0+
 TAR_LICENSE_FILES = COPYING
 TAR_CPE_ID_VENDOR = gnu
+TAR_DEPENDENCIES = $(TARGET_NLS_DEPENDENCIES)
+TAR_CONF_ENV = LIBS=$(TARGET_NLS_LIBS)
+
+# 0002-Fix-boundary-checking-in-base-256-decoder.patch
+TAR_IGNORE_CVES += CVE-2022-48303
 
 ifeq ($(BR2_PACKAGE_ACL),y)
 TAR_DEPENDENCIES += acl

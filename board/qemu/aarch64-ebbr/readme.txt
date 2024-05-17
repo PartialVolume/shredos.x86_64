@@ -26,16 +26,15 @@ Running under Qemu
 Run the emulation with:
 
   qemu-system-aarch64 \
-      -M virt,secure=on \
+      -M virt,secure=on,acpi=off \
       -bios output/images/flash.bin \
       -cpu cortex-a53 \
       -device virtio-blk-device,drive=hd0 \
       -device virtio-net-device,netdev=eth0 \
       -device virtio-rng-device,rng=rng0 \
       -drive file=output/images/disk.img,if=none,format=raw,id=hd0 \
-      -m 1024 \
+      -m 2048 \
       -netdev user,id=eth0 \
-      -no-acpi \
       -nographic \
       -object rng-random,filename=/dev/urandom,id=rng0 \
       -rtc base=utc,clock=host \
@@ -63,7 +62,7 @@ image first with:
 Then run the OS installer iso image on emulation with:
 
   qemu-system-aarch64 \
-      -M virt,secure=on \
+      -M virt,secure=on,acpi=off \
       -bios output/images/flash.bin \
       -cpu cortex-a53 \
       -device virtio-blk-device,drive=hd1 \
@@ -72,9 +71,8 @@ Then run the OS installer iso image on emulation with:
       -device virtio-rng-device,rng=rng0 \
       -drive file=<iso>,if=none,format=raw,readonly=on,id=hd0 \
       -drive file=disk.qcow2,if=none,id=hd1 \
-      -m 1024 \
+      -m 2048 \
       -netdev user,id=eth0 \
-      -no-acpi \
       -nographic \
       -object rng-random,filename=/dev/urandom,id=rng0 \
       -rtc base=utc,clock=host \
@@ -100,4 +98,4 @@ Firmware update is currently not supported.
 [1]: https://github.com/ARM-software/ebbr
 [2]: https://developer.arm.com/Architectures/Arm%20SystemReady%20IR
 [3]: https://github.com/ARM-software/arm-systemready/tree/main/IR/prebuilt_images
-[4]: https://developer.arm.com/documentation/DUI1101/1-1/?lang=en
+[4]: https://developer.arm.com/documentation/DUI1101/latest/

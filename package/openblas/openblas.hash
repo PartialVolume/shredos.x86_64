@@ -1,5 +1,5 @@
-# From https://github.com/xianyi/OpenBLAS/releases/tag/v0.3.23
-md5  115634b39007de71eb7e75cf7591dfb2  openblas-0.3.23.tar.gz
+# From https://github.com/OpenMathLib/OpenBLAS/releases/tag/v0.3.26
+md5  bd496a1c81769ed19a161c1f8f904ccd  openblas-0.3.26.tar.gz
 # Locally calculated
-sha256  5d9491d07168a5d00116cdc068a40022c3455bf9293c7cb86a65b1054d7e5114  openblas-0.3.23.tar.gz
+sha256  4e6e4f5cb14c209262e33e6816d70221a2fe49eb69eaf0a06f065598ac602c68  openblas-0.3.26.tar.gz
 sha256  190b5a9c8d9723fe958ad33916bd7346d96fab3c5ea90832bb02d854f620fcff  LICENSE

@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-OCTAVE_VERSION = 8.2.0
+OCTAVE_VERSION = 8.4.0
 OCTAVE_SITE = https://ftp.gnu.org/gnu/octave
 OCTAVE_SOURCE = octave-$(OCTAVE_VERSION).tar.lz
 OCTAVE_LICENSE = GPL-3.0+
@@ -20,7 +20,9 @@ OCTAVE_DEPENDENCIES = \
 	pcre2
 
 ifeq ($(BR2_PACKAGE_READLINE),y)
-OCTAVE_CONF_OPTS += --enable-readline
+OCTAVE_CONF_OPTS += \
+	--enable-readline \
+	--with-libreadline-prefix=$(STAGING_DIR)/usr
 OCTAVE_DEPENDENCIES += readline
 else
 OCTAVE_CONF_OPTS += --disable-readline

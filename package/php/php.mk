@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-PHP_VERSION = 8.2.11
+PHP_VERSION = 8.2.16
 PHP_SITE = https://www.php.net/distributions
 PHP_SOURCE = php-$(PHP_VERSION).tar.xz
 PHP_INSTALL_STAGING = YES
@@ -38,6 +38,11 @@ endif
 
 ifeq ($(BR2_TOOLCHAIN_HAS_LIBATOMIC),y)
 PHP_EXTRA_LIBS += -latomic
+endif
+
+ifeq ($(BR2_PACKAGE_LIBUCONTEXT),y)
+PHP_DEPENDENCIES += libucontext
+PHP_EXTRA_LIBS += -lucontext
 endif
 
 ifeq ($(call qstrip,$(BR2_TARGET_LOCALTIME)),)

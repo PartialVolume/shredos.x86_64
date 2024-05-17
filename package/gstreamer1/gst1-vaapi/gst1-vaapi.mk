@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-GST1_VAAPI_VERSION = 1.22.6
+GST1_VAAPI_VERSION = 1.22.9
 GST1_VAAPI_SITE = https://gstreamer.freedesktop.org/src/gstreamer-vaapi
 GST1_VAAPI_SOURCE = gstreamer-vaapi-$(GST1_VAAPI_VERSION).tar.xz
 GST1_VAAPI_LICENSE = LGPL-2.1+
@@ -39,6 +39,7 @@ endif
 
 ifeq ($(BR2_PACKAGE_WAYLAND),y)
 GST1_VAAPI_CONF_OPTS += -Dwayland=enabled
+GST1_VAAPI_DEPENDENCIES += wayland wayland-protocols
 else
 GST1_VAAPI_CONF_OPTS += -Dwayland=disabled
 endif
