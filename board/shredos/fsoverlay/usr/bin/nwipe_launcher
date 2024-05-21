@@ -170,8 +170,30 @@ then
 	printf "[`date`] Remote Server IP = $config_ip\n" 2>&1 | tee -a transfer.log
 	printf "[`date`] Remote Server path = $config_path\n" 2>&1 | tee -a transfer.log
 
-	ping -c1 $config_ip  2>&1 | tee -a transfer.log
-	if test ${PIPESTATUS[0]} -eq 0
+	# Ping the ftp at 1 second intervals. Proceed as soon as a response is received
+	# If no response after 30 seconds proceed anyway and log a warning.
+	# It is necessary for the server to be online BEFORE nwipe starts, on some systems
+	# the ethernet can be slow to initialise and this check deals with those situations
+	loop_count_total=30
+	server_status="offline"
+	while (( loop_count_total > 0 )); do
+            ping -c1 $config_ip >> transfer.log 2>&1
+            if test ${PIPESTATUS[0]} -eq 0
+            then
+                server_status="online"
+                printf "Server $config_ip online"
+                break
+            fi
+            printf "Waiting for ping response from sftp/ftp server, timeout in  $loop_count_total \r"
+            ((loop_count_total--))
+            sleep 1
+        done
+        if (( $loop_count_total == 0 ))
+        then
+            printf "\nsftp/ftp ping timout\n"
+        fi
+
+	if [[ "$server_status" == "online" ]]
 	then
 		# ***** FTP TRANSFER *****
 		# If the protocol in shredos_config=".." is ftp then read the remote nwipe.conf and customers.csv files
@@ -230,7 +252,7 @@ then
 				# to TFTP_OPTIONS, i.e TFTP_OPTIONS="--secure -v -c" in the config file /etc/default/tftpd-hpa on
 				# your tftp server.
 				#
-				tftp $config_ip -v -m binary -c get $config_file /imported/$config_file 2>&1 | tee -a transfer.log
+				tftp $config_ip -v -m binary -c get $config_path/$config_file /imported/$config_file 2>&1 | tee -a transfer.log
 				test -f "/imported/nwipe.conf"
 				if [ $? == 0 ]
 				then
@@ -245,7 +267,7 @@ then
 					printf "[`date`][TFTP:][FAILED] Could not retrieve nwipe.conf from tftp server $config_ip:$config_path\n" 2>&1  | tee -a transfer.log
 				fi
 
-				tftp $config_ip -v -m binary -c get $customers_file /imported/$customers_file 2>&1 | tee -a transfer.log
+				tftp $config_ip -v -m binary -c get $config_path/$customers_file /imported/$customers_file 2>&1 | tee -a transfer.log
 				test -f "/imported/nwipe_customers.csv"
 				if [ $? == 0 ]
 				then
@@ -262,7 +284,7 @@ then
 
 				# Send a copy of dmesg
 				dmesg > dmesg.txt
-				tftp $config_ip -v -m binary -c put $dmesg_file 2>&1 | tee -a transfer.log
+				tftp $config_ip -v -m binary -c put $config_path/$dmesg_file 2>&1 | tee -a transfer.log
 				if test ${PIPESTATUS[0]} -eq 0
 				then
 					printf "[`date`][TFTP:] Sent dmesg.txt to tftp server $config_ip:$config_path\n" 2>&1 | tee -a transfer.log
@@ -272,7 +294,7 @@ then
 			fi
 		fi
 	else
-		printf "[`date`] Pinging $config_ip FAILED, Check RJ45 network connection\n" 2>&1 | tee -a transfer.log
+		printf "[`date`] [FAILED] No ping response from $config_ip, Check RJ45 network connection\n" 2>&1 | tee -a transfer.log
 	fi
 else
 	# if the shredos_config=".." doesn't exist on the kernel cmdline then we have to assume we booted from USB
@@ -487,8 +509,28 @@ do
 		printf "[`date`] Remote Server IP = $output_ip\n" 2>&1 | tee -a transfer.log
 		printf "[`date`] Remote Server path = $output_path\n" 2>&1 | tee -a transfer.log
 
-		ping -c1 $output_ip 2>&1  | tee -a transfer.log
-		if test ${PIPESTATUS[0]} -eq 0
+                # Ping the ftp at 1 second intervals. Proceed as soon as a response is received
+                # If no response after 30 seconds proceed anyway and log a warning.
+                loop_count_total=30
+                server_status="offline"
+                while (( loop_count_total > 0 )); do
+                    ping -c1 $config_ip >> transfer.log 2>&1
+                    if test ${PIPESTATUS[0]} -eq 0
+                    then
+                        server_status="online"
+                        printf "Server $config_ip online"
+                        break
+                    fi
+                    printf "Waiting for ping response from sftp/ftp server, timeout in  $loop_count_total \r"
+                    ((loop_count_total--))
+                    sleep 1
+                    done
+                if (( $loop_count_total == 0 ))
+                then
+                    printf "\nsftp/ftp ping timout\n"
+                fi
+
+		if [[ "$server_status" == "online" ]]
 		then
 			# ***** FTP TRANSFER *****
 			#
@@ -502,10 +544,10 @@ do
 					if test ${PIPESTATUS[0]} -eq 0
 					then
 						printf "[`date`] Sent $pdf to ftp server $output_ip:$output_path\n" 2>&1 | tee -a transfer.log
+						mv $pdf exported/  2>&1 | tee -a transfer.log
 					else
 						printf "[`date`] Failed to send $pdf to ftp server $output_ip:$output_path\n" 2>&1 | tee -a transfer.log
 					fi
-					mv $pdf exported/  2>&1 | tee -a transfer.log
 				done
 
 				#loop through all the logs
@@ -515,10 +557,10 @@ do
 					if test ${PIPESTATUS[0]} -eq 0
 					then
 						printf "[`date`] Sent $log to ftp server $output_ip:$output_path\n" 2>&1 | tee -a transfer.log
+						mv $log exported/  2>&1 | tee -a transfer.log
 					else
 						printf "[`date`] Failed to send $log to ftp server $output_ip:$output_path\n" 2>&1 | tee -a transfer.log
 					fi
-					mv $log exported/  2>&1 | tee -a transfer.log
 				done
 			else
 				# ***** TFTP TRANSFER *****
@@ -528,27 +570,29 @@ do
 					# loop through all nwipe pdf files
 					for pdf in *.pdf
 					do
-						tftp $config_ip -v -m binary -c put $pdf 2>&1 | tee -a transfer.log
-						if test ${PIPESTATUS[0]} -eq 0
+						tftp $config_ip -v -m binary -c put $output_path/$pdf 2>&1 | tee -a transfer.log
+						tail -1 transfer.log | grep -i ERROR
+						if test ${PIPESTATUS[1]} -ne 0
 						then
 							printf "[`date`] Sent $pdf to tftp server $output_ip:$output_path\n" 2>&1 | tee -a transfer.log
+							mv $pdf exported/  2>&1 | tee -a transfer.log
 						else
 							printf "[`date`] Failed to send $pdf to tftp server $output_ip:$output_path\n" 2>&1 | tee -a transfer.log
 						fi
-						mv $pdf exported/  2>&1 | tee -a transfer.log
 					done
 
 					#loop through all the logs
 					for log in nwipe_log*.txt
 					do
-						tftp $config_ip -v -m binary -c put $log 2>&1 | tee -a transfer.log
-						if test ${PIPESTATUS[0]} -eq 0
+						tftp $config_ip -v -m binary -c put $output_path/$log 2>&1 | tee -a transfer.log
+						tail -1 transfer.log | grep -i ERROR
+						if test ${PIPESTATUS[1]} -ne 0
 						then
 							printf "[`date`] Sent $log to tftp server $output_ip:$output_path\n" 2>&1 | tee -a transfer.log
+							mv $log exported/  2>&1 | tee -a transfer.log
 						else
 							printf "[`date`] Failed to send $log to tftp server $output_ip:$output_path\n" 2>&1 | tee -a transfer.log
 						fi
-						mv $log exported/  2>&1 | tee -a transfer.log
 					done
 				fi
 			fi
@@ -610,16 +654,18 @@ do
 			#
 			if [[ "$config_protocol" == "tftp" ]]; then
 				printf "[`date`] TFTP protocol selected by the user\n" | tee -a transfer.log
-				tftp $config_ip -v -m binary -c put /etc/nwipe/$config_file $config_file 2>&1 | tee -a transfer.log
-				if test ${PIPESTATUS[0]} -eq 0
+				tftp $config_ip -v -m binary -c put /etc/nwipe/$config_file $config_path/$config_file 2>&1 | tee -a transfer.log
+				tail -1 transfer.log | grep -i ERROR
+				if test ${PIPESTATUS[1]} -ne 0
 				then
 					printf "[`date`] Sent nwipe.conf to tftp server $config_ip:$config_path\n" | tee -a transfer.log
 				else
 					printf "[`date`] Failed to send nwipe.conf to tftp server $config_ip:$config_path\n" | tee -a transfer.log
 				fi
 
-				tftp $config_ip -v -m binary -c put /etc/nwipe/$customers_file $customers_file 2>&1 | tee -a transfer.log
-				if test ${PIPESTATUS[0]} -eq 0
+				tftp $config_ip -v -m binary -c put /etc/nwipe/$customers_file $config_path/$customers_file 2>&1 | tee -a transfer.log
+				tail -1 transfer.log | grep -i ERROR
+				if test ${PIPESTATUS[1]} -ne 0
 				then
 					printf "[`date`] Sent customers.csv to tftp server $config_ip:$config_path\n" 2>&1 | tee -a transfer.log
 				else
@@ -627,8 +673,9 @@ do
 				fi
 
 				dmesg > dmesg.txt
-				tftp $config_ip -v -m binary -c put $dmesg_file 2>&1 | tee -a transfer.log
-				if [ ${PIPESTATUS[0]} -eq 0 ]
+				tftp $config_ip -v -m binary -c put $config_path/$dmesg_file 2>&1 | tee -a transfer.log
+				tail -1 transfer.log | grep -i ERROR
+				if [ ${PIPESTATUS[1]} -ne 0 ]
 				then
 					printf "[`date`] Sent dmesg.txt to tftp server $config_ip:$config_path\n" 2>&1 | tee -a transfer.log
 				else
@@ -692,15 +739,8 @@ do
 			;;
 		esac
 	done
-
-	sleep 1;
-	printf " 4"
+	printf " >> Restarting Nwipe <<"
 	sleep 1
-	printf " 3"
-	sleep 1;
-	printf " 2"
-	sleep 1
-	printf " 1"
 done
 # end of never ending while loop
 
