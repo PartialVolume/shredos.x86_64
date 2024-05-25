@@ -25,6 +25,12 @@ transfer_status="SUCCESS"
 # supplementary nwipe options are appended to this string by this launcher script
 launcher_options=""
 
+# These are the errors that tftp can output upon transfer failure. We check for these via grep when
+# sending via tftp. We do not check for these on getting files from the tftp server as we
+# check for the existence of the received file. Unfortunately these two methods of checking
+# is required as tftp does not set the return status to non zero on transfer failure.
+tftp_errors="ERROR\|Transfer Timed out\|Network is unreachable"
+
 # countdown on screen from 30s with numeric digits, checking the sha1 of dmesg every 5 secs
 # will exit countdown before reaching zero if no USB activity for 5 seconds
 loop_count_total=30
@@ -599,7 +605,7 @@ do
 					for pdf in *.pdf
 					do
 						tftp $output_ip -v -m binary -c put $output_path/$pdf 2>&1 | tee -a transfer.log
-						tail -1 transfer.log | grep -i "ERROR\|Transfer Timed out"
+						tail -1 transfer.log | grep -i $tftp_errors
 						if test ${PIPESTATUS[1]} -ne 0
 						then
 							printf "[`date`] Sent $pdf to tftp server $output_ip:$output_path\n" 2>&1 | tee -a transfer.log
@@ -614,7 +620,7 @@ do
 					for log in nwipe_log*.txt
 					do
 						tftp $output_ip -v -m binary -c put $output_path/$log 2>&1 | tee -a transfer.log
-						tail -1 transfer.log | grep -i "ERROR\|Transfer Timed out"
+						tail -1 transfer.log | grep -i $tftp_errors
 						if test ${PIPESTATUS[1]} -ne 0
 						then
 							printf "[`date`] Sent $log to tftp server $output_ip:$output_path\n" 2>&1 | tee -a transfer.log
@@ -689,7 +695,7 @@ do
 			if [[ "$config_protocol" == "tftp" ]]; then
 				printf "[`date`] TFTP protocol selected by the user\n" | tee -a transfer.log
 				tftp $config_ip -v -m binary -c put /etc/nwipe/$config_file $config_path/$config_file 2>&1 | tee -a transfer.log
-				tail -1 transfer.log | grep -i "ERROR\|Transfer Timed out"
+				tail -1 transfer.log | grep -i $tftp_errors
 				if test ${PIPESTATUS[1]} -ne 0
 				then
 					printf "[`date`] Sent nwipe.conf to tftp server $config_ip:$config_path\n" | tee -a transfer.log
@@ -699,7 +705,7 @@ do
 				fi
 
 				tftp $config_ip -v -m binary -c put /etc/nwipe/$customers_file $config_path/$customers_file 2>&1 | tee -a transfer.log
-				tail -1 transfer.log | grep -i "ERROR\|Transfer Timed out"
+				tail -1 transfer.log | grep -i $tftp_errors
 				if test ${PIPESTATUS[1]} -ne 0
 				then
 					printf "[`date`] Sent customers.csv to tftp server $config_ip:$config_path\n" 2>&1 | tee -a transfer.log
@@ -710,7 +716,7 @@ do
 
 				dmesg > dmesg.txt
 				tftp $config_ip -v -m binary -c put $config_path/$dmesg_file 2>&1 | tee -a transfer.log
-				tail -1 transfer.log | grep -i "ERROR\|Transfer Timed out"
+				tail -1 transfer.log | grep -i $tftp_errors
 				if [ ${PIPESTATUS[1]} -ne 0 ]
 				then
 					printf "[`date`] Sent dmesg.txt to tftp server $config_ip:$config_path\n" 2>&1 | tee -a transfer.log
