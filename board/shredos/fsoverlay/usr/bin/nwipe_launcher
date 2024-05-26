@@ -148,6 +148,7 @@ config_debug=""
 config_file="nwipe.conf"
 customers_file="nwipe_customers.csv"
 dmesg_file="dmesg.txt"
+transfer_log_file="transfer.log"
 shredos_config_cmd_exists=""
 
 # Search /proc/cmdline for example: shredos_config="ftp:192.168.0.2:/home/joe/ftpdata/:jo:488993d:d"
@@ -604,31 +605,35 @@ do
 					# loop through all nwipe pdf files
 					for pdf in *.pdf
 					do
-						tftp $output_ip -v -m binary -c put $output_path/$pdf 2>&1 | tee -a transfer.log
-						tail -1 transfer.log | grep -i $tftp_errors
+						tftp $output_ip -v -m binary -c put $output_path/$pdf 2>&1 | tee -a transfer.log tftp_status.txt
+						sleep 1
+						more tftp_status.txt | grep -i "$tftp_errors"
 						if test ${PIPESTATUS[1]} -ne 0
 						then
-							printf "[`date`] Sent $pdf to tftp server $output_ip:$output_path\n" 2>&1 | tee -a transfer.log
+							printf "[`date`] Sent $pdf to tftp server $output_ip:$output_path\n\n" 2>&1 | tee -a transfer.log
 							mv $pdf exported/  2>&1 | tee -a transfer.log
 						else
-							printf "[`date`] Failed to send $pdf to tftp server $output_ip:$output_path\n" 2>&1 | tee -a transfer.log
+							printf "[`date`] FAILED to send $pdf to tftp server $output_ip:$output_path\n\n" 2>&1 | tee -a transfer.log
 							transfer_status="FAIL"
 						fi
+						rm tftp_status.txt
 					done
 
 					#loop through all the logs
 					for log in nwipe_log*.txt
 					do
-						tftp $output_ip -v -m binary -c put $output_path/$log 2>&1 | tee -a transfer.log
-						tail -1 transfer.log | grep -i $tftp_errors
+						tftp $output_ip -v -m binary -c put $output_path/$log 2>&1 | tee -a transfer.log tftp_status.txt
+						sleep 1
+						more tftp_status.txt | grep -i "$tftp_errors"
 						if test ${PIPESTATUS[1]} -ne 0
 						then
-							printf "[`date`] Sent $log to tftp server $output_ip:$output_path\n" 2>&1 | tee -a transfer.log
+							printf "[`date`] Sent $log to tftp server $output_ip:$output_path\n\n" 2>&1 | tee -a transfer.log
 							mv $log exported/  2>&1 | tee -a transfer.log
 						else
-							printf "[`date`] Failed to send $log to tftp server $output_ip:$output_path\n" 2>&1 | tee -a transfer.log
+							printf "[`date`] FAILED to send $log to tftp server $output_ip:$output_path\n\n" 2>&1 | tee -a transfer.log
 							transfer_status="FAIL"
 						fi
+						rm tftp_status.txt
 					done
 				fi
 			fi
@@ -665,18 +670,18 @@ do
 			lftp $output_debug -c "set xfer:clobber yes; open $config_ip; user $config_user $config_password; lcd /etc/nwipe; cd $config_path; put -e $config_file; close" 2>&1 | tee -a transfer.log
 			if test ${PIPESTATUS[0]} -eq 0
 			then
-				printf "[`date`] Sent nwipe.conf to ftp server $config_ip:$config_path\n" | tee -a transfer.log
+				printf "[`date`] Sent nwipe.conf to ftp server $config_ip:$config_path\n\n" | tee -a transfer.log
 			else
-				printf "[`date`] Failed to send nwipe.conf to ftp server $config_ip:$config_path\n" | tee -a transfer.log
+				printf "[`date`] Failed to send nwipe.conf to ftp server $config_ip:$config_path\n\n" | tee -a transfer.log
 				transfer_status="FAIL"
 			fi
 
 			lftp $output_debug -c "set xfer:clobber yes; open $config_ip; user $config_user $config_password; lcd /etc/nwipe; cd $config_path; put -e $customers_file; close" 2>&1 | tee -a transfer.log
 			if test ${PIPESTATUS[0]} -eq 0
 			then
-				printf "[`date`] Sent customers.csv to ftp server $config_ip:$config_path\n" 2>&1 | tee -a transfer.log
+				printf "[`date`] Sent customers.csv to ftp server $config_ip:$config_path\n\n" 2>&1 | tee -a transfer.log
 			else
-				printf "[`date`] Failed to send customers.csv to ftp server $config_ip:$config_path\n" 2>&1 | tee -a transfer.log
+				printf "[`date`] Failed to send customers.csv to ftp server $config_ip:$config_path\n\n" 2>&1 | tee -a transfer.log
 				transfer_status="FAIL"
 			fi
 
@@ -684,9 +689,18 @@ do
 			lftp $output_debug -c "set xfer:clobber yes; open $config_ip; user $config_user $config_password; lcd /; cd $config_path; put -e $dmesg_file; close" 2>&1 | tee -a transfer.log
 			if [ ${PIPESTATUS[0]} -eq 0 ]
 			then
-				printf "[`date`] Sent dmesg.txt to ftp server $config_ip:$config_path\n" 2>&1 | tee -a transfer.log
+				printf "[`date`] Sent dmesg.txt to ftp server $config_ip:$config_path\n\n" 2>&1 | tee -a transfer.log
 			else
-				printf "[`date`] Failed to send dmesg.txt to ftp server $config_ip:$config_path\n" 2>&1 | tee -a transfer.log
+				printf "[`date`] Failed to send dmesg.txt to ftp server $config_ip:$config_path\n\n" 2>&1 | tee -a transfer.log
+				transfer_status="FAIL"
+			fi
+
+			lftp $output_debug -c "set xfer:clobber yes; open $config_ip; user $config_user $config_password; lcd /; cd $config_path; put -e $transfer_log_file; close" 2>&1 | tee -a transfer.log
+			if [ ${PIPESTATUS[0]} -eq 0 ]
+			then
+				printf "[`date`] Sent $transfer_log_file to ftp server $config_ip:$config_path\n\n" 2>&1 | tee -a transfer.log
+			else
+				printf "[`date`] Failed to send $transfer_log_file to ftp server $config_ip:$config_path\n\n" 2>&1 | tee -a transfer.log
 				transfer_status="FAIL"
 			fi
 		else
@@ -694,34 +708,47 @@ do
 			#
 			if [[ "$config_protocol" == "tftp" ]]; then
 				printf "[`date`] TFTP protocol selected by the user\n" | tee -a transfer.log
-				tftp $config_ip -v -m binary -c put /etc/nwipe/$config_file $config_path/$config_file 2>&1 | tee -a transfer.log
-				tail -1 transfer.log | grep -i $tftp_errors
+				tftp $config_ip -v -m binary -c put /etc/nwipe/$config_file $config_path/$config_file 2>&1 | tee -a transfer.log tftp_status.txt
+				more tftp_status.txt | grep -i "$tftp_errors"
 				if test ${PIPESTATUS[1]} -ne 0
 				then
-					printf "[`date`] Sent nwipe.conf to tftp server $config_ip:$config_path\n" | tee -a transfer.log
+					printf "[`date`] Sent nwipe.conf to tftp server $config_ip:$config_path\n\n" | tee -a transfer.log
 				else
-					printf "[`date`] Failed to send nwipe.conf to tftp server $config_ip:$config_path\n" | tee -a transfer.log
+					printf "[`date`] FAILED to send nwipe.conf to tftp server $config_ip:$config_path\n\n" | tee -a transfer.log
 					transfer_status="FAIL"
 				fi
+				rm tftp_status.txt
 
-				tftp $config_ip -v -m binary -c put /etc/nwipe/$customers_file $config_path/$customers_file 2>&1 | tee -a transfer.log
-				tail -1 transfer.log | grep -i $tftp_errors
+				tftp $config_ip -v -m binary -c put /etc/nwipe/$customers_file $config_path/$customers_file 2>&1 | tee -a transfer.log tftp_status.txt
+				more tftp_status.txt | grep -i "$tftp_errors"
 				if test ${PIPESTATUS[1]} -ne 0
 				then
-					printf "[`date`] Sent customers.csv to tftp server $config_ip:$config_path\n" 2>&1 | tee -a transfer.log
+					printf "[`date`] Sent customers.csv to tftp server $config_ip:$config_path\n\n" 2>&1 | tee -a transfer.log
 				else
-					printf "[`date`] Failed to send customers.csv to tftp server $config_ip:$config_path\n" 2>&1 | tee -a transfer.log
+					printf "[`date`] FAILED to send customers.csv to tftp server $config_ip:$config_path\n\n" 2>&1 | tee -a transfer.log
 					transfer_status="FAIL"
 				fi
+                                rm tftp_status.txt
 
 				dmesg > dmesg.txt
-				tftp $config_ip -v -m binary -c put $config_path/$dmesg_file 2>&1 | tee -a transfer.log
-				tail -1 transfer.log | grep -i $tftp_errors
+				tftp $config_ip -v -m binary -c put $config_path/$dmesg_file 2>&1 | tee -a transfer.log tftp_status.txt
+				more tftp_status.txt | grep -i "$tftp_errors"
 				if [ ${PIPESTATUS[1]} -ne 0 ]
 				then
-					printf "[`date`] Sent dmesg.txt to tftp server $config_ip:$config_path\n" 2>&1 | tee -a transfer.log
+					printf "[`date`] Sent dmesg.txt to tftp server $config_ip:$config_path\n\n" 2>&1 | tee -a transfer.log
 				else
-					printf "[`date`] Failed to send dmesg.txt to tftp server $config_ip:$config_path\n" 2>&1 | tee -a transfer.log
+					printf "[`date`] FAILED to send dmesg.txt to tftp server $config_ip:$config_path\n\n" 2>&1 | tee -a transfer.log
+					transfer_status="FAIL"
+				fi
+				rm tftp_status.txt
+
+				tftp $config_ip -v -m binary -c put $config_path/$transfer_log_file 2>&1 | tee -a transfer.log tftp_status.txt
+				more tftp_status.txt | grep -i "$tftp_errors"
+				if [ ${PIPESTATUS[1]} -ne 0 ]
+				then
+					printf "[`date`] Sent transfer.log to tftp server $config_ip:$config_path\n\n" 2>&1 | tee -a transfer.log
+				else
+					printf "[`date`] FAILED to send transfer.log to tftp server $config_ip:$config_path\n\n" 2>&1 | tee -a transfer.log
 					transfer_status="FAIL"
 				fi
 			fi
