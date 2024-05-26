@@ -606,7 +606,6 @@ do
 					for pdf in *.pdf
 					do
 						tftp $output_ip -v -m binary -c put $output_path/$pdf 2>&1 | tee -a transfer.log tftp_status.txt
-						sleep 1
 						more tftp_status.txt | grep -i "$tftp_errors"
 						if test ${PIPESTATUS[1]} -ne 0
 						then
@@ -623,7 +622,6 @@ do
 					for log in nwipe_log*.txt
 					do
 						tftp $output_ip -v -m binary -c put $output_path/$log 2>&1 | tee -a transfer.log tftp_status.txt
-						sleep 1
 						more tftp_status.txt | grep -i "$tftp_errors"
 						if test ${PIPESTATUS[1]} -ne 0
 						then
@@ -672,7 +670,7 @@ do
 			then
 				printf "[`date`] Sent nwipe.conf to ftp server $config_ip:$config_path\n\n" | tee -a transfer.log
 			else
-				printf "[`date`] Failed to send nwipe.conf to ftp server $config_ip:$config_path\n\n" | tee -a transfer.log
+				printf "[`date`] FAILED to send nwipe.conf to ftp server $config_ip:$config_path\n\n" | tee -a transfer.log
 				transfer_status="FAIL"
 			fi
 
@@ -681,7 +679,7 @@ do
 			then
 				printf "[`date`] Sent customers.csv to ftp server $config_ip:$config_path\n\n" 2>&1 | tee -a transfer.log
 			else
-				printf "[`date`] Failed to send customers.csv to ftp server $config_ip:$config_path\n\n" 2>&1 | tee -a transfer.log
+				printf "[`date`] FAILED to send customers.csv to ftp server $config_ip:$config_path\n\n" 2>&1 | tee -a transfer.log
 				transfer_status="FAIL"
 			fi
 
@@ -691,7 +689,7 @@ do
 			then
 				printf "[`date`] Sent dmesg.txt to ftp server $config_ip:$config_path\n\n" 2>&1 | tee -a transfer.log
 			else
-				printf "[`date`] Failed to send dmesg.txt to ftp server $config_ip:$config_path\n\n" 2>&1 | tee -a transfer.log
+				printf "[`date`] FAILED to send dmesg.txt to ftp server $config_ip:$config_path\n\n" 2>&1 | tee -a transfer.log
 				transfer_status="FAIL"
 			fi
 
@@ -700,7 +698,7 @@ do
 			then
 				printf "[`date`] Sent $transfer_log_file to ftp server $config_ip:$config_path\n\n" 2>&1 | tee -a transfer.log
 			else
-				printf "[`date`] Failed to send $transfer_log_file to ftp server $config_ip:$config_path\n\n" 2>&1 | tee -a transfer.log
+				printf "[`date`] FAILED to send $transfer_log_file to ftp server $config_ip:$config_path\n\n" 2>&1 | tee -a transfer.log
 				transfer_status="FAIL"
 			fi
 		else
