@@ -133,6 +133,9 @@ This paragraph is for those that are not familiar with wiping disks. if you know
 Nwipe also includes the following pseudo random number generators:
 * Mersenne Twister (mt19937ar-cok)
 * ISAAC (rand.c 20010626)
+* ISAAC-64 (isaac64.c)
+* Lagged Fibonacci (from v2024.02.2_26.0_x86-64_0.37)
+* XORoshiro-256 (from v2024.02.2_26.0_x86-64_0.37)
 
 ## Obtaining and writing ShredOS to a USB flash drive, the easy way!
 
