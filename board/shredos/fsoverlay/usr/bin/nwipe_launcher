@@ -7,6 +7,9 @@ trap "echo" INT
 # ignore the case
 shopt -s nocasematch
 
+# date format used by nwipe & shredos in all logs
+date_format="+%Y/%m/%d %H:%M:%S"
+
 # Check dmesg for USB activity, do not proceed until there has been no
 # activity for 5 seconds or automatically proceed after 30 seconds.
 #
@@ -53,8 +56,8 @@ while (( loop_count_total > 0 )); do
 done
 printf "\n"
 
-echo "[`date`] Transfer log" > transfer.log
-echo "[`date`] wget log" > wget.log
+echo "[`date "$date_format"`] Transfer log" > transfer.log
+echo "[`date "$date_format"`] wget log" > wget.log
 
 # If it doesn't already exist create a directory where we can
 # store the incoming config file when using a remote server.
@@ -65,9 +68,9 @@ then
 	mkdir /imported
 	if [ $? == 0 ]
 	then
-		printf "[`date`] Created the /imported directory\n" 2>&1 | tee -a transfer.log
+		printf "[`date "$date_format"`] Created the /imported directory\n" 2>&1 | tee -a transfer.log
 	else
-		printf "[`date`] FAILED to create the /imported directory\n" 2>&1 | tee -a transfer.log
+		printf "[`date "$date_format"`] FAILED to create the /imported directory\n" 2>&1 | tee -a transfer.log
 	fi
 fi
 
@@ -79,9 +82,9 @@ then
 	mkdir /etc/nwipe
 	if [ $? == 0 ]
 	then
-		printf "[`date`] Created the /etc/nwipe directory\n" 2>&1 | tee -a transfer.log
+		printf "[`date "$date_format"`] Created the /etc/nwipe directory\n" 2>&1 | tee -a transfer.log
 	else
-		printf "[`date`] FAILED to create the /etc/nwipe directory\n" 2>&1 | tee -a transfer.log
+		printf "[`date "$date_format"`] FAILED to create the /etc/nwipe directory\n" 2>&1 | tee -a transfer.log
 	fi
 fi
 
@@ -91,9 +94,9 @@ if [ ! -d "exported" ]; then
 	mkdir /exported
 	if [ $? == 0 ]
 	then
-		printf "[`date`] Created the /exported directory\n" 2>&1 | tee -a transfer.log
+		printf "[`date "$date_format"`] Created the /exported directory\n" 2>&1 | tee -a transfer.log
 	else
-		printf "[`date`] FAILED to create the /exported directory\n" 2>&1 | tee -a transfer.log
+		printf "[`date "$date_format"`] FAILED to create the /exported directory\n" 2>&1 | tee -a transfer.log
 	fi
 fi
 
@@ -102,13 +105,13 @@ fi
 # exFAT/FAT32/FAT16 drive it comes across. If it doesn't find any exFAT/FAT32/FAT16
 # drive then it reurns "".
 #
-printf "[`date`] nwipe_launcher: Searching for exFAT/FAT32/FAT16 USB drive.\n" 2>&1 | tee -a transfer.log
+printf "[`date "$date_format"`] nwipe_launcher: Searching for exFAT/FAT32/FAT16 USB drive.\n" 2>&1 | tee -a transfer.log
 drive_partition=$(find_shredos_boot_disc.sh)
 
 if [ "$drive_partition" == "" ]; then
-	printf "[`date`] nwipe_launcher: No exFAT/FAT32/FAT16 USB drive found: Unable to archive PDF/logs $drive.\n" 2>&1 | tee -a transfer.log
+	printf "[`date "$date_format"`] nwipe_launcher: No exFAT/FAT32/FAT16 USB drive found: Unable to archive PDF/logs $drive.\n" 2>&1 | tee -a transfer.log
 else
-	printf "[`date`] nwipe_launcher: Found a exFAT/FAT32/FAT16 USB drive $drive\n" 2>&1 | tee -a transfer.log
+	printf "[`date "$date_format"`] nwipe_launcher: Found a exFAT/FAT32/FAT16 USB drive $drive\n" 2>&1 | tee -a transfer.log
 	if [ -f /boot_device.txt ]
 	then
 		drive=$(cat /boot_device.txt)
@@ -181,9 +184,9 @@ then
 		config_debug=""
 	fi
 
-	printf "[`date`] Remote Server protocol = $config_protocol\n" 2>&1 | tee -a transfer.log
-	printf "[`date`] Remote Server IP = $config_ip\n" 2>&1 | tee -a transfer.log
-	printf "[`date`] Remote Server path = $config_path\n" 2>&1 | tee -a transfer.log
+	printf "[`date "$date_format"`] Remote Server protocol = $config_protocol\n" 2>&1 | tee -a transfer.log
+	printf "[`date "$date_format"`] Remote Server IP = $config_ip\n" 2>&1 | tee -a transfer.log
+	printf "[`date "$date_format"`] Remote Server path = $config_path\n" 2>&1 | tee -a transfer.log
 
 	# Ping the ftp at 1 second intervals. Proceed as soon as a response is received
 	# If no response after 30 seconds proceed anyway and log a warning.
@@ -196,16 +199,16 @@ then
             if test ${PIPESTATUS[0]} -eq 0
             then
                 config_server_status="online"
-                printf "[`date`] Server $config_ip online\n"
+                printf "[`date "$date_format"`] Server $config_ip online\n"
                 break
             fi
-            printf "[`date`] Waiting for ping response from sftp/ftp server, timeout in  $loop_count_total \r"
+            printf "[`date "$date_format"`] Waiting for ping response from sftp/ftp server, timeout in  $loop_count_total \r"
             ((loop_count_total--))
             sleep 1
         done
         if (( $loop_count_total == 0 ))
         then
-            printf "[`date`] \nsftp/ftp ping timout\n"
+            printf "[`date "$date_format"`] \nsftp/ftp ping timout\n"
         fi
 
 	if [[ "$config_server_status" == "online" ]]
@@ -214,7 +217,7 @@ then
 		# If the protocol in shredos_config=".." is ftp then read the remote nwipe.conf and customers.csv files
 		if [[ "$config_protocol" == "ftp" ]]
 		then
-			printf "[`date`][FTP:] Using ftp protocol\n" 2>&1 | tee -a transfer.log
+			printf "[`date "$date_format"`][FTP:] Using ftp protocol\n" 2>&1 | tee -a transfer.log
 			# we test lftp transferred successfully by checking whether the file exists
 			lftp $config_debug -c "set xfer:clobber yes; open $config_ip; user $config_user $config_password; cd $config_path; get -O /imported -c $config_file; close" 2>&1 | tee -a transfer.log
 			test -f "/imported/nwipe.conf"
@@ -223,12 +226,12 @@ then
 				cp "/imported/nwipe.conf" "/etc/nwipe/nwipe.conf" 2>&1  | tee -a transfer.log
 				if test ${PIPESTATUS[0]} -eq 0
 				then
-					printf "[`date`][FTP:] Retrieved nwipe.conf from ftp server $config_ip:$config_path\n" 2>&1  | tee -a transfer.log
+					printf "[`date "$date_format"`][FTP:] Retrieved nwipe.conf from ftp server $config_ip:$config_path\n" 2>&1  | tee -a transfer.log
 				else
-					printf "[`date`][FTP:] [FAILED] to copy nwipe.conf from /imported/ to /etc/nwipe/\n" 2>&1  | tee -a transfer.log
+					printf "[`date "$date_format"`][FTP:] [FAILED] to copy nwipe.conf from /imported/ to /etc/nwipe/\n" 2>&1  | tee -a transfer.log
 				fi
 			else
-				printf "[`date`][FTP:][FAILED] Could not retrieve nwipe.conf from ftp server $config_ip:$config_path\n" 2>&1  | tee -a transfer.log
+				printf "[`date "$date_format"`][FTP:][FAILED] Could not retrieve nwipe.conf from ftp server $config_ip:$config_path\n" 2>&1  | tee -a transfer.log
 			fi
 
 			lftp $config_debug -c "set xfer:clobber yes; open $config_ip; user $config_user $config_password; cd $config_path; get -O /imported -c $customers_file; close" 2>&1 | tee -a transfer.log
@@ -238,12 +241,12 @@ then
 				cp "/imported/nwipe_customers.csv" "/etc/nwipe/nwipe_customers.csv" 2>&1  | tee -a transfer.log
 				if test ${PIPESTATUS[0]} -eq 0
 				then
-					printf "[`date`][FTP:] Retrieved nwipe_customers.csv from ftp server $config_ip:$config_path\n" 2>&1  | tee -a transfer.log
+					printf "[`date "$date_format"`][FTP:] Retrieved nwipe_customers.csv from ftp server $config_ip:$config_path\n" 2>&1  | tee -a transfer.log
 				else
-					printf "[`date`][FTP:] [FAILED] to copy nwipe_customers.csv from /imported/ to /etc/nwipe/\n" 2>&1  | tee -a transfer.log
+					printf "[`date "$date_format"`][FTP:] [FAILED] to copy nwipe_customers.csv from /imported/ to /etc/nwipe/\n" 2>&1  | tee -a transfer.log
 				fi
 			else
-				printf "[`date`][FTP:][FAILED] Could not retrieve nwipe_customers.csv from ftp server $config_ip:$config_path\n" 2>&1  | tee -a transfer.log
+				printf "[`date "$date_format"`][FTP:][FAILED] Could not retrieve nwipe_customers.csv from ftp server $config_ip:$config_path\n" 2>&1  | tee -a transfer.log
 			fi
 
 			# Send a copy of dmesg
@@ -251,16 +254,16 @@ then
 			lftp $config_debug -c "set xfer:clobber yes; open $config_ip; user $config_user $config_password; cd $config_path; put -e $dmesg_file; close" 2>&1 | tee -a transfer.log
 			if test ${PIPESTATUS[0]} -eq 0
 			then
-				printf "[`date`][FTP:] Sent dmesg.txt to ftp server $config_ip:$config_path\n" 2>&1 | tee -a transfer.log
+				printf "[`date "$date_format"`][FTP:] Sent dmesg.txt to ftp server $config_ip:$config_path\n" 2>&1 | tee -a transfer.log
 			else
-				printf "[`date`][FTP:][FAILED] Could not send dmesg.txt to ftp server $config_ip:$config_path\n" 2>&1 | tee -a transfer.log
+				printf "[`date "$date_format"`][FTP:][FAILED] Could not send dmesg.txt to ftp server $config_ip:$config_path\n" 2>&1 | tee -a transfer.log
 			fi
 		else
 			# ***** TFTP TRANSFER *****
 			#
 			if [[ "$config_protocol" == "tftp" ]]
 			then
-				printf "[`date`][TFTP:]Using tftp protocol\n" 2>&1 | tee -a transfer.log
+				printf "[`date "$date_format"`][TFTP:]Using tftp protocol\n" 2>&1 | tee -a transfer.log
 				# tftp uses a subset of the ftp commands. It does not support authentication or changing directories
 				# It also uses port 69 as standard unlike ftp which uses 20 & 21. The tftp server needs to support
 				# write access and creation of files by the client. In the case of tftpd_hpa that means adding -c
@@ -274,12 +277,12 @@ then
 					cp "/imported/nwipe.conf" "/etc/nwipe/nwipe.conf" 2>&1  | tee -a transfer.log
 					if test ${PIPESTATUS[0]} -eq 0
 					then
-						printf "[`date`][TFTP:] Retrieved nwipe.conf from tftp server $config_ip:$config_path\n" 2>&1  | tee -a transfer.log
+						printf "[`date "$date_format"`][TFTP:] Retrieved nwipe.conf from tftp server $config_ip:$config_path\n" 2>&1  | tee -a transfer.log
 					else
-						printf "[`date`][TFTP:][FAILED] to copy nwipe.conf from /imported/ to /etc/nwipe/\n" 2>&1  | tee -a transfer.log
+						printf "[`date "$date_format"`][TFTP:][FAILED] to copy nwipe.conf from /imported/ to /etc/nwipe/\n" 2>&1  | tee -a transfer.log
 					fi
 				else
-					printf "[`date`][TFTP:][FAILED] Could not retrieve nwipe.conf from tftp server $config_ip:$config_path\n" 2>&1  | tee -a transfer.log
+					printf "[`date "$date_format"`][TFTP:][FAILED] Could not retrieve nwipe.conf from tftp server $config_ip:$config_path\n" 2>&1  | tee -a transfer.log
 				fi
 
 				tftp $config_ip -v -m binary -c get $config_path/$customers_file /imported/$customers_file 2>&1 | tee -a transfer.log
@@ -289,12 +292,12 @@ then
 					cp "/imported/nwipe_customers.csv" "/etc/nwipe/nwipe_customers.csv" 2>&1  | tee -a transfer.log
 					if test ${PIPESTATUS[0]} -eq 0
 					then
-						printf "[`date`][TFTP:] Retrieved nwipe_customers.csv from tftp server $config_ip:$config_path\n" 2>&1  | tee -a transfer.log
+						printf "[`date "$date_format"`][TFTP:] Retrieved nwipe_customers.csv from tftp server $config_ip:$config_path\n" 2>&1  | tee -a transfer.log
 					else
-						printf "[`date`][TFTP:] [FAILED] to copy nwipe_customers.csv from /imported/ to /etc/nwipe/\n" 2>&1  | tee -a transfer.log
+						printf "[`date "$date_format"`][TFTP:] [FAILED] to copy nwipe_customers.csv from /imported/ to /etc/nwipe/\n" 2>&1  | tee -a transfer.log
 					fi
 				else
-					printf "[`date`][TFTP:][FAILED] Could not retrieve nwipe_customers.csv from tftp server $config_ip:$config_path\n" 2>&1  | tee -a transfer.log
+					printf "[`date "$date_format"`][TFTP:][FAILED] Could not retrieve nwipe_customers.csv from tftp server $config_ip:$config_path\n" 2>&1  | tee -a transfer.log
 				fi
 
 				# Send a copy of dmesg
@@ -302,14 +305,14 @@ then
 				tftp $config_ip -v -m binary -c put $config_path/$dmesg_file 2>&1 | tee -a transfer.log
 				if test ${PIPESTATUS[0]} -eq 0
 				then
-					printf "[`date`][TFTP:] Sent dmesg.txt to tftp server $config_ip:$config_path\n" 2>&1 | tee -a transfer.log
+					printf "[`date "$date_format"`][TFTP:] Sent dmesg.txt to tftp server $config_ip:$config_path\n" 2>&1 | tee -a transfer.log
 				else
-					printf "[`date`][TFTP:][FAILED] Could not send dmesg.txt to tftp server $config_ip:$config_path\n" 2>&1 | tee -a transfer.log
+					printf "[`date "$date_format"`][TFTP:][FAILED] Could not send dmesg.txt to tftp server $config_ip:$config_path\n" 2>&1 | tee -a transfer.log
 				fi
 			fi
 		fi
 	else
-		printf "[`date`] [FAILED] No ping response from $config_ip, Check RJ45 network connection\n" 2>&1 | tee -a transfer.log
+		printf "[`date "$date_format"`] [FAILED] No ping response from $config_ip, Check RJ45 network connection\n" 2>&1 | tee -a transfer.log
 	fi
 else
 	# if the shredos_config=".." doesn't exist on the kernel cmdline then we have to assume we booted from USB
@@ -453,32 +456,32 @@ do
 	lftp_command_line=$(kernel_cmdline_extractor lftp)
 	if [ $? == 0 ]
 	then
-		printf "[`date`] Found lftp commands on kernel command line in grub.cfg\n"
-		printf "[`date`] Executing users lftp commands\n"
+		printf "[`date "$date_format"`] Found lftp commands on kernel command line in grub.cfg\n"
+		printf "[`date "$date_format"`] Executing users lftp commands\n"
 		lftp -c "$lftp_command_line"
 		if [ $? == 0 ]
 		then
-			printf "[`date`] lftp completed sucessfully\n" 2>&1 | tee -a transfer.log
-			printf "[`date`] moving nwipe logs to ../exported\n" 2>&1 | tee -a transfer.log
+			printf "[`date "$date_format"`] lftp completed sucessfully\n" 2>&1 | tee -a transfer.log
+			printf "[`date "$date_format"`] moving nwipe logs to ../exported\n" 2>&1 | tee -a transfer.log
 			mv $logfile exported/
 		else
-			printf "[`date`] lftp command failed, See above and transfer.log for details\n" 2>&1 | tee -a transfer.log
+			printf "[`date "$date_format"`] lftp command failed, See above and transfer.log for details\n" 2>&1 | tee -a transfer.log
 		fi
 	fi
 
 	http_post_url=$(kernel_cmdline_extractor http_post_url)
 	if [ $? == 0 ]
 	then
-		printf "[`date`] Found http_post config on kernel command line in grub.cfg\n"
-		printf "[`date`] Executing users http_post request\n"
+		printf "[`date "$date_format"`] Found http_post config on kernel command line in grub.cfg\n"
+		printf "[`date "$date_format"`] Executing users http_post request\n"
 		wget --method PUT --body-file="$logfile" "$http_post_url" -O - -nv >> wget.log
 		if [ $? == 0 ]
 		then
-			printf "[`date`] wget completed sucessfully\n"
-			printf "[`date`] moving nwipe logs to ../exported\n"
+			printf "[`date "$date_format"`] wget completed sucessfully\n"
+			printf "[`date "$date_format"`] moving nwipe logs to ../exported\n"
 			mv $logfile exported/
 		else
-			printf "[`date`] wget command failed, See above and wget.log for details\n"
+			printf "[`date "$date_format"`] wget command failed, See above and wget.log for details\n"
 		fi
 	fi
 
@@ -538,9 +541,9 @@ do
 			output_debug=""
 		fi
 
-		printf "[`date`] Remote Server protocol = $output_protocol\n" 2>&1  | tee -a transfer.log
-		printf "[`date`] Remote Server IP = $output_ip\n" 2>&1 | tee -a transfer.log
-		printf "[`date`] Remote Server path = $output_path\n" 2>&1 | tee -a transfer.log
+		printf "[`date "$date_format"`] Remote Server protocol = $output_protocol\n" 2>&1  | tee -a transfer.log
+		printf "[`date "$date_format"`] Remote Server IP = $output_ip\n" 2>&1 | tee -a transfer.log
+		printf "[`date "$date_format"`] Remote Server path = $output_path\n" 2>&1 | tee -a transfer.log
 
                 # Ping the ftp at 1 second intervals. Proceed as soon as a response is received
                 # If no response after 30 seconds proceed anyway and log a warning.
@@ -551,10 +554,10 @@ do
                     if test ${PIPESTATUS[0]} -eq 0
                     then
                         output_server_status="online"
-                        printf "[`date`] Server $output_ip online\n"
+                        printf "[`date "$date_format"`] Server $output_ip online\n"
                         break
                     fi
-                    printf "[`date`] Waiting for ping response from sftp/ftp server, timeout in  $loop_count_total \r"
+                    printf "[`date "$date_format"`] Waiting for ping response from sftp/ftp server, timeout in  $loop_count_total \r"
                     ((loop_count_total--))
                     sleep 1
                     done
@@ -576,10 +579,10 @@ do
 					lftp $output_debug -c "set xfer:clobber yes; open $output_ip; user $output_user $output_password; lcd /; cd $output_path; put -e $pdf; close" 2>&1 | tee -a transfer.log
 					if test ${PIPESTATUS[0]} -eq 0
 					then
-						printf "[`date`] Sent $pdf to ftp server $output_ip:$output_path\n" 2>&1 | tee -a transfer.log
+						printf "[`date "$date_format"`] Sent $pdf to ftp server $output_ip:$output_path\n" 2>&1 | tee -a transfer.log
 						mv $pdf exported/  2>&1 | tee -a transfer.log
 					else
-						printf "[`date`] Failed to send $pdf to ftp server $output_ip:$output_path\n" 2>&1 | tee -a transfer.log
+						printf "[`date "$date_format"`] Failed to send $pdf to ftp server $output_ip:$output_path\n" 2>&1 | tee -a transfer.log
 						transfer_status="FAIL"
 					fi
 				done
@@ -590,10 +593,10 @@ do
 					lftp $output_debug -c "set xfer:clobber yes; open $output_ip; user $output_user $output_password; lcd /; cd $output_path; put -e $log; close" 2>&1 | tee -a transfer.log
 					if test ${PIPESTATUS[0]} -eq 0
 					then
-						printf "[`date`] Sent $log to ftp server $output_ip:$output_path\n" 2>&1 | tee -a transfer.log
+						printf "[`date "$date_format"`] Sent $log to ftp server $output_ip:$output_path\n" 2>&1 | tee -a transfer.log
 						mv $log exported/  2>&1 | tee -a transfer.log
 					else
-						printf "[`date`] Failed to send $log to ftp server $output_ip:$output_path\n" 2>&1 | tee -a transfer.log
+						printf "[`date "$date_format"`] Failed to send $log to ftp server $output_ip:$output_path\n" 2>&1 | tee -a transfer.log
 						transfer_status="FAIL"
                                         fi
 				done
@@ -609,10 +612,10 @@ do
 						more tftp_status.txt | grep -i "$tftp_errors"
 						if test ${PIPESTATUS[1]} -ne 0
 						then
-							printf "[`date`] Sent $pdf to tftp server $output_ip:$output_path\n\n" 2>&1 | tee -a transfer.log
+							printf "[`date "$date_format"`] Sent $pdf to tftp server $output_ip:$output_path\n\n" 2>&1 | tee -a transfer.log
 							mv $pdf exported/  2>&1 | tee -a transfer.log
 						else
-							printf "[`date`] FAILED to send $pdf to tftp server $output_ip:$output_path\n\n" 2>&1 | tee -a transfer.log
+							printf "[`date "$date_format"`] FAILED to send $pdf to tftp server $output_ip:$output_path\n\n" 2>&1 | tee -a transfer.log
 							transfer_status="FAIL"
 						fi
 						rm tftp_status.txt
@@ -625,10 +628,10 @@ do
 						more tftp_status.txt | grep -i "$tftp_errors"
 						if test ${PIPESTATUS[1]} -ne 0
 						then
-							printf "[`date`] Sent $log to tftp server $output_ip:$output_path\n\n" 2>&1 | tee -a transfer.log
+							printf "[`date "$date_format"`] Sent $log to tftp server $output_ip:$output_path\n\n" 2>&1 | tee -a transfer.log
 							mv $log exported/  2>&1 | tee -a transfer.log
 						else
-							printf "[`date`] FAILED to send $log to tftp server $output_ip:$output_path\n\n" 2>&1 | tee -a transfer.log
+							printf "[`date "$date_format"`] FAILED to send $log to tftp server $output_ip:$output_path\n\n" 2>&1 | tee -a transfer.log
 							transfer_status="FAIL"
 						fi
 						rm tftp_status.txt
@@ -636,7 +639,7 @@ do
 				fi
 			fi
 		else
-			printf "[`date`] Pinging $output_ip FAILED, Check RJ45 network connection\n" 2>&1 | tee -a transfer.log
+			printf "[`date "$date_format"`] Pinging $output_ip FAILED, Check RJ45 network connection\n" 2>&1 | tee -a transfer.log
 			transfer_status="FAIL"
 		fi
 	else
@@ -664,22 +667,22 @@ do
 		# ***** FTP TRANSFER *****
 		#
 		if [[ "$config_protocol" == "ftp" ]]; then
-			printf "[`date`] FTP protocol selected by the user\n" | tee -a transfer.log
+			printf "[`date "$date_format"`] FTP protocol selected by the user\n" | tee -a transfer.log
 			lftp $output_debug -c "set xfer:clobber yes; open $config_ip; user $config_user $config_password; lcd /etc/nwipe; cd $config_path; put -e $config_file; close" 2>&1 | tee -a transfer.log
 			if test ${PIPESTATUS[0]} -eq 0
 			then
-				printf "[`date`] Sent nwipe.conf to ftp server $config_ip:$config_path\n\n" | tee -a transfer.log
+				printf "[`date "$date_format"`] Sent nwipe.conf to ftp server $config_ip:$config_path\n\n" | tee -a transfer.log
 			else
-				printf "[`date`] FAILED to send nwipe.conf to ftp server $config_ip:$config_path\n\n" | tee -a transfer.log
+				printf "[`date "$date_format"`] FAILED to send nwipe.conf to ftp server $config_ip:$config_path\n\n" | tee -a transfer.log
 				transfer_status="FAIL"
 			fi
 
 			lftp $output_debug -c "set xfer:clobber yes; open $config_ip; user $config_user $config_password; lcd /etc/nwipe; cd $config_path; put -e $customers_file; close" 2>&1 | tee -a transfer.log
 			if test ${PIPESTATUS[0]} -eq 0
 			then
-				printf "[`date`] Sent customers.csv to ftp server $config_ip:$config_path\n\n" 2>&1 | tee -a transfer.log
+				printf "[`date "$date_format"`] Sent customers.csv to ftp server $config_ip:$config_path\n\n" 2>&1 | tee -a transfer.log
 			else
-				printf "[`date`] FAILED to send customers.csv to ftp server $config_ip:$config_path\n\n" 2>&1 | tee -a transfer.log
+				printf "[`date "$date_format"`] FAILED to send customers.csv to ftp server $config_ip:$config_path\n\n" 2>&1 | tee -a transfer.log
 				transfer_status="FAIL"
 			fi
 
@@ -687,32 +690,32 @@ do
 			lftp $output_debug -c "set xfer:clobber yes; open $config_ip; user $config_user $config_password; lcd /; cd $config_path; put -e $dmesg_file; close" 2>&1 | tee -a transfer.log
 			if [ ${PIPESTATUS[0]} -eq 0 ]
 			then
-				printf "[`date`] Sent dmesg.txt to ftp server $config_ip:$config_path\n\n" 2>&1 | tee -a transfer.log
+				printf "[`date "$date_format"`] Sent dmesg.txt to ftp server $config_ip:$config_path\n\n" 2>&1 | tee -a transfer.log
 			else
-				printf "[`date`] FAILED to send dmesg.txt to ftp server $config_ip:$config_path\n\n" 2>&1 | tee -a transfer.log
+				printf "[`date "$date_format"`] FAILED to send dmesg.txt to ftp server $config_ip:$config_path\n\n" 2>&1 | tee -a transfer.log
 				transfer_status="FAIL"
 			fi
 
 			lftp $output_debug -c "set xfer:clobber yes; open $config_ip; user $config_user $config_password; lcd /; cd $config_path; put -e $transfer_log_file; close" 2>&1 | tee -a transfer.log
 			if [ ${PIPESTATUS[0]} -eq 0 ]
 			then
-				printf "[`date`] Sent $transfer_log_file to ftp server $config_ip:$config_path\n\n" 2>&1 | tee -a transfer.log
+				printf "[`date "$date_format"`] Sent $transfer_log_file to ftp server $config_ip:$config_path\n\n" 2>&1 | tee -a transfer.log
 			else
-				printf "[`date`] FAILED to send $transfer_log_file to ftp server $config_ip:$config_path\n\n" 2>&1 | tee -a transfer.log
+				printf "[`date "$date_format"`] FAILED to send $transfer_log_file to ftp server $config_ip:$config_path\n\n" 2>&1 | tee -a transfer.log
 				transfer_status="FAIL"
 			fi
 		else
 			# ***** TFTP TRANSFER *****
 			#
 			if [[ "$config_protocol" == "tftp" ]]; then
-				printf "[`date`] TFTP protocol selected by the user\n" | tee -a transfer.log
+				printf "[`date "$date_format"`] TFTP protocol selected by the user\n" | tee -a transfer.log
 				tftp $config_ip -v -m binary -c put /etc/nwipe/$config_file $config_path/$config_file 2>&1 | tee -a transfer.log tftp_status.txt
 				more tftp_status.txt | grep -i "$tftp_errors"
 				if test ${PIPESTATUS[1]} -ne 0
 				then
-					printf "[`date`] Sent nwipe.conf to tftp server $config_ip:$config_path\n\n" | tee -a transfer.log
+					printf "[`date "$date_format"`] Sent nwipe.conf to tftp server $config_ip:$config_path\n\n" | tee -a transfer.log
 				else
-					printf "[`date`] FAILED to send nwipe.conf to tftp server $config_ip:$config_path\n\n" | tee -a transfer.log
+					printf "[`date "$date_format"`] FAILED to send nwipe.conf to tftp server $config_ip:$config_path\n\n" | tee -a transfer.log
 					transfer_status="FAIL"
 				fi
 				rm tftp_status.txt
@@ -721,9 +724,9 @@ do
 				more tftp_status.txt | grep -i "$tftp_errors"
 				if test ${PIPESTATUS[1]} -ne 0
 				then
-					printf "[`date`] Sent customers.csv to tftp server $config_ip:$config_path\n\n" 2>&1 | tee -a transfer.log
+					printf "[`date "$date_format"`] Sent customers.csv to tftp server $config_ip:$config_path\n\n" 2>&1 | tee -a transfer.log
 				else
-					printf "[`date`] FAILED to send customers.csv to tftp server $config_ip:$config_path\n\n" 2>&1 | tee -a transfer.log
+					printf "[`date "$date_format"`] FAILED to send customers.csv to tftp server $config_ip:$config_path\n\n" 2>&1 | tee -a transfer.log
 					transfer_status="FAIL"
 				fi
                                 rm tftp_status.txt
@@ -733,9 +736,9 @@ do
 				more tftp_status.txt | grep -i "$tftp_errors"
 				if [ ${PIPESTATUS[1]} -ne 0 ]
 				then
-					printf "[`date`] Sent dmesg.txt to tftp server $config_ip:$config_path\n\n" 2>&1 | tee -a transfer.log
+					printf "[`date "$date_format"`] Sent dmesg.txt to tftp server $config_ip:$config_path\n\n" 2>&1 | tee -a transfer.log
 				else
-					printf "[`date`] FAILED to send dmesg.txt to tftp server $config_ip:$config_path\n\n" 2>&1 | tee -a transfer.log
+					printf "[`date "$date_format"`] FAILED to send dmesg.txt to tftp server $config_ip:$config_path\n\n" 2>&1 | tee -a transfer.log
 					transfer_status="FAIL"
 				fi
 				rm tftp_status.txt
@@ -744,9 +747,9 @@ do
 				more tftp_status.txt | grep -i "$tftp_errors"
 				if [ ${PIPESTATUS[1]} -ne 0 ]
 				then
-					printf "[`date`] Sent transfer.log to tftp server $config_ip:$config_path\n\n" 2>&1 | tee -a transfer.log
+					printf "[`date "$date_format"`] Sent transfer.log to tftp server $config_ip:$config_path\n\n" 2>&1 | tee -a transfer.log
 				else
-					printf "[`date`] FAILED to send transfer.log to tftp server $config_ip:$config_path\n\n" 2>&1 | tee -a transfer.log
+					printf "[`date "$date_format"`] FAILED to send transfer.log to tftp server $config_ip:$config_path\n\n" 2>&1 | tee -a transfer.log
 					transfer_status="FAIL"
 				fi
 			fi
@@ -764,7 +767,7 @@ do
                         # Waits while shutdown does it's stuff, without this sleep, the message above gets redisplayed.
                         sleep 30
                 else
-                        printf "[`date`] Although auto reboot requested, a transfer error occurred, waiting for user to review transfer.log\n" 2>&1 | tee -a transfer.log
+                        printf "[`date "$date_format"`] Although auto reboot requested, a transfer error occurred, waiting for user to review transfer.log\n" 2>&1 | tee -a transfer.log
                 fi
 	fi
 
@@ -776,7 +779,7 @@ do
                 then
                         init 0
                 else
-                        printf "[`date`] Although auto power off requested, a transfer error occurred, so wait for user to review transfer.log\n" 2>&1 | tee -a transfer.log
+                        printf "[`date "$date_format"`] Although auto power off requested, a transfer error occurred, so wait for user to review transfer.log\n" 2>&1 | tee -a transfer.log
                 fi
 	fi
 
@@ -784,7 +787,26 @@ do
 	while [ "$exitloop" == "1" ]
 	do
 		printf ""
-		printf "Paused, press r to reboot, s to shutdown, spacebar to restart nwipe.\n"
+
+                # Are there any *.pdf certificates left in the '/' of the shredos virtual drive? i.e. did transfer to USB
+                # or to a network server fail? If yes then change the 'reboot, shutdown, restart nwipe' message to include a
+                # option to archive to USB. So in the event of something going wrong, like the USB stick is missing or the
+                # network or server is offline, this allows the user to archive the certificates to a FAT formatted USB
+                # drive. Note once PDF files/logs have been sent to USB or network server they are moved from '/' to '/sent/'
+                # hence why we only search '/' for pdfs.
+                #
+                grep -i "Model" /*.pdf 2>/dev/null
+                if [ $? == 0 ]
+		then
+                    printf ">> WARNING << There are PDF's that have not been saved, plug in a USB drive\n"
+                    printf "              and press the 'a' key to archive to USB.\n\n"
+                    printf "Paused, press r=reboot, s=shutdown, a=archive to USB, spacebar=restart nwipe.\n"
+                    Final_message_plus=1
+                else
+                    printf "[GOOD] All PDFs and logs have been saved\n\n"
+                    printf "Paused.. press r to reboot, s to shutdown, spacebar to restart nwipe.\n"
+                    Final_message_plus=0
+                fi
 		printf ">"
 		read -rsn1 input
 		printf "\n"
@@ -802,6 +824,14 @@ do
 			# Waits while shutdown does it's stuff, without this sleep, the message above gets redisplayed.
 			sleep 10
 			;;
+
+			A)
+			if [ $Final_message_plus == 1 ]
+			then
+                            # no need to tee the output of archive_log.sh, it's done in the script.
+                            archive_log.sh write
+                        fi
+                        ;;
 
 			'')
 			printf "Restart Nwipe\n"
