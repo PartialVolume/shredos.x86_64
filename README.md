@@ -133,6 +133,9 @@ This paragraph is for those that are not familiar with wiping disks. if you know
 Nwipe also includes the following pseudo random number generators:
 * Mersenne Twister (mt19937ar-cok)
 * ISAAC (rand.c 20010626)
+* ISAAC-64 (isaac64.c)
+* Lagged Fibonacci (from v2024.02.2_26.0_x86-64_0.37)
+* XORoshiro-256 (from v2024.02.2_26.0_x86-64_0.37)
 
 ## Obtaining and writing ShredOS to a USB flash drive, the easy way!
 
@@ -314,8 +317,9 @@ menuentry "shredos" {
 }
 ```
 
-For reference and as of nwipe v0.35, listed below are all the options that you can use with nwipe and can place on the kernel command line in grub.cfg as described in the examples above.
+For reference and as of nwipe v0.37 (from v2024.02.2_26.0_x86-64_0.37), listed below are all the options that you can use with nwipe and can place on the kernel command line in grub.cfg as described in the examples above.
 ```
+sudo nwipe --help
 Usage: nwipe [options] [device1] [device2] ...
 Options:
   -V, --version           Prints the version number
@@ -347,6 +351,9 @@ Options:
                           off   - Do not verify
                           last  - Verify after the last pass
                           all   - Verify every pass
+                          
+                          Please mind that HMG IS5 enhanced always verifies the
+                          last (PRNG) pass regardless of this option.
 
   -m, --method=METHOD     The wiping method. See man page for more details.
                           (default: dodshort)
@@ -359,13 +366,14 @@ Options:
                           one                    - Overwrite with ones (0xFF)
                           verify_zero            - Verifies disk is zero filled
                           verify_one             - Verifies disk is 0xFF filled
+                          is5enh                 - HMG IS5 enhanced
 
   -l, --logfile=FILE      Filename to log to. Default is STDOUT
 
   -P, --PDFreportpath=PATH Path to write PDF reports to. Default is "."
                            If set to "noPDF" no PDF reports are written.
 
-  -p, --prng=METHOD       PRNG option (mersenne|twister|isaac|isaac64)
+  -p, --prng=METHOD       PRNG option (mersenne|twister|isaac|isaac64|add_lagg_fibonacci_prng)
 
   -q, --quiet             Anonymize logs and the GUI by removing unique data, i.e.
                           serial numbers, LU WWN Device ID, and SMBIOS/DMI data
@@ -390,7 +398,7 @@ Options:
       --nousb             Do NOT show or wipe any USB devices whether in GUI
                           mode, --nogui or --autonuke modes.
 
-  -e, --exclude=DEVICES   Up to thirty comma separated devices to be excluded
+  -e, --exclude=DEVICES   Up to ten comma separated devices to be excluded
                           --exclude=/dev/sdc
                           --exclude=/dev/sdc,/dev/sdd
                           --exclude=/dev/sdc,/dev/sdd,/dev/mapper/cryptswap1
