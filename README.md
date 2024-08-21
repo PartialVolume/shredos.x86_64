@@ -603,6 +603,9 @@ Use hexedit to examine and modify the contents of a hard disk. Hexedit can be us
 #### hdparm
 hdparm has many uses and is a powerfull tool. Although Nwipe will be adding ATA secure erase capability, i.e using the hard disk own firmware to initiate an erase, nwipe currently wipes drives using the traditional method of writing to every block. If you want to initiate a ATA secure erase using the drives firmware then hdparm will be of use.
 
+#### nvme
+nvme can be used run a secure erase on NVMe devices.
+
 
 ## Compiling ShredOS and burning to USB stick, the harder way !
 
