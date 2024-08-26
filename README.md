@@ -76,8 +76,10 @@ A certificate can optionally be created for each drive erased, the default is to
 1. [Nwipe's font size is too small, How to double the size of the text](#nwipes-font-size-is-too-small-how-to-double-the-size-of-the-text)
 1. [Shredos includes the following related programs](#shredos-includes-the-following-related-programs)
    1. [smartmontools](#smartmontools)
-   1. [hexedit](#hexedit)
    1. [hdparm](#hdparm)
+   1. [hexedit](#hexedit)
+   1. [nvme-cli](#hdparm)
+   1. [sg3_utils](#sg3_utils)
 1. [Compiling shredos and burning to USB stick, the harder way!](#compiling-shredos-and-burning-to-usb-stick-the-harder-way-)
    1. [Install the following prerequisite software first. Without this software, the make command will fail](https://github.com/PartialVolume/shredos.x86_64/blob/master/README.md#install-the-following-prerequisite-software-first-without-this-software-the-make-command-will-fail)
    1. [Download the ShredOS source using the git command and build ShredOS](https://github.com/PartialVolume/shredos.x86_64/blob/master/README.md#download-the-shredos-source-using-the-git-command-and-build-shredos)
@@ -106,7 +108,7 @@ ShredOS can be used as a software image and booted via the network using a clien
 		
 You can also use ShredOS on headless systems or systems with faulty display hardware as it includes a user enabled telnet server. Further details can be found here. [How to wipe drives on headless systems or systems with faulty or missing display hardware or keyboards](#how-to-wipe-drives-on-headless-systems-or-systems-with-faulty-display-hardware-for-use-on-secure-lans-only)
 
-ShredOS includes the latest Nwipe official release, but in addition includes other disk related utilities such as Smartmontools, hdparm, a hexeditor [hexedit](https://linux.die.net/man/1/hexedit), and, the program loadkeys which can be used for [setting the keyboard layout](https://github.com/PartialVolume/shredos.2020.02/blob/master/README.md#how-to-set-the-keyboard-map-using-the-loadkeys-command-see-here-for-persistent-change-between-reboots). Nwipe automatically starts it's GUI in the first virtual terminal (ALT-F1), hdparm, smartmontools and hexeditor can be run in the second virtual terminal, (ALT-F2). Nwipe will erase drives using a user selectable choice of seven methods. hdparm - amongst many of its options - can be used for wiping a drive by [issueing ATA erase commands to the drive's internal firmware](https://ata.wiki.kernel.org/index.php/ATA_Secure_Erase). This is a planned feature addition to nwipe.
+ShredOS includes the latest Nwipe official release, but in addition includes other disk related utilities such as Smartmontools, hdparm, a hexeditor [hexedit](https://linux.die.net/man/1/hexedit), and, the program loadkeys which can be used for [setting the keyboard layout](https://github.com/PartialVolume/shredos.2020.02/blob/master/README.md#how-to-set-the-keyboard-map-using-the-loadkeys-command-see-here-for-persistent-change-between-reboots). Nwipe automatically starts it's GUI in the first virtual terminal (ALT-F1), hdparm, smartmontools and hexeditor can be run in the second virtual terminal, (ALT-F2). Nwipe will erase drives using a user selectable choice of seven methods. hdparm - amongst many of its options - can be used for wiping a drive by issueing [ATA erase commands](https://ata.wiki.kernel.org/index.php/ATA_Secure_Erase) or [SAS erase commands](https://github.com/gms-electronics/formatingguide) interface commands to the firmware of the storrage device. This is a planned feature addition to nwipe.
 
 ShredOS boots very quickly and depending upon the host system can boot in as little as 2 seconds (typically 4 to 6 seconds) on modern hardware, while on an old Pentium4 may take 40+ seconds. Nwipe automatically starts in GUI mode and will list the disks present on the host system. In fact, on version of ShredOS earlier than [v2023.08.2_25.0_x86-64_0.35](https://github.com/PartialVolume/shredos.x86_64/releases/tag/v2023.08.2_25.0_x86-64_0.35) nwipe can launch so fast that the USB devices have not yet initialised so the first time nwipe appears it may not show any USB drives, this behaviour has been fixed from version v2023.08.2_25.0_x86-64_0.35 onwards so there will usually be a delay of about 5-10 seconds while the USB devices are initialised. On older versions of ShredOS you would use Control-C to exit and restart nwipe to see any attached USB devices. You can then select the methods by which you want to securely erase the disk/s. Nwipe is able to simultanuosly wipe multiple disks using a threaded software architecture. I have simultaneously wiped 28 loop devices in tests and know of instances where it's been used to simultaneuosly wipe upwards of fifty drives on a rack server.
 		
@@ -597,27 +599,29 @@ After running the setfont command.
 #### smartmontools
 Nwipes ability to detect serial numbers on USB devices now works on USB bridges who's chipset supports that functionality. Smartmontools provides nwipe with that capability. Smartmontools can be used in the second or third virtual terminal. ALT-F2 and ALT-F3.
 
-#### hexedit
-Use hexedit to examine and modify the contents of a hard disk. Hexedit can be used in the second or third virtual terminal. ALT-F2 and ALT-F3.
-
 #### hdparm
 hdparm has many uses and is a powerfull tool. Although Nwipe will be adding ATA secure erase capability, i.e using the hard disk own firmware to initiate an erase, nwipe currently wipes drives using the traditional method of writing to every block. If you want to initiate a ATA secure erase using the drives firmware then hdparm will be of use.
 
-#### nvme
-nvme can be used run a secure erase on NVMe devices.
+#### hexedit
+Use hexedit to examine and modify the contents of a hard disk. Hexedit can be used in the second or third virtual terminal. ALT-F2 and ALT-F3.
 
+#### nvme
+nvme can be used run a secure erase on NVMe devices. 
+
+#### sg3_utils
+Like hdparm sg3_utils has many applications such as changes to the disk's block sizes, removal of scsi integrity protection and firmware level reformating (such as sanitization or secure erase). nwipe currently wipes drives using the traditional method of writing to every block. If you want to initiate a SCSI / SAS secure erase using the drives firmware then sg3_utils will be of use, it can also be used in conjunction with gnu parallel to format multiple drives at once. 
 
 ## Compiling ShredOS and burning to USB stick, the harder way !
 
 The ShredOS system is based on the buildroot tool whos main application is to create operating systems for embedded systems.
 The image (.img) file is approximately 260 MiB and can be written to a USB memory stick with a tool such as dd or Etcher.
 
-### You can build shredos using the following commands. This example build was compiled on KDE Neon (Ubuntu 20.04).
+### You can build shredos using the following commands. This example build was compiled on KDE Neon (Ubuntu 24.04 LTSl).
 
 #### Install the following prerequisite software first. Without this software, the make command will fail
 ```
 $ sudo apt install git
-$ sudo apt install build-essential   pkg-config   automake   libncurses5-dev   autotools-dev   libparted-dev   dmidecode   coreutils   smartmontools
+$ sudo apt install build-essential   pkg-config   automake   libncurses5-dev   autotools-dev   libparted-dev   dmidecode   coreutils   smartmontools unzip
 $ sudo apt-get install libssl-dev
 $ sudo apt-get install libelf-dev
 $ sudo apt-get install mtools
