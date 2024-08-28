@@ -1,4 +1,4 @@
-config BR2_PACKAGE_PROCPS_NG
+config BR2_PACKAGE_PROCPS-NG
 	bool "procps-ng"
 	depends on BR2_USE_MMU # fork()
 	depends on BR2_PACKAGE_BUSYBOX_SHOW_OTHERS

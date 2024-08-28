@@ -1,7 +1,7 @@
 config BR2_PACKAGE_PARALLEL
 	bool "parallel"
 	depends on BR2_PACKAGE_PERL
-	depends on BR2_PACKAGE_PROCPS_NG
+	depends on BR2_PACKAGE_PROCPS-NG
 	help
 	  A shell tool for executing jobs in parallel.
 
@@ -9,4 +9,4 @@ config BR2_PACKAGE_PARALLEL
 
 comment "parallel needs Perl and procps-ng"
 	depends on BR2_PACKAGE_PERL
-	depends on BR2_PACKAGE_PROCPS_NG
+	depends on BR2_PACKAGE_PROCPS-NG
