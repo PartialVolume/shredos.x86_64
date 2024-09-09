@@ -1,0 +1,4 @@
+[submodule "external/nwipe"]
+	path = external/nwipe
+	url = https://github.com/martijnvanbrummelen/nwipe.git
+	branch = master
