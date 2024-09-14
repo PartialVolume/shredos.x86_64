@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# This script will archive the nwipe log file/s, dmesg.txt files and PDF certificates
+# This script will archive the nwipe log file/s, $dmesg_file files and PDF certificates
 # to the first exFAT/FAT32 formatted partition found that is identified as having a
 # matching /boot/version.txt file (ShredOS USB) as the booted ShredOS or in the case of
 # Ventoy the version within the kernel filename that matches the booted ShredOS.
@@ -14,9 +14,11 @@
 #
 # Written by PartialVolume, archive_log.sh is a component of ShredOS - the disk eraser.
 
-# This is the default date format used by ShredOS and nwipe for logs
+# This is the default date format used by ShredOS and nwipe for use within the logs but
+# not recommended for use in the filename.
 date_format="+%Y/%m/%d %H:%M:%S"
 
+dmesg_file="dmesg_$(date +%Y-%m-%d-%H-%M-%S)_system_uuid_$(dmidecode  -s system-uuid).txt"
 exit_code=0
 mode=""
 
@@ -73,13 +75,13 @@ if [ $status != 0 ] && [ $status != 32 ]; then
 else
     printf "[`date "$date_format"`] archive_log.sh: exFAT/FAT32 partition $drive_partition is now mounted to $archive_drive_directory\n" 2>&1 | tee -a transfer.log
 
-    # Copy the dmesg.txt and PDF files over to the exFAT/FAT32 partition
-    dmesg > dmesg.txt
-    cp /dmesg.txt "$archive_drive_directory/"
+    # Copy the $dmesg_file and PDF files over to the exFAT/FAT32 partition
+    dmesg > $dmesg_file
+    cp /$dmesg_file "$archive_drive_directory/"
     if [ $? != 0 ]; then
-	printf "[`date "$date_format"`] archive_log.sh: FAILED to copy the dmesg.txt file to the root of $drive_partition:/\n" 2>&1 | tee -a transfer.log
+	printf "[`date "$date_format"`] archive_log.sh: FAILED to copy the $dmesg_file file to the root of $drive_partition:/\n" 2>&1 | tee -a transfer.log
     else
-	printf "[`date "$date_format"`] archive_log.sh: Copied dmesg.txt to $drive_partition:/\n" 2>&1 | tee -a transfer.log
+	printf "[`date "$date_format"`] archive_log.sh: Copied $dmesg_file to $drive_partition:/\n" 2>&1 | tee -a transfer.log
     fi
 
     # Copy the PDF certificates over to the exFAT/FAT32 partition
