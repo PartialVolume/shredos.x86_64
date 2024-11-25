@@ -405,7 +405,7 @@ Options:
                           --exclude=/dev/sdc,/dev/sdd,/dev/mapper/cryptswap1
 ```
 ## How to set the keyboard map using the loadkeys command (see [here](#how-to-make-a-persistent-change-to-keyboard-maps) for persistent change between reboots)
-You can set the type of keyboard that you are using by typing, `loadkeys uk`, `loadkeys us`, `loadkeys fr`, `loadkeys cf`, `loadkeys by`, `loadkeys cf`, `loadkeys cz` etc. See /usr/share/keymaps/i386/ for full list of keymaps. However you will need to add an entry to `loadkeys=uk` etc to grub.cfg for a persistent change between reboots.
+You can set the type of keyboard that you are using by typing, `loadkeys uk`, `loadkeys us`, `loadkeys fr`, `loadkeys cf`, `loadkeys by`, `loadkeys cf`, `loadkeys cz` etc. See /usr/share/keymaps/i386/ for full list of keymaps. However you will need to add an entry to grub.cfg as shown in the example below for a persistent change between reboots.
 
 Examples are:
 (azerty:) azerty, be-latin1, fr-latin1, fr-latin9, fr-pc, fr, wangbe, wangbe2
