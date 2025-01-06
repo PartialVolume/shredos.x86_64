@@ -102,13 +102,13 @@ disks using the program [nwipe](https://github.com/martijnvanbrummelen/nwipe). I
 
 ShredOS supports either 32bit or 64bit processors. You will need to download the appropriate 64bit or 32bit .img or .iso file, depending upon your target processor and whether you want to burn ShredOS to a USB memory stick, in which case you would download the .img file. Alternatively, if you wanted to burn ShredOS to CD/DVD, then you would download the .iso file.
 
-Because ShredOS boots and runs straight from a USB flash drive or DVD/CD, it doesn't matter what operating system already exists on the computer. It will remove all data/directories/operating systems, from the drive or drives you have selected for wiping, leaving a disk with no trace of what originally existed. It will wipe PC's & Intel based MACs, such as MAC Book Pros. It doesn't care what operating system previosuly existed, be it Windows/MAC OSX/Linux/VXWorks. 
+Because ShredOS boots and runs straight from a USB flash drive or DVD/CD, it doesn't matter what operating system already exists on the computer. It will remove all data/directories/operating systems, from the drive or drives you have selected for wiping, leaving a disk with no trace of what originally existed. It will wipe PCs & Intel-based Macs, such as MacBookPros. It doesn't care what operating system previosuly existed, be it Windows/Mac OSX/Linux/VXWorks. 
 
 ShredOS can be used as a software image and booted via the network using a client PC that supports Preboot execution environment (PXE) via a PXE enabled server. A procedure for creating a simple UEFI PXE server based on Debian/Ubuntu and serving up ShredOS can be found here [#148](https://github.com/PartialVolume/shredos.x86_64/discussions/148)
 		
 You can also use ShredOS on headless systems or systems with faulty display hardware as it includes a user enabled telnet server. Further details can be found here. [How to wipe drives on headless systems or systems with faulty or missing display hardware or keyboards](#how-to-wipe-drives-on-headless-systems-or-systems-with-faulty-display-hardware-for-use-on-secure-lans-only)
 
-ShredOS includes the latest Nwipe official release, but in addition includes other disk related utilities such as Smartmontools, hdparm, a hexeditor [hexedit](https://linux.die.net/man/1/hexedit), and, the program loadkeys which can be used for [setting the keyboard layout](https://github.com/PartialVolume/shredos.2020.02/blob/master/README.md#how-to-set-the-keyboard-map-using-the-loadkeys-command-see-here-for-persistent-change-between-reboots). Nwipe automatically starts it's GUI in the first virtual terminal (ALT-F1), hdparm, smartmontools and hexeditor can be run in the second virtual terminal, (ALT-F2). Nwipe will erase drives using a user selectable choice of seven methods. hdparm - amongst many of its options - can be used for wiping a drive by issueing [ATA erase commands](https://ata.wiki.kernel.org/index.php/ATA_Secure_Erase) or [SAS erase commands](https://github.com/gms-electronics/formatingguide) interface commands to the firmware of the storrage device. This is a planned feature addition to nwipe.
+ShredOS includes the latest Nwipe official release, but in addition includes other disk related utilities such as Smartmontools, hdparm, a hexeditor [hexedit](https://linux.die.net/man/1/hexedit), and, the program loadkeys which can be used for [setting the keyboard layout](https://github.com/PartialVolume/shredos.2020.02/blob/master/README.md#how-to-set-the-keyboard-map-using-the-loadkeys-command-see-here-for-persistent-change-between-reboots). Nwipe automatically starts its GUI in the first virtual terminal (ALT-F1), hdparm, smartmontools and hexeditor can be run in the second virtual terminal, (ALT-F2). Nwipe will erase drives using a user-selectable choice of seven methods. hdparm - amongst many of its options - can be used for wiping a drive by issueing [ATA erase commands](https://ata.wiki.kernel.org/index.php/ATA_Secure_Erase) or [SAS erase commands](https://github.com/gms-electronics/formatingguide) interface commands to the firmware of the storrage device. This is a planned feature addition to nwipe.
 
 ShredOS boots very quickly and depending upon the host system can boot in as little as 2 seconds (typically 4 to 6 seconds) on modern hardware, while on an old Pentium4 may take 40+ seconds. Nwipe automatically starts in GUI mode and will list the disks present on the host system. In fact, on version of ShredOS earlier than [v2023.08.2_25.0_x86-64_0.35](https://github.com/PartialVolume/shredos.x86_64/releases/tag/v2023.08.2_25.0_x86-64_0.35) nwipe can launch so fast that the USB devices have not yet initialised so the first time nwipe appears it may not show any USB drives, this behaviour has been fixed from version v2023.08.2_25.0_x86-64_0.35 onwards so there will usually be a delay of about 5-10 seconds while the USB devices are initialised. On older versions of ShredOS you would use Control-C to exit and restart nwipe to see any attached USB devices. You can then select the methods by which you want to securely erase the disk/s. Nwipe is able to simultanuosly wipe multiple disks using a threaded software architecture. I have simultaneously wiped 28 loop devices in tests and know of instances where it's been used to simultaneuosly wipe upwards of fifty drives on a rack server.
 		
@@ -116,7 +116,7 @@ The vanilla version of ShredOS boots into nwipe's GUI and shows the available di
 
 ## What do I do after I've erased everything on my disk? What is actually erased?
 
-This paragraph is for those that are not familiar with wiping disks. if you know what you are doing skip to the next section. So you have erased your disk with ShredOS/nwipe and nwipe reported zero errors and the disk was erased. In it's erased state and depending upon the method you used every block on the drive contains either zero's or meaningless random data. In this state the disk won't be recognised by your operating system except at a very low level or by specialised programs. You won't be able to write files to the disk because nwipe has removed everything, absolutely everything, the operating system is gone, all your data is gone, the partition table is gone, the file system gone, the MBR and all the files have been erased without a trace and will never ever be recovered from the disk. The only thing left is a whole load of zeros or random data. To make the disk usable again you will either need to format the disk, which creates a partition table and directory structure or install a new operating system such as Linux or Windows. Of course, if you are just disposing of or reselling the disk then you don't need to do anything else. So if you are reasonably happy that you know what you are doing and you understand that you will need to format the disk then I hope this software does it's job and is useful to you. Before you press that 'S' key to start the wipe, pause and double check you have selected the correct drive/s, something I always do !
+This paragraph is for those that are not familiar with wiping disks. if you know what you are doing skip to the next section. So you have erased your disk with ShredOS/nwipe and nwipe reported zero errors and the disk was erased. In its erased state and depending upon the method you used every block on the drive contains either zeroes or meaningless random data. In this state the disk won't be recognised by your operating system except at a very low level or by specialised programs. You won't be able to write files to the disk because nwipe has removed everything, absolutely everything, the operating system is gone, all your data is gone, the partition table is gone, the file system gone, the MBR and all the files have been erased without a trace and will never ever be recovered from the disk. The only thing left is a whole load of zeros or random data. To make the disk usable again you will either need to format the disk, which creates a partition table and directory structure or install a new operating system such as Linux or Windows. Of course, if you are just disposing of or reselling the disk then you don't need to do anything else. So if you are reasonably happy that you know what you are doing and you understand that you will need to format the disk then I hope this software does its job and is useful to you. Before you press that 'S' key to start the wipe, pause and double check you have selected the correct drive/s, something I always do !
 
 ## Nwipe's erasure methods
 
@@ -148,7 +148,7 @@ Download the latest ShredOS for either 32bit, 64bit, .img or .iso from [here](#d
 
 Check it's not corrupt by running the following command and comparing with the checksum shown in the release notes:
 ```
-$ sha1sum shredos.img.tar.gz (shasum instead of sha1sum if you're using a MAC)
+$ sha1sum shredos.img.tar.gz (shasum instead of sha1sum if you're using a Mac)
 (example) sha1 db37ea8526a17898b0fb34a2ec4d254744ef08a1 shredos.img.tar.gz
 ```
 If the image file has a .img.tar.gz extension then use the following commands to extract the .img file. If the file extension simply ends with .img and there is no tar.gz then skip this step.
@@ -156,7 +156,7 @@ If the image file has a .img.tar.gz extension then use the following commands to
 $ gunzip shredos.img.tar.gz
 $ tar xvf shredos.img.tar
 ```
-If you are using linux or a MAC write the shredos.img file (also sometimes called shredos-2020MMDD.img i.e. shredos-20200418.img etc) to your USB flash drive using the following command.  (/dev/sdx is the device name of your USB drive, this can be obtained from the results of sudo fdisk -l on linux and diskutil list on a MAC)
+If you are using Linux or a Mac write the shredos.img file (also sometimes called shredos-2020MMDD.img i.e. shredos-20200418.img etc) to your USB flash drive using the following command.  (/dev/sdx is the device name of your USB drive, this can be obtained from the results of sudo fdisk -l on linux and diskutil list on a Mac)
 ```
 sudo dd if=shredos.img of=/dev/sdx
 
@@ -179,7 +179,7 @@ Once your USB removable drive is having VENTOY installed, you just have to copy 
 #### How to edit the ShredOS /EFI/BOOT/grub.cfg and boot/grub/grub.cfg files when using Ventoy with ShredOS .img files
 As Ventoy simply requires you to copy the .img file to the root of the Ventoy USB stick, to edit the ShredOS grub.cfg files it's neccessary to unpack the ShredOS .img, edit the files and re-create the .img file that now includes the modified grub files. The procedure below shows you how to do this on a Linux distro.
 
-Create a file on the disk that is slightly larger than the size of the ShredOS .img. In this example we will use shredos-2023.08.2_25.1_x86-64_0.35_20231202.img which is 260646656 bytes in size (260.64MByte, 248.57MiByte). So if we create a empty file that is 270Mbyte in size that should be sufficient. I'm going to go a bit over the top and create a 500MB file for this example but that isn't necessary if all you are doing is editing the grub files
+Create a file on the disk that is slightly larger than the size of the ShredOS .img. In this example we will use shredos-2023.08.2_25.1_x86-64_0.35_20231202.img which is 260,646,656 bytes in size (260.64MByte, 248.57MiByte). So if we create a empty file that is 270Mbyte in size that should be sufficient. I'm going to go a bit over the top and create a 500MB file for this example but that isn't necessary if all you are doing is editing the grub files
 ```
 >truncate -s 500M loopbackfile.img
 ```
@@ -247,12 +247,12 @@ menuentry "shredos" {
 **WARNING** 
 You should not place the string `/etc/shredos/shredos_exclude_disc` on multiple FAT formatted drives or for that matter any drive irrespective of formatting, expecting all the drives with this string to not appear in nwipe or not get wiped in interactive mode. The file `/etc/shredos/shredos_exclude_disc` should only appear on the one and only ShredOS boot drive on the system. Any other drives that contain `/etc/shredos/shredos_exclude_disc` will appear in nwipe and WILL get wiped in autonuke mode.
 
-## A word about the MAC Book Pro
-Yes, ShredOS will boot on MAC Book Pros, however here's a few tips you may find useful.
+## A word about the Mac Book Pro
+Yes, ShredOS will boot on Mac Book Pros, however here's a few tips you may find useful.
 
 - Booting from USB. Power off then power on holding down the `alt` key. After a few seconds select EFI boot.
-- Due to the high resolution screens on a MAC Book Pro you may find the text displayed by nwipe and in the virtual terminals is very small. To enlarge the text follow the instructions [here](#nwipes-font-size-is-too-small-I-want-the-text-to-be-bigger).
-- How to switch between virtual terminals on a MAC. On a PC it's usually (but not always) ALT F1 (/dev/tty1 - nwipe), ALT F2 (/dev/tty2 or /dev/tty0 - terminal), ALT F3 (/dev/console - console). However on a MAC you switch virtual terminals as follows. FN+ALT F1 (/dev/tty1 - nwipe), FN+ALT F2 (/dev/tty2 or /dev/tty0 - terminal), FN+ALT F3 (/dev/console).
+- Due to the high resolution screens on a Mac Book Pro you may find the text displayed by nwipe and in the virtual terminals is very small. To enlarge the text follow the instructions [here](#nwipes-font-size-is-too-small-I-want-the-text-to-be-bigger).
+- How to switch between virtual terminals on a Mac. On a PC it's usually (but not always) ALT F1 (/dev/tty1 - nwipe), ALT F2 (/dev/tty2 or /dev/tty0 - terminal), ALT F3 (/dev/console - console). However on a MAC you switch virtual terminals as follows. FN+ALT F1 (/dev/tty1 - nwipe), FN+ALT F2 (/dev/tty2 or /dev/tty0 - terminal), FN+ALT F3 (/dev/console).
 
 ## How to make a persistent change to the terminal resolution
 
@@ -458,7 +458,7 @@ For Linux: If the | character isn't displayed properly use loadkeys fr etc to se
 ```
 fdisk -l | more
 ```
-For MACS:
+For Macs:
 ```
 diskutil list
 ```
@@ -573,7 +573,7 @@ Type `nwipe` as shown above and the nwipe GUI will be displayed and you can proc
 If you are using a monitor with a native high resolution you may find that nwipe's font size is too small for your liking, if that's the case, you just need to type the following command in the second virtual terminal `/bin/setfont -d -C /dev/tty1`. To double the font size in other virtual terminals use `/bin/setfont -d -C /dev/tty2` and `/bin/setfont -d -C /dev/console`.
 
 #### Detail
-Type ALT F2 (Fn ALT F2 on a MAC) to bring up the 2nd virtual console. Type the following tty command which will return the current console name. So from this result /dev/tty2 we can deduce that the default nwipe in ALT F1 is /dev/tty1. For reference ALT F3 is /dev/console.
+Type ALT F2 (Fn ALT F2 on a Mac) to bring up the 2nd virtual console. Type the following tty command which will return the current console name. So from this result /dev/tty2 we can deduce that the default nwipe in ALT F1 is /dev/tty1. For reference ALT F3 is /dev/console.
 
 ```
 tty
