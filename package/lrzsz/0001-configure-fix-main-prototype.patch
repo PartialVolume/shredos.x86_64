@@ -1,0 +1,34 @@
+From c2758812867a52a6bb56b87d52c35ebff797e777 Mon Sep 17 00:00:00 2001
+From: Thomas Petazzoni <thomas.petazzoni@bootlin.com>
+Date: Sun, 15 Sep 2024 15:12:07 +0200
+Subject: [PATCH] configure: fix main() prototype
+
+The pre-generated configure script has a check that doesn't work with
+GCC >= 14.x due to a partial main() prototype. Doing AUTORECONF = YES
+doesn't work as the configure.in is very old, so let's fix the
+configure script directly.
+
+Signed-off-by: Thomas Petazzoni <thomas.petazzoni@bootlin.com>
+Upstream: N/A, patching generated file
+[wsa: rebased to 0.12.21rc]
+Signed-off-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
+---
+ configure | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/configure b/configure
+index cc586d5..16a259a 100755
+--- a/configure
++++ b/configure
+@@ -1053,7 +1053,7 @@ cat > conftest.$ac_ext << EOF
+ #line 1054 "configure"
+ #include "confdefs.h"
+ 
+-main(){return(0);}
++int main(){return(0);}
+ EOF
+ if { (eval echo configure:1059: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
+   ac_cv_prog_cc_works=yes
+-- 
+2.45.2
+

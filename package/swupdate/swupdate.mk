@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-SWUPDATE_VERSION = 2023.12
+SWUPDATE_VERSION = 2024.05.2
 SWUPDATE_SITE = $(call github,sbabic,swupdate,$(SWUPDATE_VERSION))
 SWUPDATE_LICENSE = GPL-2.0, GPL-2.0+, LGPL-2.1+, MIT, ISC, BSD-1-Clause, BSD-3-Clause, CC0-1.0, CC-BY-SA-4.0, OFL-1.1
 SWUPDATE_LICENSE_FILES = LICENSES/BSD-1-Clause.txt \
@@ -72,7 +72,10 @@ else
 SWUPDATE_MAKE_ENV += HAVE_LIBFDISK=n
 endif
 
-ifeq ($(BR2_PACKAGE_LIBGPIOD),y)
+ifeq ($(BR2_PACKAGE_LIBGPIOD2),y)
+SWUPDATE_DEPENDENCIES += libgpiod2
+SWUPDATE_MAKE_ENV += HAVE_LIBGPIOD=y
+else ifeq ($(BR2_PACKAGE_LIBGPIOD),y)
 SWUPDATE_DEPENDENCIES += libgpiod
 SWUPDATE_MAKE_ENV += HAVE_LIBGPIOD=y
 else

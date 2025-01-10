@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-FREESWITCH_VERSION = 1.10.11
+FREESWITCH_VERSION = 1.10.12
 FREESWITCH_SOURCE = freeswitch-$(FREESWITCH_VERSION).-release.tar.xz
 FREESWITCH_SITE = https://files.freeswitch.org/freeswitch-releases
 # External modules need headers/libs from staging
@@ -227,6 +227,10 @@ endif
 ifeq ($(BR2_PACKAGE_LIBPNG),y)
 FREESWITCH_DEPENDENCIES += libpng
 FREESWITCH_ENABLED_MODULES += formats/mod_png
+endif
+
+ifeq ($(BR2_PACKAGE_LIBXCRYPT),y)
+FREESWITCH_DEPENDENCIES += libxcrypt
 endif
 
 ifeq ($(BR2_PACKAGE_LIBYAML),y)

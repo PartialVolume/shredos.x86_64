@@ -5,7 +5,7 @@
 ################################################################################
 
 HIAWATHA_VERSION = 11.2
-HIAWATHA_SITE = https://www.hiawatha-webserver.org/files
+HIAWATHA_SITE = https://hiawatha.leisink.net/files
 HIAWATHA_DEPENDENCIES = zlib
 HIAWATHA_LICENSE = GPL-2.0
 HIAWATHA_LICENSE_FILES = LICENSE
@@ -45,6 +45,10 @@ ifeq ($(BR2_PACKAGE_HIAWATHA_SSL),y)
 HIAWATHA_CONF_OPTS += -DENABLE_TLS=ON
 else
 HIAWATHA_CONF_OPTS += -DENABLE_TLS=OFF
+endif
+
+ifeq ($(BR2_PACKAGE_LIBXCRYPT),y)
+HIAWATHA_DEPENDENCIES += libxcrypt
 endif
 
 ifeq ($(BR2_PACKAGE_LIBXSLT),y)

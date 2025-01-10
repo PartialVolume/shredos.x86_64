@@ -5,7 +5,8 @@
 ################################################################################
 
 QUAGGA_VERSION = 1.2.4
-QUAGGA_SITE = http://download.savannah.gnu.org/releases/quagga
+# upstream (http://download.savannah.gnu.org/releases/quagga) dead
+QUAGGA_SITE = http://sources.buildroot.net/quagga
 QUAGGA_INSTALL_STAGING = YES
 QUAGGA_DEPENDENCIES = host-gawk host-pkgconf
 QUAGGA_LICENSE = GPL-2.0+
@@ -31,6 +32,10 @@ QUAGGA_CONF_OPTS += --enable-capabilities
 QUAGGA_DEPENDENCIES += libcap
 else
 QUAGGA_CONF_OPTS += --disable-capabilities
+endif
+
+ifeq ($(BR2_PACKAGE_LIBXCRYPT),y)
+QUAGGA_DEPENDENCIES += libxcrypt
 endif
 
 ifeq ($(BR2_PACKAGE_PROTOBUF_C),y)

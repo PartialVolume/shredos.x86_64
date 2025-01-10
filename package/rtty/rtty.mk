@@ -4,11 +4,15 @@
 #
 ################################################################################
 
-RTTY_VERSION = 8.1.0
+RTTY_VERSION = 8.1.2
 RTTY_SITE = https://github.com/zhaojh329/rtty/releases/download/v$(RTTY_VERSION)
 RTTY_LICENSE = MIT
 RTTY_LICENSE_FILES = LICENSE
 RTTY_DEPENDENCIES = libev
+
+ifeq ($(BR2_PACKAGE_LIBXCRYPT),y)
+RTTY_DEPENDENCIES += libxcrypt
+endif
 
 ifeq ($(BR2_PACKAGE_MBEDTLS),y)
 RTTY_DEPENDENCIES += mbedtls

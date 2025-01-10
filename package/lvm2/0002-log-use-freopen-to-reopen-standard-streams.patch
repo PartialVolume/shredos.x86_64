@@ -1,0 +1,46 @@
+From 760ac03a8d8870ad47776075c1e59b6395d308bf Mon Sep 17 00:00:00 2001
+From: Simon Rowe <simon.rowe@nutanix.com>
+Date: Thu, 23 Mar 2023 10:07:02 +0000
+Subject: [PATCH] log: use freopen() to reopen standard streams
+
+In glibc stdin, stdout & stderr are variables that can be assigned to
+(https://www.gnu.org/software/libc/manual/html_node/Standard-Streams.html)
+however this not necessarily true of other C libraries.
+
+The gentoo musl porting notes
+(https://wiki.gentoo.org/wiki/Musl_porting_notes)
+recommend the substitution of
+
+    stdX = fopen(...)
+
+with
+
+    freopen(..., stdX)
+
+Taken from: https://github.com/gentoo/gentoo/blob/master/sys-fs/lvm2/files/lvm2-2.03.14-freopen_n2.patch
+Signed-off-by: Simon Rowe <simon.rowe@nutanix.com>
+[Julien: rebased patch on v2.03.27]
+Signed-off-by: Julien Olivain <ju.o@free.fr>
+---
+ lib/log/log.c | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/lib/log/log.c b/lib/log/log.c
+index 3eda7d343..0bcd9552d 100644
+--- a/lib/log/log.c
++++ b/lib/log/log.c
+@@ -208,7 +208,11 @@ int reopen_standard_stream(FILE **stream, const char *mode)
+ 
+ 	_check_and_replace_standard_log_streams(*stream, new_stream);
+ 
++#ifdef __GLIBC__
+ 	*stream = new_stream;
++#else
++	freopen(NULL, mode, *stream);
++#endif
+ 	return 1;
+ }
+ 
+-- 
+2.46.2
+

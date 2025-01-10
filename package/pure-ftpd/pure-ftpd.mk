@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-PURE_FTPD_VERSION = 1.0.51
+PURE_FTPD_VERSION = 1.0.52
 PURE_FTPD_SITE = https://download.pureftpd.org/pub/pure-ftpd/releases
 PURE_FTPD_SOURCE = pure-ftpd-$(PURE_FTPD_VERSION).tar.bz2
 PURE_FTPD_LICENSE = ISC
@@ -28,6 +28,10 @@ endif
 
 ifeq ($(BR2_PACKAGE_LIBSODIUM),y)
 PURE_FTPD_DEPENDENCIES += libsodium
+endif
+
+ifeq ($(BR2_PACKAGE_LIBXCRYPT),y)
+PURE_FTPD_DEPENDENCIES += libxcrypt
 endif
 
 ifeq ($(BR2_PACKAGE_MARIADB),y)

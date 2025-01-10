@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-DAV1D_VERSION = 1.3.0
+DAV1D_VERSION = 1.5.0
 DAV1D_SOURCE = dav1d-$(DAV1D_VERSION).tar.xz
 DAV1D_SITE = https://download.videolan.org/pub/videolan/dav1d/$(DAV1D_VERSION)
 DAV1D_LICENSE = BSD-2-Clause
@@ -21,6 +21,11 @@ endif
 
 # ARM assembly requires v6+ ISA
 ifeq ($(BR2_ARM_CPU_ARMV4)$(BR2_ARM_CPU_ARMV5)$(BR2_ARM_CPU_ARMV7M),y)
+DAV1D_CONF_OPTS += -Denable_asm=false
+endif
+
+# riscv assembly requires riscv64
+ifeq ($(BR2_riscv):$(BR2_RISCV_64),y:)
 DAV1D_CONF_OPTS += -Denable_asm=false
 endif
 

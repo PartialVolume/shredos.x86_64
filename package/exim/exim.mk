@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-EXIM_VERSION = 4.97.1
+EXIM_VERSION = 4.98
 EXIM_SOURCE = exim-$(EXIM_VERSION).tar.xz
 EXIM_SITE = https://ftp.exim.org/pub/exim/exim4
 EXIM_LICENSE = GPL-2.0+
@@ -73,6 +73,10 @@ EXIM_DEPENDENCIES += clamav
 define EXIM_USE_DEFAULT_CONFIG_FILE_CLAMAV
 	$(call exim-config-change,WITH_CONTENT_SCAN,yes)
 endef
+endif
+
+ifeq ($(BR2_PACKAGE_LIBXCRYPT),y)
+EXIM_DEPENDENCIES += libxcrypt
 endif
 
 ifeq ($(BR2_PACKAGE_OPENSSL),y)

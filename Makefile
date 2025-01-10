@@ -66,13 +66,14 @@ endif
 CANONICAL_CURDIR = $(realpath $(CURDIR))
 
 REQ_UMASK = 0022
+CUR_UMASK := $(shell umask)
 
 # Make sure O= is passed (with its absolute canonical path) everywhere the
 # toplevel makefile is called back.
 EXTRAMAKEARGS := O=$(CANONICAL_O)
 
 # Check Buildroot execution pre-requisites here.
-ifneq ($(shell umask):$(CURDIR):$(O),$(REQ_UMASK):$(CANONICAL_CURDIR):$(CANONICAL_O))
+ifneq ($(CUR_UMASK):$(CURDIR):$(O),$(REQ_UMASK):$(CANONICAL_CURDIR):$(CANONICAL_O))
 .PHONY: _all $(MAKECMDGOALS)
 
 $(MAKECMDGOALS): _all
@@ -81,6 +82,7 @@ $(MAKECMDGOALS): _all
 _all:
 	@umask $(REQ_UMASK) && \
 		$(MAKE) -C $(CANONICAL_CURDIR) --no-print-directory \
+			BR_ORIG_UMASK=$(CUR_UMASK) \
 			$(MAKECMDGOALS) $(EXTRAMAKEARGS)
 
 else # umask / $(CURDIR) / $(O)
@@ -90,9 +92,9 @@ all:
 .PHONY: all
 
 # Set and export the version string
-export BR2_VERSION := 2024.02.2
+export BR2_VERSION := 2024.11
 # Actual time the release is cut (for reproducible builds)
-BR2_VERSION_EPOCH = 1715067000
+BR2_VERSION_EPOCH = 1733653000
 
 # Save running make version since it's clobbered by the make package
 RUNNING_MAKE_VERSION := $(MAKE_VERSION)
@@ -444,6 +446,7 @@ ZCAT := $(call qstrip,$(BR2_ZCAT))
 BZCAT := $(call qstrip,$(BR2_BZCAT))
 XZCAT := $(call qstrip,$(BR2_XZCAT))
 LZCAT := $(call qstrip,$(BR2_LZCAT))
+ZSTDCAT := $(call qstrip,$(BR2_ZSTDCAT))
 TAR_OPTIONS = $(call qstrip,$(BR2_TAR_OPTIONS)) -xf
 
 ifeq ($(BR2_PER_PACKAGE_DIRECTORIES),y)
@@ -584,21 +587,17 @@ $(BUILD_DIR)/buildroot-config/auto.conf: $(BR2_CONFIG)
 prepare: $(BUILD_DIR)/buildroot-config/auto.conf
 	@$(foreach s, $(call qstrip,$(BR2_ROOTFS_PRE_BUILD_SCRIPT)), \
 		$(call MESSAGE,"Executing pre-build script $(s)"); \
-		$(EXTRA_ENV) $(s) $(TARGET_DIR) $(call qstrip,$(BR2_ROOTFS_POST_SCRIPT_ARGS))$(sep))
+		$(EXTRA_ENV) $(s) \
+			$(TARGET_DIR) \
+			$(call qstrip,$(BR2_ROOTFS_POST_SCRIPT_ARGS)) \
+			$(call qstrip,$(BR2_ROOTFS_PRE_BUILD_SCRIPT_ARGS))$(sep))
 
 .PHONY: world
 world: target-post-image
 
 .PHONY: prepare-sdk
 prepare-sdk: world
-	@$(call MESSAGE,"Rendering the SDK relocatable")
-	PARALLEL_JOBS=$(PARALLEL_JOBS) \
-		PER_PACKAGE_DIR=$(PER_PACKAGE_DIR) \
-		$(TOPDIR)/support/scripts/fix-rpath host
-	PARALLEL_JOBS=$(PARALLEL_JOBS) \
-		PER_PACKAGE_DIR=$(PER_PACKAGE_DIR) \
-		$(TOPDIR)/support/scripts/fix-rpath staging
-	$(call ppd-fixup-paths,$(BASE_DIR))
+	@$(call MESSAGE,"Preparing the SDK")
 	$(INSTALL) -m 755 $(TOPDIR)/support/misc/relocate-sdk.sh $(HOST_DIR)/relocate-sdk.sh
 	mkdir -p $(HOST_DIR)/share/buildroot
 	echo $(HOST_DIR) > $(HOST_DIR)/share/buildroot/sdk-location
@@ -716,6 +715,13 @@ STAGING_DIR_FILES_LISTS = $(sort $(wildcard $(BUILD_DIR)/*/.files-list-staging.t
 host-finalize: $(PACKAGES) $(HOST_DIR) $(HOST_DIR_SYMLINK)
 	@$(call MESSAGE,"Finalizing host directory")
 	$(call per-package-rsync,$(sort $(PACKAGES)),host,$(HOST_DIR),copy)
+	$(Q)PARALLEL_JOBS=$(PARALLEL_JOBS) \
+		PER_PACKAGE_DIR=$(PER_PACKAGE_DIR) \
+		$(TOPDIR)/support/scripts/fix-rpath host
+	$(Q)PARALLEL_JOBS=$(PARALLEL_JOBS) \
+		PER_PACKAGE_DIR=$(PER_PACKAGE_DIR) \
+		$(TOPDIR)/support/scripts/fix-rpath staging
+	$(call ppd-fixup-paths,$(BASE_DIR))
 
 .PHONY: staging-finalize
 staging-finalize: $(STAGING_DIR_SYMLINK)
@@ -801,7 +807,10 @@ endif # merged /usr
 
 	$(foreach s, $(call qstrip,$(BR2_ROOTFS_POST_BUILD_SCRIPT)), \
 		@$(call MESSAGE,"Executing post-build script $(s)")$(sep) \
-		$(Q)$(EXTRA_ENV) $(s) $(TARGET_DIR) $(call qstrip,$(BR2_ROOTFS_POST_SCRIPT_ARGS))$(sep))
+		$(Q)$(EXTRA_ENV) $(s) \
+			$(TARGET_DIR) \
+			$(call qstrip,$(BR2_ROOTFS_POST_SCRIPT_ARGS)) \
+			$(call qstrip,$(BR2_ROOTFS_POST_BUILD_SCRIPT_ARGS))$(sep))
 
 	touch $(TARGET_DIR)/usr
 
@@ -819,7 +828,10 @@ target-post-image: $(TARGETS_ROOTFS) target-finalize staging-finalize
 	$(Q)mkdir -p $(BINARIES_DIR)
 	@$(foreach s, $(call qstrip,$(BR2_ROOTFS_POST_IMAGE_SCRIPT)), \
 		$(call MESSAGE,"Executing post-image script $(s)"); \
-		$(EXTRA_ENV) $(s) $(BINARIES_DIR) $(call qstrip,$(BR2_ROOTFS_POST_SCRIPT_ARGS))$(sep))
+		$(EXTRA_ENV) $(s) \
+			$(BINARIES_DIR) \
+			$(call qstrip,$(BR2_ROOTFS_POST_SCRIPT_ARGS)) \
+			$(call qstrip,$(BR2_ROOTFS_POST_IMAGE_SCRIPT_ARGS))$(sep))
 
 .PHONY: source
 source: $(foreach p,$(PACKAGES),$(p)-all-source)
@@ -1160,6 +1172,9 @@ help:
 	@echo '                         - Recursively list packages which have <pkg> as a dependency'
 	@echo '  <pkg>-graph-depends    - Generate a graph of <pkg>'\''s dependencies'
 	@echo '  <pkg>-graph-rdepends   - Generate a graph of <pkg>'\''s reverse dependencies'
+	@echo '  <pkg>-graph-both-depends'
+	@echo '                         - Generate a graph of both <pkg>'\''s forward and'
+	@echo '                           reverse dependencies.'
 	@echo '  <pkg>-dirclean         - Remove <pkg> build directory'
 	@echo '  <pkg>-reconfigure      - Restart the build from the configure step'
 	@echo '  <pkg>-rebuild          - Restart the build from the build step'

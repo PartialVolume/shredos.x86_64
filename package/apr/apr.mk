@@ -39,7 +39,7 @@ APR_CONF_ENV = \
 	ac_cv_sizeof_struct_iovec=8 \
 	ac_cv_sizeof_pid_t=4 \
 	ac_cv_struct_rlimit=yes \
-	ac_cv_strerror_r_rc_int=no \
+	ac_cv_strerror_r_rc_int=$(if $(BR2_TOOLCHAIN_USES_MUSL),yes,no) \
 	ac_cv_o_nonblock_inherited=no \
 	apr_cv_mutex_recursive=yes \
 	apr_cv_epoll=yes \
@@ -66,6 +66,10 @@ APR_CONF_OPTS += --enable-nonportable-atomics
 APR_CONF_ENV += ap_cv_atomic_builtins=yes
 else
 APR_CONF_OPTS += --disable-nonportable-atomics
+endif
+
+ifeq ($(BR2_PACKAGE_LIBXCRYPT),y)
+APR_DEPENDENCIES += libxcrypt
 endif
 
 ifeq ($(BR2_PACKAGE_UTIL_LINUX_LIBUUID),y)

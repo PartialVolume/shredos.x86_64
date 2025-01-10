@@ -4,8 +4,8 @@
 #
 ################################################################################
 
-MONIT_VERSION = 5.33.0
-MONIT_SITE = http://mmonit.com/monit/dist
+MONIT_VERSION = 5.34.2
+MONIT_SITE = https://mmonit.com/monit/dist
 MONIT_LICENSE = AGPL-3.0 with OpenSSL exception
 MONIT_LICENSE_FILES = COPYING
 MONIT_CPE_ID_VENDOR = mmonit
@@ -24,6 +24,10 @@ MONIT_CONF_ENV = \
 MONIT_CONF_OPTS += \
 	--without-pam \
 	--with-largefiles
+
+ifeq ($(BR2_PACKAGE_LIBXCRYPT),y)
+MONIT_DEPENDENCIES += libxcrypt
+endif
 
 ifeq ($(BR2_PACKAGE_OPENSSL),y)
 MONIT_CONF_ENV += LIBS=`$(PKG_CONFIG_HOST_BINARY) --libs openssl`

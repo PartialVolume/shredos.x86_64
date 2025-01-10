@@ -220,13 +220,15 @@ config BR2_PACKAGE_UTIL_LINUX_LSFD
 	bool "lsfd"
 	depends on BR2_USE_MMU # libsmartcols
 	depends on BR2_TOOLCHAIN_HEADERS_AT_LEAST_3_19
+	depends on !BR2_TOOLCHAIN_USES_UCLIBC # process_vm_readv
 	select BR2_PACKAGE_UTIL_LINUX_LIBSMARTCOLS
 	help
 	  List file descriptors (modern replacement for lsof)
 
-comment "lsfd needs a toolchain w/ headers >= 3.19"
+comment "lsfd needs a musl or glibc toolchain w/ headers >= 3.19"
 	depends on BR2_USE_MMU
-	depends on !BR2_TOOLCHAIN_HEADERS_AT_LEAST_3_19
+	depends on !BR2_TOOLCHAIN_HEADERS_AT_LEAST_3_19 \
+		|| BR2_TOOLCHAIN_USES_UCLIBC
 
 config BR2_PACKAGE_UTIL_LINUX_LSLOGINS
 	bool "lslogins"
@@ -280,6 +282,7 @@ config BR2_PACKAGE_UTIL_LINUX_MOUNTPOINT
 
 config BR2_PACKAGE_UTIL_LINUX_NEWGRP
 	bool "newgrp"
+	select BR2_PACKAGE_LIBXCRYPT if BR2_TOOLCHAIN_USES_GLIBC
 	help
 	  Log in to a new group
 
@@ -402,6 +405,7 @@ comment "su needs a uClibc or glibc toolchain w/ wchar, locale, dynamic library,
 config BR2_PACKAGE_UTIL_LINUX_SULOGIN
 	bool "sulogin"
 	depends on BR2_USE_MMU # fork()
+	select BR2_PACKAGE_LIBXCRYPT if BR2_TOOLCHAIN_USES_GLIBC
 	help
 	  Single-user login
 

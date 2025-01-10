@@ -4,8 +4,8 @@
 #
 ################################################################################
 
-POLKIT_VERSION = 123
-POLKIT_SITE = https://gitlab.freedesktop.org/polkit/polkit/-/archive/$(POLKIT_VERSION)
+POLKIT_VERSION = 125
+POLKIT_SITE = $(call github,polkit-org,polkit,$(POLKIT_VERSION))
 POLKIT_LICENSE = GPL-2.0
 POLKIT_LICENSE_FILES = COPYING
 POLKIT_CPE_ID_VALID = YES
@@ -28,6 +28,10 @@ POLKIT_CONF_OPTS += -Dintrospection=true
 POLKIT_DEPENDENCIES += gobject-introspection
 else
 POLKIT_CONF_OPTS += -Dintrospection=false
+endif
+
+ifeq ($(BR2_PACKAGE_LIBXCRYPT),y)
+POLKIT_DEPENDENCIES += libxcrypt
 endif
 
 ifeq ($(BR2_PACKAGE_LINUX_PAM),y)
