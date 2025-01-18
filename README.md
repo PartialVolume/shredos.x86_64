@@ -575,14 +575,14 @@ Type `nwipe` as shown above and the nwipe GUI will be displayed and you can proc
 >Due to the insecure nature of telnet as opposed to ssh, it goes without saying that this method of accessing ShredOS & nwipe should only be carried out on a trusted local area network and never over the internet unless via a VPN or SSH tunnel. ssh access may be provided at a future date if it's requested.
 
 ## Nwipes font size is too small How to double the size of the text
-If you are using a monitor with a native high resolution you may find that nwipe's font size is too small for your liking, if that's the case, you just need to type `F` to toggle the scaling of the interface to 200% during the disk selection screen or the progress screen.
+If you are using a monitor with a native high resolution you may find that nwipe's font size is too small for your liking. Type `F` to toggle the scaling of the interface to 200% during the disk selection screen or the progress screen.
 
-![image](https://user-images.githubusercontent.com/22084881/216849290-8e1c05d2-c856-4466-b76f-eec4ccd2d880.png)
 Default font size on a high resolution monitor.
-.
-![image](https://user-images.githubusercontent.com/22084881/216849326-e9a5c3a0-4485-432a-a3c7-a72858faeab1.png)
+![image](https://user-images.githubusercontent.com/22084881/216849290-8e1c05d2-c856-4466-b76f-eec4ccd2d880.png)
+
 After running the setfont command.
-		
+![image](https://user-images.githubusercontent.com/22084881/216849326-e9a5c3a0-4485-432a-a3c7-a72858faeab1.png)
+
 ## Included Packages
 
 #### smartmontools
