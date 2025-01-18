@@ -96,7 +96,7 @@ A certificate can optionally be created for each drive erased, the default is to
 	1. [../package/nwipe/nwipe.hash](#packagenwipenwipehash)
 	1. [../package/nwipe/Config.in](#packagenwipeconfigin)
 	1. [../package/nwipe/002-nwipe-banner-patch.sh](#packagenwipe002-nwipe-banner-patchsh)
- 1. [Troubleshooting](#Troubleshooting
+ 1. [Troubleshooting](#Troubleshooting)
  	1. [Small Font Size and Inteface](#Small-Font-Size-and-Interface)
   	1. [Disks with Non-Standard Blocksizes](#Drives-with-Non-Standard-Blocksizes)
    	1. [Disks with Integrity Protection](#Drives-with-Integrity-Protection)
@@ -575,23 +575,7 @@ Type `nwipe` as shown above and the nwipe GUI will be displayed and you can proc
 >Due to the insecure nature of telnet as opposed to ssh, it goes without saying that this method of accessing ShredOS & nwipe should only be carried out on a trusted local area network and never over the internet unless via a VPN or SSH tunnel. ssh access may be provided at a future date if it's requested.
 
 ## Nwipes font size is too small How to double the size of the text
-If you are using a monitor with a native high resolution you may find that nwipe's font size is too small for your liking, if that's the case, you just need to type the following command in the second virtual terminal `/bin/setfont -d -C /dev/tty1`. To double the font size in other virtual terminals use `/bin/setfont -d -C /dev/tty2` and `/bin/setfont -d -C /dev/console`.
-
-#### Detail
-Type ALT F2 (Fn ALT F2 on a Mac) to bring up the 2nd virtual console. Type the following tty command which will return the current console name. So from this result /dev/tty2 we can deduce that the default nwipe in ALT F1 is /dev/tty1. For reference ALT F3 is /dev/console.
-
-```
-tty
-/dev/tty2
-```
-To set the font for the default nwipe in the first virtual console ALT F1 (/dev/tty1), type the following command in the 2nd virtual console (ALT F2)
-```
-/bin/setfont -d -C /dev/tty1
-```
-
-> **Warning**
->Always specify the full path to setfont, setfont -d -C /dev/tty1 without the /bin/ prefix, will not work! There are actually two different versions of setfont on Linux and if you ommit the prefix path you will be running the wrong setfont which won't work.
-
+If you are using a monitor with a native high resolution you may find that nwipe's font size is too small for your liking, if that's the case, you just need to type `F` to toggle the scaling of the interface to 200% during the disk selection screen or the progress screen.
 
 ![image](https://user-images.githubusercontent.com/22084881/216849290-8e1c05d2-c856-4466-b76f-eec4ccd2d880.png)
 Default font size on a high resolution monitor.
