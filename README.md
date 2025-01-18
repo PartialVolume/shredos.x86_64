@@ -96,6 +96,10 @@ A certificate can optionally be created for each drive erased, the default is to
 	1. [../package/nwipe/nwipe.hash](#packagenwipenwipehash)
 	1. [../package/nwipe/Config.in](#packagenwipeconfigin)
 	1. [../package/nwipe/002-nwipe-banner-patch.sh](#packagenwipe002-nwipe-banner-patchsh)
+ 1. [Troubleshooting](#Troubleshooting
+ 	1. [Small Font Size and Inteface](#Small-Font-Size-and-Interface)
+  	1. [Disks with Non-Standard Blocksizes](#Drives-with-Non-Standard-Blocksizes)
+   	1. [Disks with Integrity Protection](#Drives-with-Integrity-Protection)
 
 ## What is ShredOS?
 ShredOS is a USB bootable (BIOS or UEFI) small linux distribution with the sole purpose of securely erasing the entire contents of your
@@ -612,7 +616,7 @@ nvme can be used run a secure erase on NVMe devices.
 #### sg3_utils
 Like hdparm sg3_utils has many applications such as changes to the disk's block sizes, removal of scsi integrity protection and firmware level reformating (such as sanitization or secure erase). nwipe currently wipes drives using the traditional method of writing to every block. If you want to initiate a SCSI / SAS secure erase using the drives firmware then sg3_utils will be of use, it can also be used in conjunction with gnu parallel to format multiple drives at once. 
 
-#### sg3_utils
+#### parallel
 GNU parallel is a shell tool for executing jobs in parallel using one or more computers. It can be helpfull when you need sg3_utils or hdparm to prepare multiple disks at the same time. 
 
 ## Compiling ShredOS and burning to USB stick, the harder way !
@@ -707,26 +711,34 @@ This script contains the changes that are made to nwipe's version.c
 
 ## Troubleshooting
 
-### Non-Standard Blocksizes
+### Small Font Size and Interface
+On Some systems the fonts might be rendered too small. 
+
+#### Solution for small font size and interface
+If you press `F` in the Drive Selection or during the wipe process, the interface will be scaled to 200% to allow better readability on high resolution displays. 
+
+### Drives with Non-Standard Blocksizes
 Certain SAS disks come with block sizes that nwipe might not be able to digest.
 In that case you can use sg_format to readjust the block size to a standard size such as `512` or `4096`.
 
-#### Instructions
-1. List disks using `lsblk`
-2. Identify the device with the wrong block size by executing `sg_format <device>`
-3. Run `sg_format -f --format --size=<512 / 4096> <device> --quick`
-4. Wait till the process terminated and check by executing `sg_format <device>` again. 
+#### Solution for Non-Standard Blocksizes
+1. Keyboard shortcut ALT-F2 you can open the second virtual terminal to open the shell
+2. List disks using `lsblk`
+3. Identify the device with the wrong block size by executing `sg_format <device>`
+4. Run `sg_format -f --format --size=<512 / 4096> <device> --quick`
+5. Wait till the process terminated and check by executing `sg_format <device>` again. 
 
 A full guide to also reformat multiple disks [can be found here](https://github.com/gms-electronics/formatingguide/blob/main/README.md).
 
-### Integrity Protection
+### Drives with Integrity Protection
 Certain SAS disks (especially disks that are used in storage systems such as HP 3Par or comparible Dell EMC Solutions) come with particular SAS features preconfigured to protect the disk from cancellation.
 
-#### Instructions
-1. List disks using lsblk
-2. Identify the device with the wrong block size by executing `sg_format <device>`
-3. Run `sg_format -v --fmtpinfo=0 --format --size=<512 / 4096> <device> --quick`
-4. Wait till the process terminated and check by executing `sg_format <device>` again.
+#### Solution for Drives with Integrity 
+1. With ALT-F2 you can open the second virtual terminal to open the shell
+2. List disks using `lsblk`
+3. Identify the device with the wrong block size by executing `sg_format <device>`
+4. Run `sg_format -v --fmtpinfo=0 --format --size=<512 / 4096> <device> --quick`
+5. Wait till the process terminated and check by executing `sg_format <device>` again.
 
 A full guide to also remove integrity protection from multiple disks [can be found here](https://github.com/gms-electronics/formatingguide/blob/main/README.md) can be found here.
 
