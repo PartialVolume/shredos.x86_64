@@ -252,11 +252,11 @@ menuentry "shredos" {
 **WARNING** 
 You should not place the string `/etc/shredos/shredos_exclude_disc` on multiple FAT formatted drives or for that matter any drive irrespective of formatting, expecting all the drives with this string to not appear in nwipe or not get wiped in interactive mode. The file `/etc/shredos/shredos_exclude_disc` should only appear on the one and only ShredOS boot drive on the system. Any other drives that contain `/etc/shredos/shredos_exclude_disc` will appear in nwipe and WILL get wiped in autonuke mode.
 
-## A word about the Mac Book Pro
-Yes, ShredOS will boot on Mac Book Pros, however here's a few tips you may find useful.
+## Informations for Intel powered Apple Devices
+Yes, ShredOS will boot on **Intel** powered Macs, however here's a few tips you may find useful.
 
 - Booting from USB. Power off then power on holding down the `alt` key. After a few seconds select EFI boot.
-- Due to the high resolution screens on a Mac Book Pro you may find the text displayed by nwipe and in the virtual terminals is very small. To enlarge the text follow the instructions [here](#nwipes-font-size-is-too-small-I-want-the-text-to-be-bigger).
+- Due to the high resolution screens on a Mac Book Pro you may find the text displayed by nwipe and in the virtual terminals is very small. To enlarge the text follow the instructions [here](#nwipes-font-size-is-too-small-how-to-double-the-size-of-the-text).
 - How to switch between virtual terminals on a Mac. On a PC it's usually (but not always) ALT F1 (/dev/tty1 - nwipe), ALT F2 (/dev/tty2 or /dev/tty0 - terminal), ALT F3 (/dev/console - console). However on a MAC you switch virtual terminals as follows. FN+ALT F1 (/dev/tty1 - nwipe), FN+ALT F2 (/dev/tty2 or /dev/tty0 - terminal), FN+ALT F3 (/dev/console).
 
 ## How to make a persistent change to the terminal resolution
