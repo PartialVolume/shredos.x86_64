@@ -74,7 +74,7 @@ A certificate can optionally be created for each drive erased, the default is to
    1. [Transferring nwipe log files to a ftp server using lftp](#transferring-nwipe-log-files-to-a-ftp-server-using-lftp)
 1. [How to wipe drives on headless systems or systems with faulty display hardware. (For use on secure LANs only)](#how-to-wipe-drives-on-headless-systems-or-systems-with-faulty-display-hardware-for-use-on-secure-lans-only)
 1. [Nwipe's font size is too small, How to double the size of the text](#nwipes-font-size-is-too-small-how-to-double-the-size-of-the-text)
-1. [Shredos includes the following related programs](#shredos-includes-the-following-related-programs)
+1. [Included Packages](#Included-Packages)
    1. [smartmontools](#smartmontools)
    1. [hdparm](#hdparm)
    1. [hexedit](#hexedit)
@@ -583,7 +583,7 @@ Default font size on a high resolution monitor.
 ![image](https://user-images.githubusercontent.com/22084881/216849326-e9a5c3a0-4485-432a-a3c7-a72858faeab1.png)
 After running the setfont command.
 		
-## ShredOS includes the following related programs
+## Included Packages
 
 #### smartmontools
 Nwipes ability to detect serial numbers on USB devices now works on USB bridges who's chipset supports that functionality. Smartmontools provides nwipe with that capability. Smartmontools can be used in the second or third virtual terminal. ALT-F2 and ALT-F3.
