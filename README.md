@@ -23,7 +23,7 @@
 
 NOTE! There may be pre-release versions that are newer than the latest versions listed below, To see all versions, [pre-release & latest](https://github.com/PartialVolume/shredos.x86_64/releases) The latest versions contain a full set of .img & .iso images in 32bit & 64bit while the pre-releases generally only contain a 64bit .img. Which should you use? Well, unless you need either 32 bit images or .iso images I would tend to download the very latest pre-release. Even the pre-releases are subjected to a fair amount of testing before they become a pre-release.
 
-### ShredOS version v2024.11_27_x86-64_0.38 (Latest Release) 
+### ShredOS version v2024.11_27_x86-64_0.38 [(Latest Release - Details)](https://github.com/PartialVolume/shredos.x86_64/releases/tag/v2024.11_27_x86-64_0.38) 
 | Nwipe Version | File to download |
 | -- | -- |
 | v0.38 | [ShredOS .img x86_64bit for USB Vanilla](https://github.com/PartialVolume/shredos.x86_64/releases/download/v2024.11_27_x86-64_0.38/shredos-2024.11_27_x86-64_0.38_20250123.img) |
@@ -32,7 +32,7 @@ NOTE! There may be pre-release versions that are newer than the latest versions 
 | v0.38 | [ShredOS .img i586_32bit for CD/DVD/Ventoy vanilla ](https://github.com/PartialVolume/shredos.x86_64/releases/download/v2024.11_27_x86-64_0.38/shredos-2024.11_27_i586_32bit_0.38_20250127_vanilla.img) |
 | v0.38 | [ShredOS .iso i586_32bit for CD/DVD/Ventoy vanilla ](https://github.com/PartialVolume/shredos.x86_64/releases/download/v2024.11_27_x86-64_0.38/shredos-2024.11_27_i586_32bit_0.38_20250128_vanilla.iso) |
 
-### ShredOS version v2024.02.2_26.0_x86-64_0.37 (Previous Release) 
+### ShredOS version v2024.02.2_26.0_x86-64_0.37 [(Previous Release - Details)](https://github.com/PartialVolume/shredos.x86_64/releases/tag/v2024.02.2_26.0_x86-64_0.37) 
 | Nwipe Version | File to download |
 | -- | -- |
 | v0.37 | [ShredOS .img x86_64bit for USB Vanilla](https://github.com/PartialVolume/shredos.x86_64/releases/download/v2024.02.2_26.0_x86-64_0.37/shredos-2024.02.2_26.0_x86-64_0.37_20240610.img) |
