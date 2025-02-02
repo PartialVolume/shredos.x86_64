@@ -628,64 +628,66 @@ GNU parallel is a shell tool for executing jobs in parallel using one or more co
 >SANITIZE is prefered over SECURITY ERASE UNIT if supported by the drive.
 >As Sanitize will remove both the mappings table and the blocks that have been written to, while SECURITY ERASE UNIT will only delete the mapping table. Therefore the latter is faster to complete.
 
-Find disks on the system:
+Press `ALT+F2` to open a virtual terminal.
+
+Find disks on the system
 ```
 $ fdisk -l
 ```
 
-Check that the drive is not frozen:
+Check that the drive is not frozen
 ```
-$ hdparm -I /dev/sdx | grep frozen
+$ hdparm -I /dev/sdX | grep frozen
 ...
 	not	frozen
 ...
 ```
 
-If frozen (repeat until not frozen):
+If frozen (repeat until not frozen)
 ```
 $ echo -n mem > /sys/power/state
 ```
 
 ##### SANITIZE:
 
-Check for support:
+Check for support
 ```
 $ hdparm --sanitize-status /dev/sdx
 
-/dev/sdx:
+/dev/sdX:
 Issuing SANITIZE_STATUS command
 Sanitize status:
     State:    SD0 Sanitize Idle
 ```
->if not move on to [secure erase](security-erase-unit).
+>if not move on to [secure erase](#security-erase-unit).
 
-Check for block erase support:
+Check for block erase support
 ```
-$ hdparm -I /dev/sda | grep BLOCK_ERASE_EXT
+$ hdparm -I /dev/sdX | grep BLOCK_ERASE_EXT
 	  *	BLOCK_ERASE_EXT command
 ```
 >While BLOCK_ERASE_EXT should be sufficient, CRYPTO_SCRAMBLE_EXT and OVERWRITE_EXT might be more appliceable for your use.
 
-Sanitize the disk:
+Sanitize the disk
 ```
-hdparm --yes-i-know-what-i-am-doing --sanitize-block-erase /dev/sdx
-```
-
-Check status:
-```
-hdparm --sanitize-status /dev/sdx
+$ hdparm --yes-i-know-what-i-am-doing --sanitize-block-erase /dev/sdX
 ```
 
-Verify:
+Check status
 ```
-dd if=/dev/sdx bs=8192 status=progress | hexdump
+$ hdparm --sanitize-status /dev/sdX
 ```
 
-##### SECURITY ERASE UNIT
+Verify
+```
+$ dd if=/dev/sdX bs=8192 status=progress | hexdump
+```
+
+##### SECURITY ERASE UNIT:
 
 Check that it is not frozen and you can also see the estimated time to run.
 ```
-$ hdparm -I /dev/sdx
+$ hdparm -I /dev/sdX
 ...
 	not	frozen
 ...
@@ -693,27 +695,29 @@ $ hdparm -I /dev/sdx
 ...
 ```
 
-If frozen (repeat until not frozen):
+If frozen (repeat until not frozen)
 ```
-echo -n mem > /sys/power/state
+$ echo -n mem > /sys/power/state
 ```
 
-Set user and password then erase disk:
+Set user and password then erase disk
 ```
-$ hdparm --user-master u --security-set-pass p /dev/sdx security_password="p"
-$ hdparm --user-master u --security-erase p /dev/sdx security_password="p"
+$ hdparm --user-master u --security-set-pass p /dev/sdX security_password="p"
+$ hdparm --user-master u --security-erase p /dev/sdX security_password="p"
 ```
 >If your drive supports enhanced erase, you may want to substitute security-erase with security-erase-enhanced. 
 
-Verify:
+Verify
 ```
-$ dd if=/dev/sdx bs=8192 status=progress | hexdump
+$ dd if=/dev/sdX bs=8192 status=progress | hexdump
 ```
 
 #### Wipe NVME
 
 >[!NOTE]
 >Sanitize is the prefered method but might not be supported by all vendors as it is an optional feature.
+
+Press `ALT+F2` to open a virtual terminal.
 
 Lists disks on the system:
 ```
@@ -722,22 +726,23 @@ $ nvme list
 
 ##### SANITIZE:
 
-Check for support | grep Sanitize
+Check for support
 ```
-$ nvme id-ctrl -H /dev/nvmeX
+$ nvme id-ctrl -H /dev/nvmeX | grep Sanitize
 ...
     [1:1] : 0x1	Block Erase Sanitize Operation Supported
     [0:0] : 0x1	Crypto Erase Sanitize Operation Supported
 ...
 ```
 
+Sanitize the disk
 ```
 $ nvme sanitize -a 2 /dev/nvmeX
 ```
 >While Block Erase should be sufficient, Overwrite and Crypto Erase might be more appliceable for your use.
 >Replace 2 for Block erase, 3 for Overwrite, 4 for Crypto Erase
 
-Check Status:
+Check Status
 ```
 $ nvme sanitize-log /dev/nvmeX
 
@@ -747,16 +752,16 @@ Sanitize Status                        (SSTAT) :  0x101
 ```
 >Status: 0x101 denotes complete.
  
-Verify:
+Verify
 ```
-$ dd if=/dev/nvme1n1 bs=8192 status=progress | hexdump
+$ dd if=/dev/nvmeX bs=8192 status=progress | hexdump
 ```
 
-##### SECURE ERASE
+##### SECURE ERASE:
 
-Check support:
+Check for support
 ```
-$ nvme id-ctrl /dev/nvme0 | grep fna
+$ nvme id-ctrl /dev/nvmeX | grep fna
 fna		: 0x4
 ```
 
@@ -765,14 +770,14 @@ If crypto erase is supported(0x4 as above)
 $ nvme format /dev/nvmeX -n 0xffffffff –ses=2
 ```
 
-else:
+else
 ```
 $ nvme format /dev/nvmeX -n 0xffffffff -ses=1
 ```
 
 Verify
 ```
-$ dd if=/dev/nvme1n1 bs=8192 status=progress | hexdump
+$ dd if=/dev/nvmeX bs=8192 status=progress | hexdump
 ```
 
 ## Compiling ShredOS and burning to USB stick, the harder way !
