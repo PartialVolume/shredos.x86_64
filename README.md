@@ -648,6 +648,11 @@ If frozen (repeat until not frozen)
 $ echo -n mem > /sys/power/state
 ```
 
+or alternatively, use the following command which sends the computer to sleep and then automatically powers the computer back up after 5 seconds.
+```
+rtcwake -m mem -s 5
+```
+
 ##### SANITIZE:
 
 Check for support
