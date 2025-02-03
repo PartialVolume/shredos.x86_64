@@ -648,7 +648,7 @@ If frozen (repeat until not frozen)
 $ echo -n mem > /sys/power/state
 ```
 
-or alternatively, use the following command which sends the computer to sleep and then automatically powers the computer back up after 5 seconds.
+or alternatively, use the following command which sends the computer to sleep and then automatically powers the computer back up after 5 seconds. See ShredOS wiki for details on [sleep states](https://github.com/PartialVolume/shredos.x86_64/wiki/Unfreezing-hard-drives-for-ATA-secure-erase)
 ```
 rtcwake -m mem -s 5
 ```
