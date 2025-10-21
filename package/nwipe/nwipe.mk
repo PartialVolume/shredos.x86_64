@@ -4,9 +4,16 @@
 #
 ################################################################################
 
-NWIPE_VERSION = 0.39
-NWIPE_SOURCE = v$(NWIPE_VERSION).tar.gz
-NWIPE_SITE = https://github.com/martijnvanbrummelen/nwipe/archive/refs/tags
+# Plain URL Download
+#NWIPE_VERSION = 0.39
+#NWIPE_SOURCE = v$(NWIPE_VERSION).tar.gz
+#NWIPE_SITE = https://github.com/martijnvanbrummelen/nwipe/archive/refs/tags
+
+# Plain URL Download - but with git commit hashes
+NWIPE_VERSION = ed74492a1d56ec2afd259ee53a1a9758597e137a
+NWIPE_SOURCE = $(NWIPE_VERSION).tar.gz
+NWIPE_SITE = https://github.com/martijnvanbrummelen/nwipe/archive
+
 
 NWIPE_DEPENDENCIES = ncurses parted dmidecode coreutils
 
