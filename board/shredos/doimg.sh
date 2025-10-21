@@ -1,6 +1,12 @@
 #!/bin/bash -e
 
-version=`cat board/shredos/fsoverlay/etc/shredos/version.txt`
+version_file=`board/shredos/fsoverlay/etc/shredos/version.txt`
+if [ -f $version_file ]; then
+    version=`cat $version_file`
+else
+    version=`$(date +"%Y.%m_%d")`
+fi
+echo $version
 
 cp "board/shredos/grub.cfg"                "${BINARIES_DIR}/grub.cfg"    || exit 1
 cp "board/shredos/bootx64.efi"             "${BINARIES_DIR}/bootx64.efi" || exit 1
@@ -14,7 +20,7 @@ cp "board/shredos/README.txt"              "${BINARIES_DIR}/README.txt"  || exit
 cp "board/shredos/shredos.ico"             "${BINARIES_DIR}/shredos.ico" || exit 1
 
 # version.txt is used to help identify boot disc
-cp "board/shredos/fsoverlay/etc/shredos/version.txt" "${BINARIES_DIR}/version.txt" || exit 1
+cp "$version_file" "${BINARIES_DIR}/version.txt" || exit 1
 
 rm -rf "${BUILD_DIR}/genimage.tmp"                                       || exit 1
 genimage --rootpath="${TARGET_DIR}" --inputpath="${BINARIES_DIR}" --outputpath="${BINARIES_DIR}" --config="board/shredos/genimage.cfg" --tmppath="${BUILD_DIR}/genimage.tmp" || exit 1
