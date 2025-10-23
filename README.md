@@ -23,21 +23,21 @@
 
 NOTE! There may be pre-release versions that are newer than the latest versions listed below, To see all versions, [pre-release & latest](https://github.com/PartialVolume/shredos.x86_64/releases) The latest versions contain a full set of .img & .iso images in 32bit & 64bit while the pre-releases generally only contain a 64bit .img. Which should you use? Well, unless you need either 32 bit images or .iso images I would tend to download the very latest pre-release. Even the pre-releases are subjected to a fair amount of testing before they become a pre-release.
 
-### ShredOS version v2024.02.2_26.0_x86-64_0.37 (Latest Release) 
+### ShredOS version v2024.11_27_x86-64_0.38 [(Latest Release - Details)](https://github.com/PartialVolume/shredos.x86_64/releases/tag/v2024.11_27_x86-64_0.38) 
+| Nwipe Version | File to download |
+| -- | -- |
+| v0.38 | [ShredOS .img x86_64bit for USB Vanilla](https://github.com/PartialVolume/shredos.x86_64/releases/download/v2024.11_27_x86-64_0.38/shredos-2024.11_27_x86-64_0.38_20250123.img) |
+| v0.38 | [ShredOS .iso x86_64bit for CD/DVD/Ventoy, Vanilla](https://github.com/PartialVolume/shredos.x86_64/releases/download/v2024.11_27_x86-64_0.38/shredos-2024.11_27_x86-64_0.38_20250125_vanilla.iso) |
+| v0.38 | [ShredOS .iso x86_64bit for CD/DVD/Ventoy nomodeset ](https://github.com/PartialVolume/shredos.x86_64/releases/download/v2024.11_27_x86-64_0.38/shredos-2024.11_27_x86-64_0.38_20250125_nomodeset.iso) |
+| v0.38 | [ShredOS .img i586_32bit for USB vanilla ](https://github.com/PartialVolume/shredos.x86_64/releases/download/v2024.11_27_x86-64_0.38/shredos-2024.11_27_i586_32bit_0.38_20250127_vanilla.img) |
+| v0.38 | [ShredOS .iso i586_32bit for CD/DVD/Ventoy vanilla ](https://github.com/PartialVolume/shredos.x86_64/releases/download/v2024.11_27_x86-64_0.38/shredos-2024.11_27_i586_32bit_0.38_20250128_vanilla.iso) |
+
+### ShredOS version v2024.02.2_26.0_x86-64_0.37 [(Previous Release - Details)](https://github.com/PartialVolume/shredos.x86_64/releases/tag/v2024.02.2_26.0_x86-64_0.37) 
 | Nwipe Version | File to download |
 | -- | -- |
 | v0.37 | [ShredOS .img x86_64bit for USB Vanilla](https://github.com/PartialVolume/shredos.x86_64/releases/download/v2024.02.2_26.0_x86-64_0.37/shredos-2024.02.2_26.0_x86-64_0.37_20240610.img) |
 | v0.37 | [ShredOS .iso x86_64bit for CD/DVD/Ventoy, Vanilla](https://github.com/PartialVolume/shredos.x86_64/releases/download/v2024.02.2_26.0_x86-64_0.37/shredos-2024.02.2_26.0_x86-64_0.37_20240611.iso) |
 | v0.37 | [ShredOS .iso x86_64bit for CD/DVD/Ventoy nomodeset ](https://github.com/PartialVolume/shredos.x86_64/releases/download/v2024.02.2_26.0_x86-64_0.37/shredos-2024.02.2_26.0_x86-64_0.37-nomodeset_20240611.iso) |
-
-### ShredOS version v2023.08.2_25_x86-64_0.35 (Previous Release)
-| Nwipe Version | File to download |
-| -- | -- |
-| v0.35 | [ShredOS .img x86_64bit for USB Vanilla DRM](https://github.com/PartialVolume/shredos.x86_64/releases/download/v2023.08.2_25.0_x86-64_0.35/shredos-2023.08.2_25.0_x86-64_0.35_20231110.img) |
-| v0.35 | [ShredOS .iso x86_64bit for CD/DVD, Ventoy Vanilla DRM](https://github.com/PartialVolume/shredos.x86_64/releases/download/v2023.08.2_25.0_x86-64_0.35/shredos-2023.08.2_25.0_x86-64_0.35_20240207.iso) |
-| v0.35 | [ShredOS .iso x86_64bit for CD/DVD, Ventoy nomodeset NoDRM](https://github.com/PartialVolume/shredos.x86_64/releases/download/v2023.08.2_25.0_x86-64_0.35/shredos.x86_64-2023.08.2_25.0_x86-64_0.35_nomodeset.iso) |
-| v0.35 | [ShredOS .img i586_32bit for USB Vanilla](https://github.com/PartialVolume/shredos.x86_64/releases/download/v2023.08.2_25.0_x86-64_0.35/shredos-2023.08.2_25.0_i586_0.35_20240219.img) |
-| v0.35 | [ShredOS .iso i586_32bit for CD/DVD](https://github.com/PartialVolume/shredos.x86_64/releases/download/v2023.08.2_25.0_x86-64_0.35/shredos-2023.08.2_25.0_i586_0.35_20240210.iso) |
 
 ### For all releases including latest and more recent pre-releases [releases](https://github.com/PartialVolume/shredos.x86_64/releases)
 
@@ -81,6 +81,9 @@ A certificate can optionally be created for each drive erased, the default is to
    1. [nvme-cli](#hdparm)
    1. [sg3_utils](#sg3_utils)
    1. [parallel](#parallel)
+1. [Wipe SSD and NVME using hdparm and nvme-cli](#wipe-ssd-and-nvme-using-hdparm-and-nvme-cli)
+   1. [Wipe SSD](#wipe-ssd)
+   1. [Wipe NVME](wipe-nvme)
 1. [Compiling shredos and burning to USB stick, the harder way!](#compiling-shredos-and-burning-to-usb-stick-the-harder-way-)
    1. [Install the following prerequisite software first. Without this software, the make command will fail](https://github.com/PartialVolume/shredos.x86_64/blob/master/README.md#install-the-following-prerequisite-software-first-without-this-software-the-make-command-will-fail)
    1. [Download the ShredOS source using the git command and build ShredOS](https://github.com/PartialVolume/shredos.x86_64/blob/master/README.md#download-the-shredos-source-using-the-git-command-and-build-shredos)
@@ -614,6 +617,173 @@ Like hdparm sg3_utils has many applications such as changes to the disk's block 
 
 #### sg3_utils
 GNU parallel is a shell tool for executing jobs in parallel using one or more computers. It can be helpfull when you need sg3_utils or hdparm to prepare multiple disks at the same time. 
+
+## Wipe SSD and NVME using hdparm and nvme-cli
+>[!CAUTION]
+>Make sure you have selected the correct device before issuing commands dealing with erasing/sanitizing as most of these commands do not ask for furter verification.(see e.g --yes-i-know-what-i-am-doing)
+
+#### Wipe SSD
+
+>[!NOTE]
+>SANITIZE is prefered over SECURITY ERASE UNIT if supported by the drive.
+>As Sanitize will remove both the mappings table and the blocks that have been written to, while SECURITY ERASE UNIT will only delete the mapping table. Therefore the latter is faster to complete.
+
+Press `ALT+F2` to open a virtual terminal.
+
+Find disks on the system
+```
+$ fdisk -l
+```
+
+Check that the drive is not frozen
+```
+$ hdparm -I /dev/sdX | grep frozen
+...
+	not	frozen
+...
+```
+
+If frozen (repeat until not frozen)
+```
+$ echo -n mem > /sys/power/state
+```
+
+or alternatively, use the following command which sends the computer to sleep and then automatically powers the computer back up after 5 seconds. See ShredOS wiki for details on [sleep states](https://github.com/PartialVolume/shredos.x86_64/wiki/Unfreezing-hard-drives-for-ATA-secure-erase) These commands will only work reliably if you are using the vanilla version of ShredOS. This is because the Linux Direct Rendering Manager (DRM) is required to correctly wake the display hardware, with the nomodeset version of ShredOS DRM is disabled and you may end up with a blank screen after rewaking.
+```
+rtcwake -m mem -s 5
+```
+
+##### SANITIZE:
+
+Check for support
+```
+$ hdparm --sanitize-status /dev/sdx
+
+/dev/sdX:
+Issuing SANITIZE_STATUS command
+Sanitize status:
+    State:    SD0 Sanitize Idle
+```
+>if not move on to [secure erase](#security-erase-unit).
+
+Check for block erase support
+```
+$ hdparm -I /dev/sdX | grep BLOCK_ERASE_EXT
+	  *	BLOCK_ERASE_EXT command
+```
+>While BLOCK_ERASE_EXT should be sufficient, CRYPTO_SCRAMBLE_EXT and OVERWRITE_EXT might be more appliceable for your use.
+
+Sanitize the disk
+```
+$ hdparm --yes-i-know-what-i-am-doing --sanitize-block-erase /dev/sdX
+```
+
+Check status
+```
+$ hdparm --sanitize-status /dev/sdX
+```
+
+Verify
+```
+$ dd if=/dev/sdX bs=8192 status=progress | hexdump
+```
+
+##### SECURITY ERASE UNIT:
+
+Check that it is not frozen and you can also see the estimated time to run.
+```
+$ hdparm -I /dev/sdX
+...
+	not	frozen
+...
+	2min for SECURITY ERASE UNIT. 2min for ENHANCED SECURITY ERASE UNIT.
+...
+```
+
+If frozen (repeat until not frozen)
+```
+$ echo -n mem > /sys/power/state
+```
+
+Set user and password then erase disk
+```
+$ hdparm --user-master u --security-set-pass p /dev/sdX security_password="p"
+$ hdparm --user-master u --security-erase p /dev/sdX security_password="p"
+```
+>If your drive supports enhanced erase, you may want to substitute security-erase with security-erase-enhanced. 
+
+Verify
+```
+$ dd if=/dev/sdX bs=8192 status=progress | hexdump
+```
+
+#### Wipe NVME
+
+>[!NOTE]
+>Sanitize is the prefered method but might not be supported by all vendors as it is an optional feature.
+
+Press `ALT+F2` to open a virtual terminal.
+
+Lists disks on the system:
+```
+$ nvme list
+```
+
+##### SANITIZE:
+
+Check for support
+```
+$ nvme id-ctrl -H /dev/nvmeX | grep Sanitize
+...
+    [1:1] : 0x1	Block Erase Sanitize Operation Supported
+    [0:0] : 0x1	Crypto Erase Sanitize Operation Supported
+...
+```
+
+Sanitize the disk
+```
+$ nvme sanitize -a 2 /dev/nvmeX
+```
+>While Block Erase should be sufficient, Overwrite and Crypto Erase might be more appliceable for your use.
+>Replace 2 for Block erase, 3 for Overwrite, 4 for Crypto Erase
+
+Check Status
+```
+$ nvme sanitize-log /dev/nvmeX
+
+Sanitize Progress                      (SPROG) :  65535
+Sanitize Status                        (SSTAT) :  0x101
+...
+```
+>Status: 0x101 denotes complete.
+ 
+Verify
+```
+$ dd if=/dev/nvmeX bs=8192 status=progress | hexdump
+```
+
+##### SECURE ERASE:
+
+Check for support
+```
+$ nvme id-ctrl /dev/nvmeX | grep fna
+fna		: 0x4
+```
+
+If crypto erase is supported(0x4 as above)
+```
+$ nvme format /dev/nvmeX -n 0xffffffff –ses=2
+```
+
+else
+```
+$ nvme format /dev/nvmeX -n 0xffffffff -ses=1
+```
+
+Verify
+```
+$ dd if=/dev/nvmeX bs=8192 status=progress | hexdump
+```
 
 ## Compiling ShredOS and burning to USB stick, the harder way !
 
