@@ -12,9 +12,9 @@
 
 # ShredOS x86_64 - Disk Eraser
 
-## For all Intel and compatible 64 & 32 bit processors
+## For PCs, Servers and Macs with Intel and AMD 64 & 32 bit processors
 
-#### As well as a 64bit versions, also included are 32bit .img & .iso images of ShredOS that will run on both 32bit and 64bit processors, see [Release Assets](https://github.com/PartialVolume/shredos.x86_64/releases) and the table of download links below. For those that wish to build their own ShredOS from source, rather than just burn the .img/.iso images, instructions for modififing the x86_64 build to generate 32bit code as well as .iso images will be included below in the notes in due course.
+#### As well as a 64bit versions, also included are 32bit .img & .iso images of ShredOS that will run on both 32bit and 64bit processors, see [Release Assets](https://github.com/PartialVolume/shredos.x86_64/releases) and the table of download links below. For those that wish to build their own ShredOS from source, rather than just burn the .img/.iso images, instructions for modififing the x86_64 build to generate 32bit code as well as .iso images will be included below in the notes in due course. Please note the additional information provided to run ShredOS on Apple systems. 
 		
 #### For those that just want to get on with using ShredOS, you can download the pre-built .img or .iso images and burn them straight to USB flash drive or CD/DVD. Boot from the USB flash drive or CD/DVD and nwipe will appear ready for you to select your preferred wipe options.
 [![GitHub all releases](https://img.shields.io/github/downloads/PartialVolume/shredos.x86_64/total?label=Total%20downloads%20x86_64%20all%20releases,%2064%20and%2032bit%20code,%20.iso%20and%20.img%20&style=plastic)](https://github.com/PartialVolume/shredos.x86_64/releases)
@@ -74,7 +74,7 @@ A certificate can optionally be created for each drive erased, the default is to
    1. [Transferring nwipe log files to a ftp server using lftp](#transferring-nwipe-log-files-to-a-ftp-server-using-lftp)
 1. [How to wipe drives on headless systems or systems with faulty display hardware. (For use on secure LANs only)](#how-to-wipe-drives-on-headless-systems-or-systems-with-faulty-display-hardware-for-use-on-secure-lans-only)
 1. [Nwipe's font size is too small, How to double the size of the text](#nwipes-font-size-is-too-small-how-to-double-the-size-of-the-text)
-1. [Shredos includes the following related programs](#shredos-includes-the-following-related-programs)
+1. [Included Packages](#Included-Packages)
    1. [smartmontools](#smartmontools)
    1. [hdparm](#hdparm)
    1. [hexedit](#hexedit)
@@ -99,6 +99,10 @@ A certificate can optionally be created for each drive erased, the default is to
 	1. [../package/nwipe/nwipe.hash](#packagenwipenwipehash)
 	1. [../package/nwipe/Config.in](#packagenwipeconfigin)
 	1. [../package/nwipe/002-nwipe-banner-patch.sh](#packagenwipe002-nwipe-banner-patchsh)
+ 1. [Troubleshooting](#Troubleshooting)
+ 	1. [Small Font Size and Inteface](#Small-Font-Size-and-Interface)
+  	1. [Disks with Non-Standard Blocksizes](#Drives-with-Non-Standard-Blocksizes)
+   	1. [Disks with Integrity Protection](#Drives-with-Integrity-Protection)
 
 ## What is ShredOS?
 ShredOS is a USB bootable (BIOS or UEFI) small linux distribution with the sole purpose of securely erasing the entire contents of your
@@ -251,11 +255,11 @@ menuentry "shredos" {
 **WARNING** 
 You should not place the string `/etc/shredos/shredos_exclude_disc` on multiple FAT formatted drives or for that matter any drive irrespective of formatting, expecting all the drives with this string to not appear in nwipe or not get wiped in interactive mode. The file `/etc/shredos/shredos_exclude_disc` should only appear on the one and only ShredOS boot drive on the system. Any other drives that contain `/etc/shredos/shredos_exclude_disc` will appear in nwipe and WILL get wiped in autonuke mode.
 
-## A word about the Mac Book Pro
-Yes, ShredOS will boot on Mac Book Pros, however here's a few tips you may find useful.
+## Informations for Intel powered Apple Devices
+Yes, ShredOS will boot on **Intel** powered Macs, however here's a few tips you may find useful.
 
 - Booting from USB. Power off then power on holding down the `alt` key. After a few seconds select EFI boot.
-- Due to the high resolution screens on a Mac Book Pro you may find the text displayed by nwipe and in the virtual terminals is very small. To enlarge the text follow the instructions [here](#nwipes-font-size-is-too-small-I-want-the-text-to-be-bigger).
+- Due to the high resolution screens on a Mac Book Pro you may find the text displayed by nwipe and in the virtual terminals is very small. To enlarge the text follow the instructions [here](#nwipes-font-size-is-too-small-how-to-double-the-size-of-the-text).
 - How to switch between virtual terminals on a Mac. On a PC it's usually (but not always) ALT F1 (/dev/tty1 - nwipe), ALT F2 (/dev/tty2 or /dev/tty0 - terminal), ALT F3 (/dev/console - console). However on a MAC you switch virtual terminals as follows. FN+ALT F1 (/dev/tty1 - nwipe), FN+ALT F2 (/dev/tty2 or /dev/tty0 - terminal), FN+ALT F3 (/dev/console).
 
 ## How to make a persistent change to the terminal resolution
@@ -574,31 +578,15 @@ Type `nwipe` as shown above and the nwipe GUI will be displayed and you can proc
 >Due to the insecure nature of telnet as opposed to ssh, it goes without saying that this method of accessing ShredOS & nwipe should only be carried out on a trusted local area network and never over the internet unless via a VPN or SSH tunnel. ssh access may be provided at a future date if it's requested.
 
 ## Nwipes font size is too small How to double the size of the text
-If you are using a monitor with a native high resolution you may find that nwipe's font size is too small for your liking, if that's the case, you just need to type the following command in the second virtual terminal `/bin/setfont -d -C /dev/tty1`. To double the font size in other virtual terminals use `/bin/setfont -d -C /dev/tty2` and `/bin/setfont -d -C /dev/console`.
+If you are using a monitor with a native high resolution you may find that nwipe's font size is too small for your liking. Type `F` to toggle the scaling of the interface to 200% during the disk selection screen or the progress screen.
 
-#### Detail
-Type ALT F2 (Fn ALT F2 on a Mac) to bring up the 2nd virtual console. Type the following tty command which will return the current console name. So from this result /dev/tty2 we can deduce that the default nwipe in ALT F1 is /dev/tty1. For reference ALT F3 is /dev/console.
-
-```
-tty
-/dev/tty2
-```
-To set the font for the default nwipe in the first virtual console ALT F1 (/dev/tty1), type the following command in the 2nd virtual console (ALT F2)
-```
-/bin/setfont -d -C /dev/tty1
-```
-
-> **Warning**
->Always specify the full path to setfont, setfont -d -C /dev/tty1 without the /bin/ prefix, will not work! There are actually two different versions of setfont on Linux and if you ommit the prefix path you will be running the wrong setfont which won't work.
-
-
-![image](https://user-images.githubusercontent.com/22084881/216849290-8e1c05d2-c856-4466-b76f-eec4ccd2d880.png)
 Default font size on a high resolution monitor.
-.
-![image](https://user-images.githubusercontent.com/22084881/216849326-e9a5c3a0-4485-432a-a3c7-a72858faeab1.png)
+![image](https://user-images.githubusercontent.com/22084881/216849290-8e1c05d2-c856-4466-b76f-eec4ccd2d880.png)
+
 After running the setfont command.
-		
-## ShredOS includes the following related programs
+![image](https://user-images.githubusercontent.com/22084881/216849326-e9a5c3a0-4485-432a-a3c7-a72858faeab1.png)
+
+## Included Packages
 
 #### smartmontools
 Nwipes ability to detect serial numbers on USB devices now works on USB bridges who's chipset supports that functionality. Smartmontools provides nwipe with that capability. Smartmontools can be used in the second or third virtual terminal. ALT-F2 and ALT-F3.
@@ -615,7 +603,7 @@ nvme can be used run a secure erase on NVMe devices.
 #### sg3_utils
 Like hdparm sg3_utils has many applications such as changes to the disk's block sizes, removal of scsi integrity protection and firmware level reformating (such as sanitization or secure erase). nwipe currently wipes drives using the traditional method of writing to every block. If you want to initiate a SCSI / SAS secure erase using the drives firmware then sg3_utils will be of use, it can also be used in conjunction with gnu parallel to format multiple drives at once. 
 
-#### sg3_utils
+#### parallel
 GNU parallel is a shell tool for executing jobs in parallel using one or more computers. It can be helpfull when you need sg3_utils or hdparm to prepare multiple disks at the same time. 
 
 ## Wipe SSD and NVME using hdparm and nvme-cli
@@ -877,26 +865,34 @@ This script contains the changes that are made to nwipe's version.c
 
 ## Troubleshooting
 
-### Non-Standard Blocksizes
+### Small Font Size and Interface
+On Some systems the fonts might be rendered too small. 
+
+#### Solution for small font size and interface
+If you press `F` in the Drive Selection or during the wipe process, the interface will be scaled to 200% to allow better readability on high resolution displays. 
+
+### Drives with Non-Standard Blocksizes
 Certain SAS disks come with block sizes that nwipe might not be able to digest.
 In that case you can use sg_format to readjust the block size to a standard size such as `512` or `4096`.
 
-#### Instructions
-1. List disks using `lsblk`
-2. Identify the device with the wrong block size by executing `sg_format <device>`
-3. Run `sg_format -f --format --size=<512 / 4096> <device> --quick`
-4. Wait till the process terminated and check by executing `sg_format <device>` again. 
+#### Solution for Non-Standard Blocksizes
+1. Keyboard shortcut ALT-F2 you can open the second virtual terminal to open the shell
+2. List disks using `lsblk`
+3. Identify the device with the wrong block size by executing `sg_format <device>`
+4. Run `sg_format -f --format --size=<512 / 4096> <device> --quick`
+5. Wait till the process terminated and check by executing `sg_format <device>` again. 
 
 A full guide to also reformat multiple disks [can be found here](https://github.com/gms-electronics/formatingguide/blob/main/README.md).
 
-### Integrity Protection
+### Drives with Integrity Protection
 Certain SAS disks (especially disks that are used in storage systems such as HP 3Par or comparible Dell EMC Solutions) come with particular SAS features preconfigured to protect the disk from cancellation.
 
-#### Instructions
-1. List disks using lsblk
-2. Identify the device with the wrong block size by executing `sg_format <device>`
-3. Run `sg_format -v --fmtpinfo=0 --format --size=<512 / 4096> <device> --quick`
-4. Wait till the process terminated and check by executing `sg_format <device>` again.
+#### Solution for Drives with Integrity 
+1. With ALT-F2 you can open the second virtual terminal to open the shell
+2. List disks using `lsblk`
+3. Identify the device with the wrong block size by executing `sg_format <device>`
+4. Run `sg_format -v --fmtpinfo=0 --format --size=<512 / 4096> <device> --quick`
+5. Wait till the process terminated and check by executing `sg_format <device>` again.
 
 A full guide to also remove integrity protection from multiple disks [can be found here](https://github.com/gms-electronics/formatingguide/blob/main/README.md) can be found here.
 
