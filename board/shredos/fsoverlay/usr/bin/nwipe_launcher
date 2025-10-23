@@ -37,7 +37,7 @@ tftp_errors="ERROR\|Transfer Timed out\|Network is unreachable"
 # countdown on screen from 30s with numeric digits, checking the sha1 of dmesg every 5 secs
 # will exit countdown before reaching zero if no USB activity for 5 seconds
 loop_count_total=30
-loop_count_check=5
+loop_count_check=10
 printf "\n"
 
 while (( loop_count_total > 0 )); do
@@ -52,7 +52,7 @@ while (( loop_count_total > 0 )); do
 		((loop_count_check--))
 		sleep 1
 	done
-	loop_count_check=5
+	loop_count_check=10
 done
 printf "\n"
 
