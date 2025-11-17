@@ -83,7 +83,7 @@ A certificate can optionally be created for each drive erased, the default is to
    1. [parallel](#parallel)
 1. [Wipe SSD and NVME using hdparm and nvme-cli](#wipe-ssd-and-nvme-using-hdparm-and-nvme-cli)
    1. [Wipe SSD](#wipe-ssd)
-   1. [Wipe NVME](wipe-nvme)
+   1. [Wipe NVME](#wipe-nvme)
 1. [Compiling shredos and burning to USB stick, the harder way!](#compiling-shredos-and-burning-to-usb-stick-the-harder-way-)
    1. [Install the following prerequisite software first. Without this software, the make command will fail](https://github.com/PartialVolume/shredos.x86_64/blob/master/README.md#install-the-following-prerequisite-software-first-without-this-software-the-make-command-will-fail)
    1. [Download the ShredOS source using the git command and build ShredOS](https://github.com/PartialVolume/shredos.x86_64/blob/master/README.md#download-the-shredos-source-using-the-git-command-and-build-shredos)
