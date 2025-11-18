@@ -372,24 +372,48 @@ ROOTFS_ISO9660_PRE_GEN_HOOKS += ROOTFS_ISO9660_INSTALL_BOOTLOADERS
 
 ################################################################################
 # ISO9660 Generation Options
+#
+# Note: Argument order is crucial here, this command line was inspired by
+# modern Debian distributions (see .disk/mkisofs inside one of their ISOs)
 ################################################################################
 
-ROOTFS_ISO9660_OPTS += -r -J -joliet-long -cache-inodes -V 'ISO9660'
+ROOTFS_ISO9660_OPTS += -r -V 'ISO9660' -J -joliet-long -cache-inodes
 
+ifeq ($(BR2_TARGET_ROOTFS_ISO9660_BOTH)$(BR2_TARGET_ROOTFS_ISO9660_HYBRID),yy)
+# Hybrid Image Support (Modern Variant, Debian-style)
+ROOTFS_ISO9660_OPTS_BIOS = \
+	-isohybrid-mbr $(HOST_DIR)/share/syslinux/isohdpfx.bin \
+	-b $(ROOTFS_ISO9660_BOOT_IMAGE) \
+	-c isolinux/boot.cat \
+	-boot-load-size 4 \
+	-boot-info-table \
+	-no-emul-boot
+else ifeq ($(BR2_TARGET_ROOTFS_ISO9660_ISOLINUX),y)
 ROOTFS_ISO9660_OPTS_BIOS = \
 	-b $(ROOTFS_ISO9660_BOOT_IMAGE) \
-	-no-emul-boot \
+	-c isolinux/boot.cat \
 	-boot-load-size 4 \
-	-boot-info-table
-
-ROOTFS_ISO9660_OPTS_EFI = \
-	--efi-boot $(ROOTFS_ISO9660_EFI_PARTITION) \
+	-boot-info-table \
 	-no-emul-boot
+else
+ROOTFS_ISO9660_OPTS_BIOS = \
+	-b $(ROOTFS_ISO9660_BOOT_IMAGE) \
+	-boot-load-size 4 \
+	-boot-info-table \
+	-no-emul-boot
+endif
 
-ifeq ($(BR2_TARGET_ROOTFS_ISO9660_ISOLINUX),y)
-ROOTFS_ISO9660_OPTS += -c isolinux/boot.cat
-else ifeq ($(BR2_TARGET_ROOTFS_ISO9660_BOTH),y)
-ROOTFS_ISO9660_OPTS += -c isolinux/boot.cat
+ifeq ($(BR2_TARGET_ROOTFS_ISO9660_BOTH)$(BR2_TARGET_ROOTFS_ISO9660_HYBRID),yy)
+# Hybrid Image Support (Modern Variant, Debian-style)
+ROOTFS_ISO9660_OPTS_EFI = \
+	-e $(ROOTFS_ISO9660_EFI_PARTITION) \
+	-no-emul-boot \
+	-isohybrid-gpt-basdat \
+	-isohybrid-apm-hfsplus
+else
+ROOTFS_ISO9660_OPTS_EFI = \
+	-e $(ROOTFS_ISO9660_EFI_PARTITION) \
+	-no-emul-boot
 endif
 
 # Determine which boot options to use
@@ -411,15 +435,11 @@ ROOTFS_ISO9660_OPTS += $(ROOTFS_ISO9660_OPTS_EFI)
 endif
 
 ################################################################################
-# Hybrid Image Support (USB bootable)
+# Hybrid Image Support (Legacy Variant, No UEFI)
 ################################################################################
 
+ifneq ($(BR2_TARGET_ROOTFS_ISO9660_BOTH),y)
 ifeq ($(BR2_TARGET_ROOTFS_ISO9660_HYBRID),y)
-ifeq ($(BR2_TARGET_ROOTFS_ISO9660_BOTH),y)
-ROOTFS_ISO9660_OPTS += \
-	-isohybrid-mbr $(HOST_DIR)/share/syslinux/isohdpfx.bin \
-	-isohybrid-gpt-basdat -isohybrid-apm-hfsplus
-else
 define ROOTFS_ISO9660_GEN_HYBRID
 	$(HOST_DIR)/bin/isohybrid -t 0x96 $@
 endef
