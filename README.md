@@ -876,7 +876,7 @@ The ISO image's ISOLINUX configuration, which the BIOS bootloader will use.
 The ISO image's GRUB configuration, which the UEFI bootloader will use.
 		
 #### ../fs/iso9660/efigrub.cfg
-The ISO image's EFI-embedded GRUB configuration, which the UEFI bootloader will use to search the ISO9660 filesystem.
+The ISO image's GRUB configuration for UEFI, used to find the ISO9660 filesystem.
 		
 #### ../board/shredos/fsoverlay/etc/shredos/version.txt
 This file contains the version information as seen in the title on nwipe's title bar, i.e. '2021.08.2_22_x86-64_0.32.023'. This version ingformation is also used when naming the .img file in ../output/images/ ../board/shredos/fsoverlay/etc/shredos/version.txt is manually updated for each new release of ShredOS.
