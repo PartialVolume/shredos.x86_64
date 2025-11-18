@@ -27,7 +27,6 @@ choice
 
 config BR2_TARGET_ROOTFS_ISO9660_GRUB2
 	bool "grub2"
-	depends on BR2_TARGET_ROOTFS_ISO9660
 	depends on BR2_TARGET_GRUB2 \
 		&& (BR2_TARGET_GRUB2_I386_EFI || BR2_TARGET_GRUB2_X86_64_EFI)
 	select BR2_TARGET_ROOTFS_ISO9660_BIOS_BOOTLOADER \
@@ -37,13 +36,13 @@ config BR2_TARGET_ROOTFS_ISO9660_GRUB2
 	help
 	  Use Grub 2 as the bootloader for the ISO9660 image.
 	  Make sure to enable the 'iso9660' module in
-	  (when used) BR2_TARGET_GRUB2_BUILTIN_MODULES_PC and (when used)
+	  BR2_TARGET_GRUB2_BUILTIN_MODULES_PC and/or
 	  BR2_TARGET_GRUB2_BUILTIN_MODULES_EFI. For GRUB on BIOS, use 'cd'
 	  as the boot partition in BR2_TARGET_GRUB2_BOOT_PARTITION setting.
 	  For GRUB on EFI 'set root=(cd0)' in the configuration file passed
-	  to BR2_TARGET_GRUB2_BUILTIN_CONFIG_EFI, although just an ISO9660
-	  BR2_TARGET_ROOTFS_ISO9660_GRUB2_EFI_BOOT_MENU containing a "search"
-	  using the BR2_TARGET_ROOTFS_ISO9660_GRUB2_EFI_IDENT_FILE also works.
+	  to BR2_TARGET_ROOTFS_ISO9660_GRUB2_EFI_BOOT_MENU, although the
+	  default configuration file contains a "search" directive using
+	  BR2_TARGET_ROOTFS_ISO9660_GRUB2_EFI_IDENT_FILE, which works too.
 
 config BR2_TARGET_ROOTFS_ISO9660_ISOLINUX
 	bool "isolinux"
@@ -57,7 +56,6 @@ config BR2_TARGET_ROOTFS_ISO9660_ISOLINUX
 
 config BR2_TARGET_ROOTFS_ISO9660_BOTH
 	bool "both"
-	depends on BR2_TARGET_ROOTFS_ISO9660
 	depends on BR2_TARGET_SYSLINUX_ISOLINUX
 	depends on BR2_TARGET_GRUB2 \
 		&& (BR2_TARGET_GRUB2_I386_EFI || BR2_TARGET_GRUB2_X86_64_EFI)
@@ -79,21 +77,8 @@ config BR2_TARGET_ROOTFS_ISO9660_BIOS_BOOTLOADER
 config BR2_TARGET_ROOTFS_ISO9660_EFI_BOOTLOADER
 	bool
 
-config BR2_TARGET_ROOTFS_ISO9660_VOLUME_NAME
-	string "iso volume name"
-	depends on BR2_TARGET_ROOTFS_ISO9660
-	default "ISO9660"
-	help
-	  Set the Volume ID of the ISO image. xorriso accepts any text up to 32
-	  characters, but according to rarely obeyed specs stricter rules apply:
-	  Conformant are ASCII characters out of [A-Z0-9_], like: "IMAGE_23". Joliet
-	  allows 16 UCS-2 characters, like: "Windows name". Be aware that the volume
-	  ID might get used automatically as name of the mount point when the medium
-	  is inserted into a playful computer system.
-
 config BR2_TARGET_ROOTFS_ISO9660_ISOLINUX_BOOT_MENU
 	string "Isolinux configuration file"
-	depends on BR2_TARGET_ROOTFS_ISO9660
 	depends on BR2_TARGET_ROOTFS_ISO9660_ISOLINUX || BR2_TARGET_ROOTFS_ISO9660_BOTH
 	default "fs/iso9660/isolinux.cfg"
 	help
@@ -106,7 +91,6 @@ config BR2_TARGET_ROOTFS_ISO9660_ISOLINUX_BOOT_MENU
 
 config BR2_TARGET_ROOTFS_ISO9660_GRUB2_BOOT_MENU
 	string "Grub2 configuration file"
-	depends on BR2_TARGET_ROOTFS_ISO9660
 	depends on BR2_TARGET_ROOTFS_ISO9660_GRUB2 || BR2_TARGET_ROOTFS_ISO9660_BOTH
 	default "fs/iso9660/grub.cfg"
 	help
@@ -117,38 +101,11 @@ config BR2_TARGET_ROOTFS_ISO9660_GRUB2_BOOT_MENU
 	  will automatically be replaced by the path to the kernel and
 	  initrd images respectively (or removed, if not applicable).
 
-config BR2_TARGET_ROOTFS_ISO9660_GRUB2_EFI_BOOT_MENU
-	string "Grub2 configuration file (EFI)"
-	depends on BR2_TARGET_ROOTFS_ISO9660
-	depends on (BR2_TARGET_ROOTFS_ISO9660_GRUB2 || BR2_TARGET_ROOTFS_ISO9660_BOTH) \
-		&& BR2_TARGET_ROOTFS_ISO9660_EFI_BOOTLOADER
-	default "fs/iso9660/efigrub.cfg"
-	help
-	  Use this option to provide a custom GRUB2 configuration
-	  file (grub.cfg), copied both to the EFI partition and the
-	  ISO9660 filesystem EFI-structure (for an EFI bootloader to find).
-
-	  It will usually contain a "search" and "source" directive to find
-	  the ISO9660 filesystem containing a common (BIOS) GRUB2 configuration.
-	  Alternatively, 'set root=(cd0)' and other such quirks are possible here.
-
-	  This is specifically for directives required for ISO9660 builds, for
-	  baking an EFI search config into the common GRUB image (often better)
-	  check out instead the GRUB2 setting: BR2_TARGET_GRUB2_BUILTIN_CONFIG_EFI
-
-	  Note that the strings __KERNEL_PATH__ and __INITRD_PATH__
-	  will automatically be replaced by the path to the kernel and
-	  initrd images respectively (or removed, if not applicable).
-
-	  Note that any string __EFI_ID_FILE__ will automatically be
-	  replaced with the BR2_TARGET_ROOTFS_ISO9660_GRUB2_EFI_IDENT_FILE.
-
 config BR2_TARGET_ROOTFS_ISO9660_GRUB2_EFI_IDENT_FILE
 	string "Grub2 identification file (EFI)"
-	depends on BR2_TARGET_ROOTFS_ISO9660
 	depends on (BR2_TARGET_ROOTFS_ISO9660_GRUB2 || BR2_TARGET_ROOTFS_ISO9660_BOTH) \
 		&& BR2_TARGET_ROOTFS_ISO9660_EFI_BOOTLOADER
-	default "/boot/buildroot"
+	default "buildroot"
 	help
 	  Use this option to provide a custom name for the identification
 	  file that is added to the ISO9660 filesystem, so the EFI bootloader
@@ -156,7 +113,6 @@ config BR2_TARGET_ROOTFS_ISO9660_GRUB2_EFI_IDENT_FILE
 
 config BR2_TARGET_ROOTFS_ISO9660_GRUB2_EFI_PARTITION_SIZE
 	string "Grub2 partition size (EFI)"
-	depends on BR2_TARGET_ROOTFS_ISO9660
 	depends on (BR2_TARGET_ROOTFS_ISO9660_GRUB2 || BR2_TARGET_ROOTFS_ISO9660_BOTH) \
 		&& BR2_TARGET_ROOTFS_ISO9660_EFI_BOOTLOADER
 	default "3M"
@@ -164,13 +120,28 @@ config BR2_TARGET_ROOTFS_ISO9660_GRUB2_EFI_PARTITION_SIZE
 	  Use this option to increase the size of the EFI partition.
 	  Embedding more GRUB2 modules may require a larger EFI partition size.
 
-	  Beware that sizes above 32M may not be compatible with all systems.
-	  xorriso will raise warnings, but not fail partitions larger than 32M.
-	  If you exceed 32M, carefully examine your builds and partition layouts.
+config BR2_TARGET_ROOTFS_ISO9660_GRUB2_EFI_BOOT_MENU
+	string "Grub2 embedded configuration (EFI)"
+	depends on (BR2_TARGET_ROOTFS_ISO9660_GRUB2 || BR2_TARGET_ROOTFS_ISO9660_BOTH) \
+		&& BR2_TARGET_ROOTFS_ISO9660_EFI_BOOTLOADER
+	default "fs/iso9660/efigrub.cfg"
+	help
+	  Use this option to provide a custom GRUB2 configuration
+	  file (grub.cfg) that is embedded in the EFI paritition.
+
+	  It will usually just contain a "search" directive to find the
+	  ISO9660 filesystem containing the actual GRUB2 configuration file.
+	  Alternatively, 'set root=(cd0)' could be directly set here also...
+
+	  Note that the string __EFI_ID_FILE__ will automatically be
+	  replaced with the BR2_TARGET_ROOTFS_ISO9660_GRUB2_EFI_IDENT_FILE.
+
+	  Do not mistake this for the regular GRUB2 configuration that is
+	  eventually loaded by the EFI bootloader, this is just for systems
+	  which need some extra help to locate the actual ISO9660 filesystem.
 
 config BR2_TARGET_ROOTFS_ISO9660_INITRD
 	bool "Use initrd"
-	depends on BR2_TARGET_ROOTFS_ISO9660
 	depends on !BR2_TARGET_ROOTFS_INITRAMFS
 	default y
 	select BR2_TARGET_ROOTFS_CPIO
@@ -193,46 +164,11 @@ config BR2_TARGET_ROOTFS_ISO9660_TRANSPARENT_COMPRESSION
 
 config BR2_TARGET_ROOTFS_ISO9660_HYBRID
 	bool "Build hybrid image"
-	depends on BR2_TARGET_ROOTFS_ISO9660
 	depends on BR2_TARGET_ROOTFS_ISO9660_ISOLINUX || BR2_TARGET_ROOTFS_ISO9660_BOTH
 	help
 	  Enable this option to build a hybrid image, which is an image
 	  that can either be burned to CD/DVD-ROM or flashed onto a device
 	  which the BIOS considers as HDD/removable device (e.g. USB stick)
-
-config BR2_TARGET_ROOTFS_ISO9660_HYBRID_APPEND_PARTITION
-	string "Append partition to hybrid image"
-	depends on BR2_TARGET_ROOTFS_ISO9660
-	depends on BR2_TARGET_ROOTFS_ISO9660_BOTH
-	depends on BR2_TARGET_ROOTFS_ISO9660_HYBRID
-	default ""
-	help
-	  Enable this option to append a prepared filesystem image
-	  to the hybrid image, useful when needing a writeable data
-	  partition for USBs - should be considered as EXPERIMENTAL.
-
-	  The path is expected to be relative to folder "output/images/".
-
-	  You can use e.g. a BR2_ROOTFS_POST_BUILD_SCRIPT for preparing
-	  the respective filesystem image for your target configuration.
-
-config BR2_TARGET_ROOTFS_ISO9660_HYBRID_APPEND_PARTITION_TYPE
-	string "Append partition type"
-	depends on BR2_TARGET_ROOTFS_ISO9660
-	depends on BR2_TARGET_ROOTFS_ISO9660_BOTH
-	depends on BR2_TARGET_ROOTFS_ISO9660_HYBRID
-	depends on BR2_TARGET_ROOTFS_ISO9660_HYBRID_APPEND_PARTITION != ""
-	default "0x0e"
-	help
-	  May be "FAT12", "FAT16", "Linux", or a hexadecimal number between 0x00 and
-	  0xff. Not all those numbers will yield usable results. For a list of codes
-	  search the internet for "Partition Types". If the partition appears in GPT
-	  then 0xef is mapped to the EFI System Partition Type GUID. All others get
-	  mapped to Basic Data Type GUID. May also be a type GUID as plain hex
-	  string like a2a0d0ebe5b9334487c068b6b72699c7 or as structured text like
-	  EBD0A0A2-B9E5-4433-87C0-68B6B72699C7. It will be used if the partition is
-	  mentioned in GPT. In MBR, C12A7328-F81F-11D2-BA4B-00A0C93EC93B will be
-	  mapped to 0xef. Any other GUID will be mapped to 0x83.
 
 endif
 

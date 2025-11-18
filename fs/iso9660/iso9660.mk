@@ -29,14 +29,11 @@
 
 ROOTFS_ISO9660_DEPENDENCIES = host-xorriso linux
 
-ROOTFS_ISO9660_VOLUME_NAME = $(call qstrip,$(BR2_TARGET_ROOTFS_ISO9660_VOLUME_NAME))
 ROOTFS_ISO9660_GRUB2_BOOT_MENU = $(call qstrip,$(BR2_TARGET_ROOTFS_ISO9660_GRUB2_BOOT_MENU))
 ROOTFS_ISO9660_GRUB2_EFI_BOOT_MENU = $(call qstrip,$(BR2_TARGET_ROOTFS_ISO9660_GRUB2_EFI_BOOT_MENU))
 ROOTFS_ISO9660_GRUB2_EFI_PARTITION_SIZE = $(call qstrip,$(BR2_TARGET_ROOTFS_ISO9660_GRUB2_EFI_PARTITION_SIZE))
 ROOTFS_ISO9660_GRUB2_EFI_IDENT_FILE = $(call qstrip,$(BR2_TARGET_ROOTFS_ISO9660_GRUB2_EFI_IDENT_FILE))
 ROOTFS_ISO9660_ISOLINUX_BOOT_MENU = $(call qstrip,$(BR2_TARGET_ROOTFS_ISO9660_ISOLINUX_BOOT_MENU))
-ROOTFS_ISO9660_HYBRID_APPEND_PARTITION = $(call qstrip,$(BR2_TARGET_ROOTFS_ISO9660_HYBRID_APPEND_PARTITION))
-ROOTFS_ISO9660_HYBRID_APPEND_PARTITION_TYPE = $(call qstrip,$(BR2_TARGET_ROOTFS_ISO9660_HYBRID_APPEND_PARTITION_TYPE))
 
 ################################################################################
 # Architecture-specific variables
@@ -138,17 +135,19 @@ ROOTFS_ISO9660_EFI_PARTITION = boot/efi.img
 ROOTFS_ISO9660_EFI_PARTITION_PATH = $(ROOTFS_ISO9660_TMP_TARGET_DIR)/$(ROOTFS_ISO9660_EFI_PARTITION)
 ROOTFS_ISO9660_EFI_PARTITION_CONTENT = $(BINARIES_DIR)/efi-part
 ROOTFS_ISO9660_GRUB2_CONFIG_PATH = $(ROOTFS_ISO9660_TMP_TARGET_DIR)/boot/grub/grub.cfg
-ROOTFS_ISO9660_GRUB2_EFI_CONFIG_PATH = $(ROOTFS_ISO9660_TMP_TARGET_DIR)/$(ROOTFS_ISO9660_GRUB2_EFI_PREFIX)/grub.cfg
+ROOTFS_ISO9660_GRUB2_EFI_CONFIG_PATH = $(ROOTFS_ISO9660_TMP_TARGET_DIR)/boot/grub/efigrub.cfg
 
 define ROOTFS_ISO9660_INSTALL_GRUB2_EFI
-	# Create file to better find ISO9660 filesystem
+	# Create identification file to better find ISO9660 filesystem
 	$(INSTALL) -D -m 0644 /dev/null \
 		$(ROOTFS_ISO9660_TMP_TARGET_DIR)/$(ROOTFS_ISO9660_GRUB2_EFI_IDENT_FILE)
-	# Copy EFI bootloader also to ISO9660 filesystem
+	# Copy grub.cfg to ISO9660 filesystem where GRUB will find it
+	$(INSTALL) -D -m 0644 $(ROOTFS_ISO9660_GRUB2_CONFIG_PATH) \
+		$(ROOTFS_ISO9660_TMP_TARGET_DIR)/$(ROOTFS_ISO9660_GRUB2_EFI_PREFIX)/grub.cfg
 	$(INSTALL) -D -m 0644 $(ROOTFS_ISO9660_EFI_PARTITION_CONTENT)/$(ROOTFS_ISO9660_GRUB2_EFI_PREFIX)/$(ROOTFS_ISO9660_EFI_NAME) \
 		$(ROOTFS_ISO9660_TMP_TARGET_DIR)/$(ROOTFS_ISO9660_GRUB2_EFI_PREFIX)/$(ROOTFS_ISO9660_EFI_NAME)
 	# Create EFI FAT partition
-	$(RM) -rf $(ROOTFS_ISO9660_EFI_PARTITION_PATH)
+	rm -rf $(ROOTFS_ISO9660_EFI_PARTITION_PATH)
 	mkdir -p $(dir $(ROOTFS_ISO9660_EFI_PARTITION_PATH))
 	dd if=/dev/zero of=$(ROOTFS_ISO9660_EFI_PARTITION_PATH) bs=$(ROOTFS_ISO9660_GRUB2_EFI_PARTITION_SIZE) count=1
 	$(HOST_DIR)/sbin/mkfs.vfat $(ROOTFS_ISO9660_VFAT_OPTS) $(ROOTFS_ISO9660_EFI_PARTITION_PATH)
@@ -159,9 +158,11 @@ define ROOTFS_ISO9660_INSTALL_GRUB2_EFI
 	# Delete the EFI bootloader that is NOT for the platform we're building for
 	$(HOST_DIR)/bin/mdel -i $(ROOTFS_ISO9660_EFI_PARTITION_PATH) \
 		::$(ROOTFS_ISO9660_GRUB2_EFI_PREFIX)/$(ROOTFS_ISO9660_EFI_NOTNAME) || true
-	# Overwrite generic EFI configuration with our EFI configuration
+	# Copy efigrub.cfg to EFI partition (may be used to find ISO9660 filesystem)
 	$(HOST_DIR)/bin/mcopy -n -o -p -m -i $(ROOTFS_ISO9660_EFI_PARTITION_PATH) \
 		$(ROOTFS_ISO9660_GRUB2_EFI_CONFIG_PATH) ::$(ROOTFS_ISO9660_GRUB2_EFI_PREFIX)/grub.cfg
+	# Remove efigrub.cfg from ISO9660 filesystem, it was just there for SED-ing
+	rm -f $(ROOTFS_ISO9660_GRUB2_EFI_CONFIG_PATH)
 	$(ROOTFS_ISO9660_FIX_TIME) $(ROOTFS_ISO9660_EFI_PARTITION_PATH)
 endef
 
@@ -222,7 +223,7 @@ ROOTFS_ISO9660_BOOT_IMAGE = isolinux/isolinux.bin
 
 # GRUB2 EFI configuration
 ROOTFS_ISO9660_GRUB2_CONFIG_PATH = $(ROOTFS_ISO9660_TMP_TARGET_DIR)/boot/grub/grub.cfg
-ROOTFS_ISO9660_GRUB2_EFI_CONFIG_PATH = $(ROOTFS_ISO9660_TMP_TARGET_DIR)/$(ROOTFS_ISO9660_GRUB2_EFI_PREFIX)/grub.cfg
+ROOTFS_ISO9660_GRUB2_EFI_CONFIG_PATH = $(ROOTFS_ISO9660_TMP_TARGET_DIR)/boot/grub/efigrub.cfg
 ROOTFS_ISO9660_EFI_PARTITION = boot/efi.img
 ROOTFS_ISO9660_EFI_PARTITION_PATH = $(ROOTFS_ISO9660_TMP_TARGET_DIR)/$(ROOTFS_ISO9660_EFI_PARTITION)
 ROOTFS_ISO9660_EFI_PARTITION_CONTENT = $(BINARIES_DIR)/efi-part
@@ -248,14 +249,16 @@ define ROOTFS_ISO9660_INSTALL_ISOLINUX_CONFIG
 endef
 
 define ROOTFS_ISO9660_INSTALL_GRUB2_EFI
-	# Create file to better find ISO9660 filesystem
+	# Create identification file to better find ISO9660 filesystem
 	$(INSTALL) -D -m 0644 /dev/null \
 		$(ROOTFS_ISO9660_TMP_TARGET_DIR)/$(ROOTFS_ISO9660_GRUB2_EFI_IDENT_FILE)
-	# Copy EFI bootloader also to ISO9660 filesystem
+	# Copy grub.cfg to ISO9660 filesystem where GRUB will find it
+	$(INSTALL) -D -m 0644 $(ROOTFS_ISO9660_GRUB2_CONFIG_PATH) \
+		$(ROOTFS_ISO9660_TMP_TARGET_DIR)/$(ROOTFS_ISO9660_GRUB2_EFI_PREFIX)/grub.cfg
 	$(INSTALL) -D -m 0644 $(ROOTFS_ISO9660_EFI_PARTITION_CONTENT)/$(ROOTFS_ISO9660_GRUB2_EFI_PREFIX)/$(ROOTFS_ISO9660_EFI_NAME) \
 		$(ROOTFS_ISO9660_TMP_TARGET_DIR)/$(ROOTFS_ISO9660_GRUB2_EFI_PREFIX)/$(ROOTFS_ISO9660_EFI_NAME)
 	# Create EFI FAT partition
-	$(RM) -rf $(ROOTFS_ISO9660_EFI_PARTITION_PATH)
+	rm -rf $(ROOTFS_ISO9660_EFI_PARTITION_PATH)
 	mkdir -p $(dir $(ROOTFS_ISO9660_EFI_PARTITION_PATH))
 	dd if=/dev/zero of=$(ROOTFS_ISO9660_EFI_PARTITION_PATH) bs=$(ROOTFS_ISO9660_GRUB2_EFI_PARTITION_SIZE) count=1
 	$(HOST_DIR)/sbin/mkfs.vfat $(ROOTFS_ISO9660_VFAT_OPTS) $(ROOTFS_ISO9660_EFI_PARTITION_PATH)
@@ -266,9 +269,11 @@ define ROOTFS_ISO9660_INSTALL_GRUB2_EFI
 	# Delete the EFI bootloader that is NOT for the platform we're building for
 	$(HOST_DIR)/bin/mdel -i $(ROOTFS_ISO9660_EFI_PARTITION_PATH) \
 		::$(ROOTFS_ISO9660_GRUB2_EFI_PREFIX)/$(ROOTFS_ISO9660_EFI_NOTNAME) || true
-	# Overwrite generic EFI configuration with our EFI configuration
+	# Copy efigrub.cfg to EFI partition (may be used to find ISO9660 filesystem)
 	$(HOST_DIR)/bin/mcopy -n -o -p -m -i $(ROOTFS_ISO9660_EFI_PARTITION_PATH) \
 		$(ROOTFS_ISO9660_GRUB2_EFI_CONFIG_PATH) ::$(ROOTFS_ISO9660_GRUB2_EFI_PREFIX)/grub.cfg
+	# Remove efigrub.cfg from ISO9660 filesystem, it was just there for SED-ing
+	rm -f $(ROOTFS_ISO9660_GRUB2_EFI_CONFIG_PATH)
 	$(ROOTFS_ISO9660_FIX_TIME) $(ROOTFS_ISO9660_EFI_PARTITION_PATH)
 endef
 
@@ -367,6 +372,14 @@ ROOTFS_ISO9660_PRE_GEN_HOOKS += ROOTFS_ISO9660_INSTALL_BOOTLOADERS
 
 ################################################################################
 # ISO9660 Generation Options
+################################################################################
+
+ROOTFS_ISO9660_OPTS += -r -J -joliet-long -cache-inodes -V 'ISO9660'
+
+ROOTFS_ISO9660_PRE_GEN_HOOKS += ROOTFS_ISO9660_INSTALL_BOOTLOADERS
+
+################################################################################
+# ISO9660 Generation Options
 #
 # Note: Argument order is crucial here, this command line was inspired by
 # modern Debian distributions (see .disk/mkisofs inside one of their ISOs)
@@ -409,52 +422,40 @@ ROOTFS_ISO9660_OPTS_BIOS = \
 	-no-emul-boot
 endif
 
-ifeq ($(BR2_TARGET_ROOTFS_ISO9660_BOTH)$(BR2_TARGET_ROOTFS_ISO9660_HYBRID),yy)
-# BOTH + HYBRID (uses GRUB2 in EFI)
-# Hybrid Image Support (Modern Variant, Debian-style)
-ROOTFS_ISO9660_OPTS_EFI = \
-	-e $(ROOTFS_ISO9660_EFI_PARTITION) \
-	-no-emul-boot \
-	-isohybrid-gpt-basdat \
-	-isohybrid-apm-hfsplus
-else
-# BOTH or GRUB2 (use GRUB2 in EFI)
-ROOTFS_ISO9660_OPTS_EFI = \
-	-e $(ROOTFS_ISO9660_EFI_PARTITION) \
-	-no-emul-boot
+ifeq ($(BR2_TARGET_ROOTFS_ISO9660_ISOLINUX),y)
+ROOTFS_ISO9660_OPTS += -c isolinux/boot.cat
+else ifeq ($(BR2_TARGET_ROOTFS_ISO9660_BOTH),y)
+ROOTFS_ISO9660_OPTS += -c isolinux/boot.cat
 endif
 
 # Determine which boot options to use
 ifeq ($(BR2_TARGET_ROOTFS_ISO9660_BIOS_BOOTLOADER)$(BR2_TARGET_ROOTFS_ISO9660_EFI_BOOTLOADER),yy)
-# BIOS and EFI
+# Both BIOS and EFI
 ROOTFS_ISO9660_OPTS += \
 	$(ROOTFS_ISO9660_OPTS_BIOS) \
 	-eltorito-alt-boot \
 	$(ROOTFS_ISO9660_OPTS_EFI)
-# Append an extra partition image, if one was provided (for hybrid images)
-ifneq ($(ROOTFS_ISO9660_HYBRID_APPEND_PARTITION),)
-ROOTFS_ISO9660_OPTS += \
-	-append_partition 3 $(ROOTFS_ISO9660_HYBRID_APPEND_PARTITION_TYPE) \
-		$(BINARIES_DIR)/$(ROOTFS_ISO9660_HYBRID_APPEND_PARTITION) \
-	-partition_cyl_align all
-endif
 
 else ifeq ($(BR2_TARGET_ROOTFS_ISO9660_BIOS_BOOTLOADER),y)
-# BIOS
+# BIOS only
 ROOTFS_ISO9660_OPTS += $(ROOTFS_ISO9660_OPTS_BIOS)
 
 else ifeq ($(BR2_TARGET_ROOTFS_ISO9660_EFI_BOOTLOADER),y)
-# EFI
+# EFI only
 ROOTFS_ISO9660_OPTS += $(ROOTFS_ISO9660_OPTS_EFI)
 
 endif
 
 ################################################################################
-# Hybrid Image Support (Legacy Variant, No UEFI)
+# Hybrid Image Support (USB bootable)
 ################################################################################
 
-ifneq ($(BR2_TARGET_ROOTFS_ISO9660_BOTH),y)
 ifeq ($(BR2_TARGET_ROOTFS_ISO9660_HYBRID),y)
+ifeq ($(BR2_TARGET_ROOTFS_ISO9660_BOTH),y)
+ROOTFS_ISO9660_OPTS += \
+	-isohybrid-mbr $(HOST_DIR)/share/syslinux/isohdpfx.bin \
+	-isohybrid-gpt-basdat -isohybrid-apm-hfsplus
+else
 define ROOTFS_ISO9660_GEN_HYBRID
 	$(HOST_DIR)/bin/isohybrid -t 0x96 $@
 endef
