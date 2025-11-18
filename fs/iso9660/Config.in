@@ -135,6 +135,10 @@ config BR2_TARGET_ROOTFS_ISO9660_GRUB2_EFI_PARTITION_SIZE
 	  Use this option to increase the size of the EFI partition.
 	  Embedding more GRUB2 modules may require a larger EFI partition size.
 
+	  Beware that sizes above 32M may not be compatible with all systems.
+	  xorriso will raise warnings, but not fail partitions larger than 32M.
+	  If you exceed 32M, carefully examine your builds and partition layouts.
+
 config BR2_TARGET_ROOTFS_ISO9660_INITRD
 	bool "Use initrd"
 	depends on !BR2_TARGET_ROOTFS_INITRAMFS
