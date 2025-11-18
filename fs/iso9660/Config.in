@@ -105,7 +105,7 @@ config BR2_TARGET_ROOTFS_ISO9660_GRUB2_EFI_IDENT_FILE
 	string "Grub2 identification file (EFI)"
 	depends on (BR2_TARGET_ROOTFS_ISO9660_GRUB2 || BR2_TARGET_ROOTFS_ISO9660_BOTH) \
 		&& BR2_TARGET_ROOTFS_ISO9660_EFI_BOOTLOADER
-	default "buildroot"
+	default "/buildroot"
 	help
 	  Use this option to provide a custom name for the identification
 	  file that is added to the ISO9660 filesystem, so the EFI bootloader
