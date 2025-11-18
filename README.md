@@ -805,16 +805,26 @@ $ cd output/images
 $ dd if=shredos-20200412.img of=/dev/sdx (20200412 will be the day you compiled, sdx is the USB flash drive)
 ```
 
-The following configurations are available to build different targets:
+#### The following configurations are available to build different targets:
 
-- `make shredos_defconfig` - build USB image and hybrid ISO (64-bit)
-- `make shredos_i586_defconfig` - build USB image and hybrid ISO (32-bit)
+- `make shredos_defconfig` - build USB image and regular hybrid ISO (64-bit)
+- `make shredos_i586_defconfig` - build USB image and regular hybrid ISO (32-bit)
 - `make shredos_img_defconfig` - build USB image only (64-bit)
 - `make shredos_img_i586_defconfig` - build USB image only (32-bit)
-- `make shredos_iso_defconfig` - build hybrid ISO only (64-bit)
-- `make shredos_iso_i586_defconfig` - build hybrid ISO only (32-bit)
+- `make shredos_iso_defconfig` - build regular hybrid ISO only (64-bit)
+- `make shredos_iso_i586_defconfig` - build regular hybrid ISO only (32-bit)
+- `make shredos_iso_aio_defconfig` - build AIO hybrid ISO only (64-bit)
+- `make shredos_iso_aio_i586_defconfig` - build AIO hybrid ISO only (32-bit)
 
 Do note that loading a configuration should typically be the last step before `make`.
+
+> **The all-in-one ISOs unite the functionality of all other formats:**
+>
+>- are BIOS and UEFI bootable
+>- can both be written to CD/DVD-ROM and USB flash drives
+>- have a writeable partition (when written to a USB flash drive)
+>
+>The regular hybrid ISOs do not have that writeable partition (but are smaller in size).
 
 ### Issues that you may get when building ShredOS
 - **Error: "Internal Size Too Big"** If you are compiling the vanilla version of ShredOS and have made no alterations or additions but it fails to build the .img with the error "Internal error: size too big" then you may have a version of mtools that has a version of mcopy which has a bug whenever the -b option is used. This bug is known to exist in mcopy version 4.0.32 and maybe others but is fixed in v4.0.42. The solution is to upgrade your copy of mtools to a later version. However, if you have altered ShredOS by adding more packages you may need to update the size of the fat32 partition. You can do this by increasing the 'size' in ../board/shredos/genimage.cfg. Depending on how much extra software you have added increase the size by 10MB or more. Currently as of March 2023 the current size is `size = 130000000`, this is in bytes, so adding 10MB will mean you need to edit this value so that it reads `size = 140000000`. After the edit, just run `make` which will result in a quicker build. You don't need to run `make clean` first as that would result in a full rebuild which is not neccessary when all you are doing is increasing the final image size. If your repository does not supply a later version of mtools, then you can obtain mtools packages for various distros from [here](https://www.gnu.org/software/mtools/#downloads)
