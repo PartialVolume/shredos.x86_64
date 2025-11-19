@@ -167,12 +167,12 @@ BR2_TARGET_ROOTFS_CPIO_LZMA=y
 BR2_TARGET_ROOTFS_INITRAMFS=y
 BR2_TARGET_ROOTFS_ISO9660=y
 BR2_TARGET_ROOTFS_ISO9660_BOTH=y
-# BR2_TARGET_ROOTFS_ISO9660_INITRD is not set
 BR2_TARGET_ROOTFS_ISO9660_HYBRID=y
 # BR2_TARGET_ROOTFS_TAR is not set
 BR2_TARGET_GRUB2=y
 BR2_TARGET_GRUB2_X86_64_EFI=y
 BR2_TARGET_GRUB2_BUILTIN_MODULES_EFI="boot linux ext2 fat squash4 part_msdos part_gpt normal progress efi_gop efi_uga all_video video_cirrus video_bochs net efinet tftp gzio test eval read true gfxterm gfxterm_menu gfxmenu gfxterm_background png usb usb_keyboard search configfile iso9660"
+BR2_TARGET_GRUB2_BUILTIN_CONFIG_EFI="board/shredos/embed/grub.cfg"
 BR2_TARGET_GRUB2_INSTALL_TOOLS=y
 BR2_TARGET_SYSLINUX=y
 BR2_PACKAGE_HOST_E2FSPROGS=y
