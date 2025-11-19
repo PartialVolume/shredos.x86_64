@@ -108,12 +108,16 @@ config BR2_TARGET_ROOTFS_ISO9660_GRUB2_EFI_BOOT_MENU
 	default "fs/iso9660/efigrub.cfg"
 	help
 	  Use this option to provide a custom GRUB2 configuration
-	  file (grub.cfg), embedded both in the EFI partition and the
+	  file (grub.cfg), copied both to the EFI partition and the
 	  ISO9660 filesystem EFI-structure (for an EFI bootloader to find).
 
 	  It will usually contain a "search" and "source" directive to find
 	  the ISO9660 filesystem containing a common (BIOS) GRUB2 configuration.
 	  Alternatively, 'set root=(cd0)' and other such quirks are possible here.
+
+	  This is specifically for directives required for ISO9660 builds, for
+	  baking an EFI search config into the common GRUB image (often better)
+	  check out instead the GRUB2 setting: BR2_TARGET_GRUB2_BUILTIN_CONFIG_EFI
 
 	  Note that any string __EFI_ID_FILE__ will automatically be
 	  replaced with the BR2_TARGET_ROOTFS_ISO9660_GRUB2_EFI_IDENT_FILE.
