@@ -75,7 +75,7 @@ print_usage() {
 	echo "Arguments:"
 	echo "  x64   - Build only x86-64 configurations"
 	echo "  x32   - Build only i586 (32-bit) configurations"
-	echo "  all  - Build all configurations (64-bit first, then 32-bit)"
+	echo "  all   - Build all configurations (64-bit first, then 32-bit)"
 	echo ""
 	echo "Environment Variables:"
 	echo "  DRY_RUN=0|1      - Output all commands that would be executed (default: 0)"
@@ -144,7 +144,7 @@ prompt_version() {
 		[ -z "$NEW_VERSION" ] && NEW_VERSION="$current_version"
 	fi
 
-	echo "$NEW_VERSION" > "$VERSION_FILE"
+	run_cmd_change_version "$NEW_VERSION"
 
 	printf "%b" "$GREEN"
 	echo
@@ -211,16 +211,53 @@ replace_version() {
 	local to=$2
 
 	if [ -f "$VERSION_FILE" ]; then
-		sed -i "s@$from@$to@g" "$VERSION_FILE"
+		run_cmd sed -i "s@$from@$to@g" "$VERSION_FILE"
 	fi
 }
 
 run_cmd() {
-    if [ "$DRY_RUN" -eq 1 ]; then
-        echo "[DRY_RUN] $*"
-    else
-        "$@"
-    fi
+	local timestamp
+	timestamp=$(date '+%d.%m.%Y %H:%M:%S')
+
+	if [ "$DRY_RUN" -eq 1 ]; then
+		if [[ $* == make* ]]; then
+			printf "%b" "$YELLOW"
+			echo "[DRY_RUN] $*"
+			printf "%b" "$RESET"
+		else
+			echo "[DRY_RUN] $*"
+		fi
+	else
+		echo "[$timestamp] $*" >> "build_all_shredos.log"
+		"$@"
+	fi
+}
+
+run_cmd_tee() {
+	local timestamp
+	timestamp=$(date '+%d.%m.%Y %H:%M:%S')
+	local log_file="$1"
+	
+	if [ "$DRY_RUN" -eq 1 ]; then
+		echo "[DRY_RUN] tee $log_file"
+		cat
+	else
+		echo "[$timestamp] tee $log_file" >> "build_all_shredos.log"
+		tee "$log_file"
+	fi
+}
+
+run_cmd_change_version() {
+	local timestamp
+	timestamp=$(date '+%d.%m.%Y %H:%M:%S')
+	local new_version="$1"
+	
+	if [ "$DRY_RUN" -eq 1 ]; then
+		echo "[DRY_RUN] echo \"$new_version\" > \"$VERSION_FILE\""
+	else
+		echo "[$timestamp] echo \"$new_version\" > \"$VERSION_FILE\"" >> "build_all_shredos.log"
+		echo "$new_version" > "$VERSION_FILE"
+	fi
 }
 
 build_config() {
@@ -229,7 +266,7 @@ build_config() {
 	local arch="$3"
 	local log_file="dist/${config}.log"
 
-    printf "%b" "$YELLOW"
+	printf "%b" "$YELLOW"
 	echo
 	echo "============================================"
 	echo "Started: '$config' ($arch)"
@@ -315,7 +352,7 @@ build_config() {
 	echo "Building '$config' ($arch)..."
 	echo "============================================"
 	echo
-	if run_cmd make 2>&1 | tee "$log_file"; then
+	if run_cmd make 2>&1 | run_cmd_tee "$log_file"; then
 		echo
 		echo "============================================"
 		echo "Finishing '$config' ($arch)..."
@@ -334,7 +371,8 @@ build_config() {
 	fi
 }
 
-print_summary() {
+print_summary_and_exit() {
+	local return_code="$1"
 	local total_success=$((X64_SUCCESS + X32_SUCCESS))
 	local total_failed=$((X64_FAILED + X32_FAILED))
 	local total_builds=$((total_success + total_failed))
@@ -349,8 +387,17 @@ print_summary() {
 	echo "Total:  $total_success succeeded, $total_failed failed (out of $total_builds)"
 	echo "--------------------------------------------"
 	echo "You will find all output files of the builds in the 'dist/' folder."
+	echo "Check 'build_all_shredos.log' for all the commands that were executed."
 	echo "============================================"
 	echo
+
+	if [ "$return_code" -ne 0 ]; then
+		exit "$return_code"
+	elif [ "$total_failed" -gt 0 ]; then
+		exit 1
+	else
+		exit 0
+	fi
 }
 
 build_config_success() {
@@ -418,6 +465,10 @@ build_config_failed() {
 
 ################################################################################
 
+if [ -f "build_all_shredos.log" ]; then
+	rm build_all_shredos.log
+fi
+
 parse_arguments "$@"
 prompt_version
 display_build_plan
@@ -477,7 +528,7 @@ run_cmd rm -r dist || true
 run_cmd mkdir -p dist
 
 echo "Starting to build..."
-trap 'print_summary' EXIT
+trap 'print_summary_and_exit $?' EXIT
 
 if [ ${#X64_CONFIGS[@]} -gt 0 ]; then
 	echo
@@ -512,11 +563,4 @@ if [ ${#X32_CONFIGS[@]} -gt 0 ]; then
 		build_config "$CFG_INDEX" "$config" "x32" || true
 		((++CFG_INDEX))
 	done
-fi
-
-TOTAL_FAILED=$((X64_FAILED + X32_FAILED))
-if [ "$TOTAL_FAILED" -gt 0 ]; then
-	exit 1
-else
-	exit 0
 fi
