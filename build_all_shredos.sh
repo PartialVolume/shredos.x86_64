@@ -532,7 +532,7 @@ run_cmd rm -r dist || true
 run_cmd mkdir -p dist
 
 echo "Starting to build..."
-trap 'print_summary_and_exit $?' EXIT
+trap 'print_summary_and_exit $?' EXIT INT TERM
 
 if [ ${#X64_CONFIGS[@]} -gt 0 ]; then
 	echo
