@@ -844,11 +844,15 @@ Do note that loading a configuration should typically be the last step before `m
 
 #### Building multiple configurations:
 
-Generally when building multiple of the above configurations on the **same
-architecture**, you only need to ensure `make grub2-rebuild` is run between any
-two configurations, unless you have made other changes to the project. For two
-configurations of **different architectures**, a full `make clean` is always
-required for the switch-over between two different architectures.
+Generally, when building multiple configurations of the above on the same
+architecture, you only need to ensure that `make` and `make grub2-reconfigure`
+are run between any two configurations. The same applies to any other package
+whose configuration has changed, adding corresponding `<package>-reconfigure`
+steps. A `make clean` step is not usually required unless you have made
+significant changes to the project, which should save time with such builds.
+
+For two configurations targeting different architectures, a full `make clean`
+is always required when switching between them, plan time for this (takes long).
 
 For your convenience, look also into the `build_all_shredos.sh` script in the
 project root. If you invoke it with no arguments, it will show a usage manual

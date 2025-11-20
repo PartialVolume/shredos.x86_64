@@ -300,7 +300,9 @@ build_config() {
 		echo "============================================"
 		echo
 		for pkg in "${ALWAYS_REBUILD_PKGS[@]}"; do
-			if ! run_cmd make "${pkg}-rebuild"; then
+			# Reconfigure starts one stage before rebuild, just to be safe.
+			# It is the earliest step after the source download and patching.
+			if ! run_cmd make "${pkg}-reconfigure"; then
 				build_config_failed "$config" "$arch" "$log_file"
 				return 1
 			fi
@@ -337,7 +339,9 @@ build_config() {
 			echo "============================================"
 			echo
 			for pkg in "${ALWAYS_REBUILD_PKGS[@]}"; do
-				if ! run_cmd make "${pkg}-rebuild"; then
+				# Reconfigure starts one stage before rebuild, just to be safe.
+				# It is the earliest step after the source download and patching.
+				if ! run_cmd make "${pkg}-reconfigure"; then
 					build_config_failed "$config" "$arch" "$log_file"
 					return 1
 				fi
