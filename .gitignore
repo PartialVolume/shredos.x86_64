@@ -1,6 +1,7 @@
 /output
 /dist
 /dl
+/build_all_shredos.log
 /.auto.deps
 /.config.cmd
 /.config.old
