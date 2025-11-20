@@ -41,10 +41,10 @@ NOTE! There may be pre-release versions that are newer than the latest versions 
 
 ### For all releases including latest and more recent pre-releases [releases](https://github.com/PartialVolume/shredos.x86_64/releases)
 
-Note for versions **after** _v2024.11_27_x86-64_0.38_: The .img files for burning to USB flash drives support both BIOS/UEFI booting, as well as saving of generated PDF reports to the USB flash drive. The .iso image supports both BIOS/UEFI booting, as well as burning to USB flash drives and CD/DVD-ROM, but not saving of generated PDF reports to USB flash drive (if being written to one, due to filesystem constraints). 
+Note for versions **after** _v2024.11_27_x86-64_0.38_: The .img files for burning to USB flash drives support both BIOS/UEFI booting, as well as saving of generated PDF reports to the USB flash drive. The .iso image also supports both BIOS/UEFI booting, burning to USB flash drives and CD/DVD-ROM, as well as saving of generated PDF reports to USB flash drive (if being written to one). But use the .img file whenever planning to customize ShredOS (`autonuke` setups, kernel parameters, ...), as it will allow direct permanent modification of the GRUB boot menu and appending of kernel parameters, which the .iso file does not support due to filesystem constraints.
 
 Note for versions **until** _v2024.11_27_x86-64_0.38_: The .img files for burning to USB flash drives support both BIOS/UEFI booting. The .iso image supports legacy BIOS booting only and not UEFI, however, a BIOS/UEFI version of the .iso is available in newer ShredOS versions.
-You can also consider [VENTOY (Open Source tool to create bootable USB drive for ISO/WIM/IMG/VHD(x)/EFI files)](https://github.com/ventoy/Ventoy) as a workaround to avoid bios/UEFI issues.
+You can also consider [VENTOY (Open Source tool to create bootable USB drive for ISO/WIM/IMG/VHD(x)/EFI files)](https://github.com/ventoy/Ventoy) as a workaround to avoid BIOS/UEFI issues.
 		
 #### Demo video below: ShredOS automatically displays Nwipe's interactive GUI at boot.
 You can then select one or more drives to be erased, wipe method or pattern to be used, number of rounds, whether a zeros blanking pass is applied, verification options such as last pass, all passes or no verification. ShredOS and nwipe are highly configurable so if you prefer to run nwipe without a GUI then you can configure nwipe by applying nwipe options to the linux command line in grub.cfg on the USB flash drive.
@@ -112,7 +112,7 @@ disks using the program [nwipe](https://github.com/martijnvanbrummelen/nwipe). I
 
 ShredOS supports either 32bit or 64bit processors. You will need to download the appropriate 64bit or 32bit .img or .iso file, depending upon your target processor and whether you want to burn ShredOS to a USB memory stick, in which case you would download the .img file. Alternatively, if you wanted to burn ShredOS to CD/DVD, then you would download the .iso file.
 
-Because ShredOS boots and runs straight from a USB flash drive or DVD/CD, it doesn't matter what operating system already exists on the computer. It will remove all data/directories/operating systems, from the drive or drives you have selected for wiping, leaving a disk with no trace of what originally existed. It will wipe PCs & Intel-based Macs, such as MacBookPros. It doesn't care what operating system previosuly existed, be it Windows/Mac OSX/Linux/VXWorks. 
+Because ShredOS boots and runs straight from a USB flash drive or DVD/CD, it doesn't matter what operating system already exists on the computer. It will remove all data/directories/operating systems, from the drive or drives you have selected for wiping, leaving a disk with no trace of what originally existed. It will wipe PCs & Intel-based Macs, such as MacBookPros. It doesn't care what operating system previously existed, be it Windows/Mac OSX/Linux/VXWorks. 
 
 ShredOS can be used as a software image and booted via the network using a client PC that supports Preboot execution environment (PXE) via a PXE enabled server. A procedure for creating a simple UEFI PXE server based on Debian/Ubuntu and serving up ShredOS can be found here [#148](https://github.com/PartialVolume/shredos.x86_64/discussions/148)
 		
@@ -130,8 +130,8 @@ This paragraph is for those that are not familiar with wiping disks. if you know
 
 ## Nwipe's erasure methods
 
-* Fill With Zeros    - Fills the device with zeros (0x00), one round only.
-* Fill With Ones     - Fills the device with ones  (0xFF), one round only.
+* Fill With Zeros    - Fills the device with zeros (0x00).
+* Fill With Ones     - Fills the device with ones  (0xFF).
 * RCMP TSSIT OPS-II  - Royal Canadian Mounted Police Technical Security Standard, OPS-II
 * DoD Short          - The American Department of Defense 5220.22-M short 3 pass wipe (passes 1, 2 & 7).
 * DoD 5220.22M       - The American Department of Defense 5220.22-M full 7 pass wipe.
@@ -784,16 +784,29 @@ The image (.img) file is approximately 260 MiB and can be written to a USB memor
 
 #### Install the following prerequisite software first. Without this software, the make command will fail
 ```
-$ sudo apt install git
-$ sudo apt install build-essential   pkg-config   automake   libncurses5-dev   autotools-dev   libparted-dev   dmidecode   coreutils   smartmontools unzip
-$ sudo apt-get install libssl-dev
-$ sudo apt-get install libelf-dev
-$ sudo apt-get install mtools
+sudo apt update
+sudo apt install \
+  automake \
+  autotools-dev \
+  build-essential \
+  cpio \
+  coreutils \
+  dmidecode \
+  dosfstools \
+  git \
+  libelf-dev \
+  libncurses5-dev \
+  libparted-dev \
+  libssl-dev \
+  mtools \
+  pkg-config \
+  smartmontools \
+  unzip
 ```
 
 #### Download the ShredOS source using the git clone command, build ShredOS and write to a USB memory device.
 ```
-$ git clone https://github.com/PartialVolume/shredos.x86_64.git (or shredos.i686.git for 32bit)
+$ git clone https://github.com/PartialVolume/shredos.x86_64.git
 $ cd shredos
 $ mkdir package/shredos
 $ touch package/shredos/Config.in
@@ -818,15 +831,28 @@ $ dd if=shredos-20200412.img of=/dev/sdx (20200412 will be the day you compiled,
 
 Do note that loading a configuration should typically be the last step before `make`.
 
-> **The all-in-one ISOs unite the functionality of all other formats:**
+> **The all-in-one hybrid ISOs unite most functionality of all other formats:**
 >
 >- are BIOS and UEFI bootable
 >- can both be written to CD/DVD-ROM and USB flash drives
 >- have a writeable partition (when written to a USB flash drive)
+>- **but** do not allow customization of GRUB (for `autonuke`, ...)
 >
->The **legacy** hybrid ISOs, however, do not have that writeable partition (but
->are slightly smaller in size), which means that you cannot make modifications
->or have any PDFs written out (when using them burned to an USB flash drive).
+>The **legacy** hybrid ISOs do not have that writeable partition (but are
+>slightly smaller in size), which means that you cannot add any files or have
+>any PDFs written to them (even when using them burned to an USB flash drive).
+
+#### Building multiple configurations:
+
+Generally when building multiple of the above configurations on the **same
+architecture**, you only need to ensure `make grub2-rebuild` is run between any
+two configurations, unless you have made other changes to the project. For two
+configurations of **different architectures**, a full `make clean` is always
+required for the switch-over between two different architectures.
+
+For your convenience, look also into the `build_all_shredos.sh` script in the
+project root. If you invoke it with no arguments, it will show a usage manual
+and allow you to build multiple configuration targets with more ease.
 
 ### Issues that you may get when building ShredOS
 - **Error: "Internal Size Too Big"** If you are compiling the vanilla version of ShredOS and have made no alterations or additions but it fails to build the .img with the error "Internal error: size too big" then you may have a version of mtools that has a version of mcopy which has a bug whenever the -b option is used. This bug is known to exist in mcopy version 4.0.32 and maybe others but is fixed in v4.0.42. The solution is to upgrade your copy of mtools to a later version. However, if you have altered ShredOS by adding more packages you may need to update the size of the fat32 partition. You can do this by increasing the 'size' in ../board/shredos/genimage.cfg. Depending on how much extra software you have added increase the size by 10MB or more. Currently as of March 2023 the current size is `size = 130000000`, this is in bytes, so adding 10MB will mean you need to edit this value so that it reads `size = 140000000`. After the edit, just run `make` which will result in a quicker build. You don't need to run `make clean` first as that would result in a full rebuild which is not neccessary when all you are doing is increasing the final image size. If your repository does not supply a later version of mtools, then you can obtain mtools packages for various distros from [here](https://www.gnu.org/software/mtools/#downloads)
@@ -858,24 +884,40 @@ make busybox-menuconfig
 make busybox-update-config # save the changes
 ```
 ### Important ShredOS files and folders when building ShredOS from source
-
+#### ../build_all_shredos.sh
+build_all_shredos.sh is a convenience script to build (multiple) ShredOS.
+If launched without arguments, it will show a usage manual on the screen.
+		
 #### ../board/shredos/make_img_file.sh
 make_img_file.sh is a bash script, the main purpose of which is to generate the .img file located in output/images/. However it is also used to copy the compiled .efi file and other files such as the shredos.ico, autorun.inf for Windows, README.txt. The contents of board/shredos/version.txt is also used to rename the .img file with version info and the current date and time.
 		
 #### ../board/shredos/make_iso_file.sh
 make_iso_file.sh is a bash script, the main purpose of which is to generate the .iso file located in output/images/. The contents of board/shredos/version.txt is used to rename the .iso file with version info and the current date and time.
 		
+#### ../board/shredos/populate_efi_partition.sh
+populate_efi_partition.sh is a bash script that copies the ShredOS files
+(similar ones as `make_img_file.sh`) to the UEFI partition of the ISO image.
+		
 #### ../board/shredos/grub.cfg
 The USB image's GRUB configuration, which both the BIOS and UEFI bootloader will use.
+It contains the BIOS and UEFI boot menu for the USB image.
+		
+#### ../board/shredos/embed/grub.cfg
+The GRUB configuration that is embedded into the GRUB images at build-time.
+It contains directions for GRUB to find the right volume and GRUB configuration.
+This applies for both the USB images and ISO images, and both for BIOS and UEFI.
 		
 #### ../fs/iso9660/isolinux.cfg
 The ISO image's ISOLINUX configuration, which the BIOS bootloader will use.
+It contains the BIOS boot menu for the ISO image.
 		
 #### ../fs/iso9660/grub.cfg
 The ISO image's GRUB configuration, which the UEFI bootloader will use.
+It contains the UEFI boot menu for the ISO image.
 		
 #### ../fs/iso9660/efigrub.cfg
-The ISO image's GRUB configuration for UEFI, used to find the ISO9660 filesystem.
+The GRUB configuration that is embedded into the ISO's UEFI partition.
+It contains directions for GRUB to find the ISO9660 FS and GRUB configuration.
 		
 #### ../board/shredos/fsoverlay/etc/shredos/version.txt
 This file contains the version information as seen in the title on nwipe's title bar, i.e. '2021.08.2_22_x86-64_0.32.023'. This version ingformation is also used when naming the .img file in ../output/images/ ../board/shredos/fsoverlay/etc/shredos/version.txt is manually updated for each new release of ShredOS.
