@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -e
 #
 # BR2_ROOTFS_POST_BUILD_SCRIPT for shredos_iso_aio configurations
 #
@@ -18,6 +18,7 @@ mkdir -p "${BINARIES_DIR}/efi-part/boot/"                                       
 
 cp "board/shredos/autorun.inf"             "${BINARIES_DIR}/efi-part/autorun.inf"                       || exit 1
 cp "board/shredos/README.txt"              "${BINARIES_DIR}/efi-part/README.txt"                        || exit 1
+cp "board/shredos/README-ISO.txt"          "${BINARIES_DIR}/efi-part/EFI/BOOT/README.txt"               || exit 1
 cp "board/shredos/shredos.ico"             "${BINARIES_DIR}/efi-part/shredos.ico"                       || exit 1
 cp "board/shredos/fsoverlay/etc/shredos/version.txt" "${BINARIES_DIR}/efi-part/boot/version.txt"        || exit 1
 
