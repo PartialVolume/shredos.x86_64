@@ -911,15 +911,15 @@ The GRUB configuration that is embedded into the GRUB images at build-time.
 It contains directions for GRUB to find the right volume and GRUB configuration.
 This applies for both the USB images and ISO images, and both for BIOS and UEFI.
 		
-#### ../fs/iso9660/isolinux.cfg
+#### ../board/shredos/iso/isolinux.cfg
 The ISO image's ISOLINUX configuration, which the BIOS bootloader will use.
 It contains the BIOS boot menu for the ISO image.
 		
-#### ../fs/iso9660/grub.cfg
+#### ../board/shredos/iso/grub.cfg
 The ISO image's GRUB configuration, which the UEFI bootloader will use.
 It contains the UEFI boot menu for the ISO image.
 		
-#### ../fs/iso9660/efigrub.cfg
+#### ../board/shredos/iso/efigrub.cfg
 The GRUB configuration that is embedded into the ISO's UEFI partition.
 It contains directions for GRUB to find the ISO9660 FS and GRUB configuration.
 		
