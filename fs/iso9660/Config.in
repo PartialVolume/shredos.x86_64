@@ -176,6 +176,21 @@ config BR2_TARGET_ROOTFS_ISO9660_HYBRID
 	  that can either be burned to CD/DVD-ROM or flashed onto a device
 	  which the BIOS considers as HDD/removable device (e.g. USB stick)
 
+config BR2_TARGET_ROOTFS_ISO9660_HYBRID_APPEND_PARTITION
+	string "Append hybrid partition image"
+	depends on BR2_TARGET_ROOTFS_ISO9660_BOTH \
+		&& BR2_TARGET_ROOTFS_ISO9660_HYBRID
+	default ""
+	help
+	  Enable this option to append a prepared FAT16 filesystem
+	  image to the hybrid image, useful when needing a writeable
+	  data partition for USBs - should be considered EXPERIMENTAL.
+
+	  The path is expected to be relative to folder "output/images/".
+
+	  You can use e.g. a BR2_ROOTFS_POST_BUILD_SCRIPT for preparing
+	  the respective filesystem image for your target configuration.
+
 endif
 
 comment "iso image needs a Linux kernel and either grub2 or isolinux to be built"
