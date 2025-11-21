@@ -49,9 +49,9 @@ do
 	isEFI=$(fdisk -l | grep -i "$drive" | grep -i "EFI")
 
 	# EFI partitions should not quality for "first drive" to avoid false
-	# positives; we only use it if confirmed as ours. The hybrid all-in-one ISO
-	# image's EFI partition can be written to, and we need to ensure that other
-	# EFI partitions remain untouched, so we don't take EFIs as "first drive".
+	# positives; we only use it if confirmed as ours. The hybrid ISO image has
+	# an EFI partition that can be written to, and we need to ensure that other
+	# devices' EFI partitions remain untouched, disallowing EFI "first drive"s.
 	#
 	# Note that our USB image's FAT partition is not marked specifically as EFI
 	# (0xEF) but regular FAT (0xC/0x0C), so it still qualifies as "first drive".

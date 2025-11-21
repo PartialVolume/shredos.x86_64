@@ -820,27 +820,25 @@ $ dd if=shredos-20200412.img of=/dev/sdx (20200412 will be the day you compiled,
 
 #### The following configurations are available to build different targets:
 
-- `make shredos_defconfig` - build USB image and AIO hybrid ISO (64-bit)
-- `make shredos_i586_defconfig` - build USB image and AIO hybrid ISO (32-bit)
+- `make shredos_defconfig` - build USB image and hybrid ISO (64-bit)
+- `make shredos_i586_defconfig` - build USB image and hybrid ISO (32-bit)
 - `make shredos_img_defconfig` - build USB image only (64-bit)
 - `make shredos_img_i586_defconfig` - build USB image only (32-bit)
-- `make shredos_iso_defconfig` - build legacy hybrid ISO only (64-bit)
-- `make shredos_iso_i586_defconfig` - build legacy hybrid ISO only (32-bit)
-- `make shredos_iso_aio_defconfig` - build AIO hybrid ISO only (64-bit)
-- `make shredos_iso_aio_i586_defconfig` - build AIO hybrid ISO only (32-bit)
+- `make shredos_iso_defconfig` - build hybrid ISO only (64-bit)
+- `make shredos_iso_i586_defconfig` - build hybrid ISO only (32-bit)
+- `make shredos_iso_legacy_defconfig` - build legacy ISO only (64-bit)
+- `make shredos_iso_legacy_i586_defconfig` - build legacy ISO only (32-bit)
 
 Do note that loading a configuration should typically be the last step before `make`.
 
-> **The all-in-one hybrid ISOs unite most functionality of all other formats:**
+> **The hybrid ISOs unite most functionality of all other formats:**
 >
 >- are BIOS and UEFI bootable
 >- can both be written to CD/DVD-ROM and USB flash drives
 >- have a writeable partition (when written to a USB flash drive)
 >- **but** do not allow customization of GRUB (for `autonuke`, ...)
 >
->The **legacy** hybrid ISOs do not have that writeable partition (but are
->slightly smaller in size), which means that you cannot add any files or have
->any PDFs written to them (even when using them burned to an USB flash drive).
+>The **legacy** ISOs work in BIOS and UEFI, but only burned to CD/DVD-ROM.
 
 #### Building multiple configurations:
 
