@@ -36,13 +36,13 @@ config BR2_TARGET_ROOTFS_ISO9660_GRUB2
 	help
 	  Use Grub 2 as the bootloader for the ISO9660 image.
 	  Make sure to enable the 'iso9660' module in
-	  BR2_TARGET_GRUB2_BUILTIN_MODULES_PC and/or
+	  (when used) BR2_TARGET_GRUB2_BUILTIN_MODULES_PC and (when used)
 	  BR2_TARGET_GRUB2_BUILTIN_MODULES_EFI. For GRUB on BIOS, use 'cd'
 	  as the boot partition in BR2_TARGET_GRUB2_BOOT_PARTITION setting.
 	  For GRUB on EFI 'set root=(cd0)' in the configuration file passed
-	  to BR2_TARGET_ROOTFS_ISO9660_GRUB2_EFI_BOOT_MENU, although the
-	  default configuration file contains a "search" directive using
-	  BR2_TARGET_ROOTFS_ISO9660_GRUB2_EFI_IDENT_FILE, which works too.
+	  to BR2_TARGET_GRUB2_BUILTIN_CONFIG_EFI, although just an ISO9660
+	  BR2_TARGET_ROOTFS_ISO9660_GRUB2_EFI_BOOT_MENU containing a "search"
+	  using the BR2_TARGET_ROOTFS_ISO9660_GRUB2_EFI_IDENT_FILE also works.
 
 config BR2_TARGET_ROOTFS_ISO9660_ISOLINUX
 	bool "isolinux"
@@ -118,6 +118,10 @@ config BR2_TARGET_ROOTFS_ISO9660_GRUB2_EFI_BOOT_MENU
 	  This is specifically for directives required for ISO9660 builds, for
 	  baking an EFI search config into the common GRUB image (often better)
 	  check out instead the GRUB2 setting: BR2_TARGET_GRUB2_BUILTIN_CONFIG_EFI
+
+	  Note that the strings __KERNEL_PATH__ and __INITRD_PATH__
+	  will automatically be replaced by the path to the kernel and
+	  initrd images respectively (or removed, if not applicable).
 
 	  Note that any string __EFI_ID_FILE__ will automatically be
 	  replaced with the BR2_TARGET_ROOTFS_ISO9660_GRUB2_EFI_IDENT_FILE.

@@ -41,7 +41,7 @@ NOTE! There may be pre-release versions that are newer than the latest versions 
 
 ### For all releases including latest and more recent pre-releases [releases](https://github.com/PartialVolume/shredos.x86_64/releases)
 
-Note for versions **after** _v2024.11_27_x86-64_0.38_: The .img files for burning to USB flash drives support both BIOS/UEFI booting, as well as saving of generated PDF reports to the USB flash drive. The .iso image also supports both BIOS/UEFI booting, burning to USB flash drives and CD/DVD-ROM, as well as saving of generated PDF reports to USB flash drive (if being written to one). But use the .img file whenever planning to customize ShredOS (`autonuke` setups, kernel parameters, ...), as it will allow direct permanent modification of the GRUB boot menu and appending of kernel parameters, which the .iso file does not support due to filesystem constraints.
+Note for versions **after** _v2024.11_27_x86-64_0.38_: The .img files for burning to USB flash drives support both BIOS/UEFI booting, as well as saving of generated PDF reports to the USB flash drive. The .iso image also supports both BIOS/UEFI booting, burning to USB flash drives and CD/DVD-ROM, but not saving of generated PDF reports to the own USB flash drive (unless being written in "ISO-Mode" with some tools, such as Rufus). Use the .img file whenever needing these generated PDF reports or planning to customize ShredOS (`autonuke` setups, kernel parameters, ...). The .img file allows direct interaction with the filesystem and modification of the GRUB boot menu, e.g. appending of kernel parameters, which the .iso file does not support due to filesystem constraints.
 
 Note for versions **until** _v2024.11_27_x86-64_0.38_: The .img files for burning to USB flash drives support both BIOS/UEFI booting. The .iso image supports legacy BIOS booting only and not UEFI, however, a BIOS/UEFI version of the .iso is available in newer ShredOS versions.
 You can also consider [VENTOY (Open Source tool to create bootable USB drive for ISO/WIM/IMG/VHD(x)/EFI files)](https://github.com/ventoy/Ventoy) as a workaround to avoid BIOS/UEFI issues.
@@ -831,23 +831,29 @@ $ dd if=shredos-20200412.img of=/dev/sdx (20200412 will be the day you compiled,
 
 Do note that loading a configuration should typically be the last step before `make`.
 
-> **The hybrid ISOs unite most functionality of all other formats:**
+> **The hybrid ISOs offer the most flexibility over the other formats:**
 >
 >- are BIOS and UEFI bootable
 >- can both be written to CD/DVD-ROM and USB flash drives
->- have a writeable partition (when written to a USB flash drive)
->- **but** do not allow customization of GRUB (for `autonuke`, ...)
+>- use ISOLINUX in BIOS for better compliance with very old systems
+>- **but** do not have a writeable partition for PDFs/configurations
+>
+> Some tools such as Rufus offer an "ISO-Mode", which enable such a writeable
+> partition (at burn-time). But this is not something that can be added to the
+> ISO on the distribution side (at build-time), as it would break the hybrid
+> functionality and standards that are needed for burning the ISO to CD/DVD-ROM.
 >
 >The **legacy** ISOs work in BIOS and UEFI, but only burned to CD/DVD-ROM.
 
 #### Building multiple configurations:
 
 Generally, when building multiple configurations of the above on the same
-architecture, you only need to ensure that `make` and `make grub2-reconfigure`
-are run between any two configurations. The same applies to any other package
-whose configuration has changed, adding corresponding `<package>-reconfigure`
-steps. A `make clean` step is not usually required unless you have made
-significant changes to the project, which should save time with such builds.
+architecture, you only need to ensure that `make grub2-reconfigure` (and
+eventually `make`) are run between any two configurations. The same applies to
+any other package whose configuration has changed, adding corresponding
+`<package>-reconfigure` steps, before the eventual `make`. A `make clean` step is
+not usually required unless you have made significant changes to the project,
+which should save time for such builds between same-architecture configurations.
 
 For two configurations targeting different architectures, a full `make clean`
 is always required when switching between them, plan time for this (takes long).
@@ -896,10 +902,6 @@ make_img_file.sh is a bash script, the main purpose of which is to generate the 
 #### ../board/shredos/make_iso_file.sh
 make_iso_file.sh is a bash script, the main purpose of which is to generate the .iso file located in output/images/. The contents of board/shredos/version.txt is used to rename the .iso file with version info and the current date and time.
 		
-#### ../board/shredos/populate_efi_partition.sh
-populate_efi_partition.sh is a bash script that copies the ShredOS files
-(similar ones as `make_img_file.sh`) to the UEFI partition of the ISO image.
-		
 #### ../board/shredos/grub.cfg
 The USB image's GRUB configuration, which both the BIOS and UEFI bootloader will use.
 It contains the BIOS and UEFI boot menu for the USB image.
@@ -919,7 +921,7 @@ It contains the UEFI boot menu for the ISO image.
 		
 #### ../board/shredos/iso/efigrub.cfg
 The GRUB configuration that is embedded into the ISO's UEFI partition.
-It contains directions for GRUB to find the ISO9660 FS and GRUB configuration.
+It contains directions for GRUB to find the ISO9660's GRUB configuration.
 		
 #### ../board/shredos/fsoverlay/etc/shredos/version.txt
 This file contains the version information as seen in the title on nwipe's title bar, i.e. '2021.08.2_22_x86-64_0.32.023'. This version ingformation is also used when naming the .img file in ../output/images/ ../board/shredos/fsoverlay/etc/shredos/version.txt is manually updated for each new release of ShredOS.

@@ -3,7 +3,7 @@
 # This program looks for any exfat, fat32 or fat16 filesystem, it then
 # examines the filesystem, looking for a kernel file or .img or .iso
 # file that has the same version number as the booted ShredOS. Once
-# the boot USB has been found this script outputs the drive name in
+# the boot USB has been found this script outputs the drive name in 
 # the following form, example being /dev/sdc etc.
 #
 # If there is no FAT drive found the script fails silently
@@ -46,22 +46,10 @@ fi
 #
 while read drive ;
 do
-	isEFI=$(fdisk -l | grep -i "$drive" | grep -i "EFI")
-
-	# EFI partitions should not quality for "first drive" to avoid false
-	# positives; we only use it if confirmed as ours. The hybrid ISO image has
-	# an EFI partition that can be written to, and we need to ensure that other
-	# devices' EFI partitions remain untouched, disallowing EFI "first drive"s.
-	#
-	# Note that our USB image's FAT partition is not marked specifically as EFI
-	# (0xEF) but regular FAT (0xC/0x0C), so it still qualifies as "first drive".
-	if [[ "$first_drive" == "" ]] && [[ -z "$isEFI" ]]
+	if [[ "$first_drive" == "" ]]
 	then
 		first_drive=$drive
 	fi
-
-	# We can use the EFI partition if it passes the below checks and is
-	# confirmed to be ours (of the hybrid ISO images, when flashed on USB).
 
 	if [[ "$drive" != "" ]]
 	then
@@ -132,7 +120,7 @@ do
 
 		umount $drive_dir 2>&1 | tee -a transfer.log
 	fi
-done <<< $(fdisk -l | grep -i "exfat\|fat16\|fat32\|EFI" | awk '{print $1}')
+done <<< $(fdisk -l | grep -i "exfat\|fat16\|fat32" | awk '{print $1}')
 
 # If no boot disc has been found that contains the version of ShredOS
 # that is running, then output the first FAT formatted drive we came across.
