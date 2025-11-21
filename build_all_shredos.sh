@@ -31,7 +31,7 @@ X64_CONFIGS=(
 	"shredos_defconfig"
 	"shredos_img_defconfig"
 	"shredos_iso_defconfig"
-	"shredos_iso_aio_defconfig"
+	"shredos_iso_legacy_defconfig"
 )
 
 # 32-bit configurations to build:
@@ -39,7 +39,7 @@ X32_CONFIGS=(
 	"shredos_i586_defconfig"
 	"shredos_img_i586_defconfig"
 	"shredos_iso_i586_defconfig"
-	"shredos_iso_aio_i586_defconfig"
+	"shredos_iso_legacy_i586_defconfig"
 )
 
 # Packages always needing rebuild between runs, even for the same architecture.
