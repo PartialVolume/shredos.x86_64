@@ -829,6 +829,11 @@ $ dd if=shredos-20200412.img of=/dev/sdx (20200412 will be the day you compiled,
 - `make shredos_iso_legacy_defconfig` - build legacy ISO only (64-bit)
 - `make shredos_iso_legacy_i586_defconfig` - build legacy ISO only (32-bit)
 
+#### The following experimental configurations are available for testing:
+
+- `make shredos_iso_extra_defconfig` - build hybrid ISO with extra writeable partition (when burned to USB flash drive) (64-bit)
+- `make shredos_iso_extra_i586_defconfig` - build hybrid ISO with extra writeable partition (when burned to USB flash drive) (32-bit)
+
 Do note that loading a configuration should typically be the last step before `make`.
 
 > **The hybrid ISOs offer the most flexibility over the other formats:**
