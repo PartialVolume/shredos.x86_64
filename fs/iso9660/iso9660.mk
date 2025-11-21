@@ -407,7 +407,7 @@ ROOTFS_ISO9660_OPTS_BIOS = \
 endif
 
 ifeq ($(BR2_TARGET_ROOTFS_ISO9660_BOTH)$(BR2_TARGET_ROOTFS_ISO9660_HYBRID),yy)
-# BOTH (uses GRUB2 in EFI)
+# BOTH + HYBRID (uses GRUB2 in EFI)
 # Hybrid Image Support (Modern Variant, Debian-style)
 ROOTFS_ISO9660_OPTS_EFI = \
 	-e $(ROOTFS_ISO9660_EFI_PARTITION) \
@@ -415,7 +415,7 @@ ROOTFS_ISO9660_OPTS_EFI = \
 	-isohybrid-gpt-basdat \
 	-isohybrid-apm-hfsplus
 else
-# BOTH/GRUB2 (use GRUB2 in EFI)
+# BOTH or GRUB2 (use GRUB2 in EFI)
 ROOTFS_ISO9660_OPTS_EFI = \
 	-e $(ROOTFS_ISO9660_EFI_PARTITION) \
 	-no-emul-boot
