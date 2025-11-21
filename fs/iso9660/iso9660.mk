@@ -372,6 +372,7 @@ ROOTFS_ISO9660_PRE_GEN_HOOKS += ROOTFS_ISO9660_INSTALL_BOOTLOADERS
 ROOTFS_ISO9660_OPTS += -r -V 'ISO9660' -J -joliet-long -cache-inodes
 
 ifeq ($(BR2_TARGET_ROOTFS_ISO9660_BOTH)$(BR2_TARGET_ROOTFS_ISO9660_HYBRID),yy)
+# BOTH + HYBRID (uses ISOLINUX)
 # Hybrid Image Support (Modern Variant, Debian-style)
 ROOTFS_ISO9660_OPTS_BIOS = \
 	-isohybrid-mbr $(HOST_DIR)/share/syslinux/isohdpfx.bin \
@@ -380,7 +381,16 @@ ROOTFS_ISO9660_OPTS_BIOS = \
 	-boot-load-size 4 \
 	-boot-info-table \
 	-no-emul-boot
+else ifeq ($(BR2_TARGET_ROOTFS_ISO9660_BOTH),y)
+# BOTH (uses ISOLINUX)
+ROOTFS_ISO9660_OPTS_BIOS = \
+	-b $(ROOTFS_ISO9660_BOOT_IMAGE) \
+	-c isolinux/boot.cat \
+	-boot-load-size 4 \
+	-boot-info-table \
+	-no-emul-boot
 else ifeq ($(BR2_TARGET_ROOTFS_ISO9660_ISOLINUX),y)
+# ISOLINUX
 ROOTFS_ISO9660_OPTS_BIOS = \
 	-b $(ROOTFS_ISO9660_BOOT_IMAGE) \
 	-c isolinux/boot.cat \
@@ -388,6 +398,7 @@ ROOTFS_ISO9660_OPTS_BIOS = \
 	-boot-info-table \
 	-no-emul-boot
 else
+# GRUB2
 ROOTFS_ISO9660_OPTS_BIOS = \
 	-b $(ROOTFS_ISO9660_BOOT_IMAGE) \
 	-boot-load-size 4 \
@@ -396,6 +407,7 @@ ROOTFS_ISO9660_OPTS_BIOS = \
 endif
 
 ifeq ($(BR2_TARGET_ROOTFS_ISO9660_BOTH)$(BR2_TARGET_ROOTFS_ISO9660_HYBRID),yy)
+# BOTH (uses GRUB2 in EFI)
 # Hybrid Image Support (Modern Variant, Debian-style)
 ROOTFS_ISO9660_OPTS_EFI = \
 	-e $(ROOTFS_ISO9660_EFI_PARTITION) \
@@ -403,6 +415,7 @@ ROOTFS_ISO9660_OPTS_EFI = \
 	-isohybrid-gpt-basdat \
 	-isohybrid-apm-hfsplus
 else
+# BOTH/GRUB2 (use GRUB2 in EFI)
 ROOTFS_ISO9660_OPTS_EFI = \
 	-e $(ROOTFS_ISO9660_EFI_PARTITION) \
 	-no-emul-boot
@@ -410,18 +423,18 @@ endif
 
 # Determine which boot options to use
 ifeq ($(BR2_TARGET_ROOTFS_ISO9660_BIOS_BOOTLOADER)$(BR2_TARGET_ROOTFS_ISO9660_EFI_BOOTLOADER),yy)
-# Both BIOS and EFI
+# BIOS and EFI
 ROOTFS_ISO9660_OPTS += \
 	$(ROOTFS_ISO9660_OPTS_BIOS) \
 	-eltorito-alt-boot \
 	$(ROOTFS_ISO9660_OPTS_EFI)
 
 else ifeq ($(BR2_TARGET_ROOTFS_ISO9660_BIOS_BOOTLOADER),y)
-# BIOS only
+# BIOS
 ROOTFS_ISO9660_OPTS += $(ROOTFS_ISO9660_OPTS_BIOS)
 
 else ifeq ($(BR2_TARGET_ROOTFS_ISO9660_EFI_BOOTLOADER),y)
-# EFI only
+# EFI
 ROOTFS_ISO9660_OPTS += $(ROOTFS_ISO9660_OPTS_EFI)
 
 endif
