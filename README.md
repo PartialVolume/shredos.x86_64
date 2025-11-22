@@ -41,7 +41,7 @@ NOTE! There may be pre-release versions that are newer than the latest versions 
 
 ### For all releases including latest and more recent pre-releases [releases](https://github.com/PartialVolume/shredos.x86_64/releases)
 
-Note for versions **after** _v2024.11_27_x86-64_0.38_: The .img files for burning to USB flash drives support both BIOS/UEFI booting, as well as saving of generated PDF reports to the USB flash drive. The .iso image also supports both BIOS/UEFI booting, burning to USB flash drives and CD/DVD-ROM, but not saving of generated PDF reports to the own USB flash drive (unless being written in "ISO-Mode" with some tools, such as Rufus). Use the .img file whenever needing these generated PDF reports or planning to customize ShredOS (`autonuke` setups, kernel parameters, ...). The .img file allows direct interaction with the filesystem and modification of the GRUB boot menu, e.g. appending of kernel parameters, which the .iso file does not support due to filesystem constraints.
+Note for versions **after** _v2024.11_27_x86-64_0.38_: The .img files for burning to USB flash drives support both BIOS/UEFI booting, as well as saving of generated PDF reports to the USB flash drive. The .iso image also supports both BIOS/UEFI booting, burning to USB flash drives and CD/DVD-ROM, but not (yet) saving of generated PDF reports to the USB flash drive (unless being written in "ISO-Mode" with some tools, such as Rufus). Use the .img file whenever needing these generated PDF reports or planning to customize ShredOS (`autonuke` setups, kernel parameters, ...). The .img file allows direct interaction with the filesystem and modification of the GRUB boot menu, e.g. appending of kernel parameters, which the .iso file does not support due to filesystem constraints.
 
 Note for versions **until** _v2024.11_27_x86-64_0.38_: The .img files for burning to USB flash drives support both BIOS/UEFI booting. The .iso image supports legacy BIOS booting only and not UEFI, however, a BIOS/UEFI version of the .iso is available in newer ShredOS versions.
 You can also consider [VENTOY (Open Source tool to create bootable USB drive for ISO/WIM/IMG/VHD(x)/EFI files)](https://github.com/ventoy/Ventoy) as a workaround to avoid BIOS/UEFI issues.
@@ -844,11 +844,11 @@ Do note that loading a configuration should typically be the last step before `m
 >- **but** do not have a writeable partition for PDFs/configurations
 >
 > Some tools such as Rufus offer an "ISO-Mode", which enable such a writeable
-> partition (at burn-time). But this is not something that can be added to the
-> ISO on the distribution side (at build-time), as it would break the hybrid
-> functionality and standards that are needed for burning the ISO to CD/DVD-ROM.
+> partition at burn-time, which then also allows customization of the GRUB
+> configuration.
 >
->The **legacy** ISOs work in BIOS and UEFI, but only burned to CD/DVD-ROM.
+>The **extra** ISOs (experimental) have an "extra" write partition appended.  
+>The **legacy** ISOs work in BIOS and UEFI, but only as burned to CD/DVD-ROM.
 
 #### Building multiple configurations:
 
