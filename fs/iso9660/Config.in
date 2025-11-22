@@ -75,6 +75,17 @@ config BR2_TARGET_ROOTFS_ISO9660_BIOS_BOOTLOADER
 config BR2_TARGET_ROOTFS_ISO9660_EFI_BOOTLOADER
 	bool
 
+config BR2_TARGET_ROOTFS_ISO9660_VOLUME_NAME
+	string "iso volume name"
+	default "ISO9660"
+	help
+	  Set the Volume ID of the ISO image. xorriso accepts any text up to 32
+	  characters, but according to rarely obeyed specs stricter rules apply:
+	  Conformant are ASCII characters out of [A-Z0-9_], like: "IMAGE_23". Joliet
+	  allows 16 UCS-2 characters, like: "Windows name". Be aware that the volume
+	  ID might get used automatically as name of the mount point when the medium
+	  is inserted into a playful computer system.
+
 config BR2_TARGET_ROOTFS_ISO9660_ISOLINUX_BOOT_MENU
 	string "Isolinux configuration file"
 	depends on BR2_TARGET_ROOTFS_ISO9660_ISOLINUX || BR2_TARGET_ROOTFS_ISO9660_BOTH
@@ -177,19 +188,35 @@ config BR2_TARGET_ROOTFS_ISO9660_HYBRID
 	  which the BIOS considers as HDD/removable device (e.g. USB stick)
 
 config BR2_TARGET_ROOTFS_ISO9660_HYBRID_APPEND_PARTITION
-	string "Append hybrid partition image"
+	string "Append partition to hybrid image"
 	depends on BR2_TARGET_ROOTFS_ISO9660_BOTH \
 		&& BR2_TARGET_ROOTFS_ISO9660_HYBRID
 	default ""
 	help
-	  Enable this option to append a prepared FAT16 filesystem
-	  image to the hybrid image, useful when needing a writeable
-	  data partition for USBs - should be considered EXPERIMENTAL.
+	  Enable this option to append a prepared filesystem image
+	  to the hybrid image, useful when needing a writeable data
+	  partition for USBs - should be considered as EXPERIMENTAL.
 
 	  The path is expected to be relative to folder "output/images/".
 
 	  You can use e.g. a BR2_ROOTFS_POST_BUILD_SCRIPT for preparing
 	  the respective filesystem image for your target configuration.
+
+config BR2_TARGET_ROOTFS_ISO9660_HYBRID_APPEND_PARTITION_TYPE
+	string "Append partition type"
+	depends on \
+		BR2_TARGET_ROOTFS_ISO9660_HYBRID_APPEND_PARTITION != ""
+	default "0x0e"
+	help
+	  May be "FAT12", "FAT16", "Linux", or a hexadecimal number between 0x00 and
+	  0xff. Not all those numbers will yield usable results. For a list of codes
+	  search the internet for "Partition Types". If the partition appears in GPT
+	  then 0xef is mapped to the EFI System Partition Type GUID. All others get
+	  mapped to Basic Data Type GUID. May also be a type GUID as plain hex
+	  string like a2a0d0ebe5b9334487c068b6b72699c7 or as structured text like
+	  EBD0A0A2-B9E5-4433-87C0-68B6B72699C7. It will be used if the partition is
+	  mentioned in GPT. In MBR, C12A7328-F81F-11D2-BA4B-00A0C93EC93B will be
+	  mapped to 0xef. Any other GUID will be mapped to 0x83.
 
 endif
 

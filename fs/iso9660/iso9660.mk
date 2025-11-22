@@ -29,12 +29,14 @@
 
 ROOTFS_ISO9660_DEPENDENCIES = host-xorriso linux
 
+ROOTFS_ISO9660_VOLUME_NAME = $(call qstrip,$(BR2_TARGET_ROOTFS_ISO9660_VOLUME_NAME))
 ROOTFS_ISO9660_GRUB2_BOOT_MENU = $(call qstrip,$(BR2_TARGET_ROOTFS_ISO9660_GRUB2_BOOT_MENU))
 ROOTFS_ISO9660_GRUB2_EFI_BOOT_MENU = $(call qstrip,$(BR2_TARGET_ROOTFS_ISO9660_GRUB2_EFI_BOOT_MENU))
 ROOTFS_ISO9660_GRUB2_EFI_PARTITION_SIZE = $(call qstrip,$(BR2_TARGET_ROOTFS_ISO9660_GRUB2_EFI_PARTITION_SIZE))
 ROOTFS_ISO9660_GRUB2_EFI_IDENT_FILE = $(call qstrip,$(BR2_TARGET_ROOTFS_ISO9660_GRUB2_EFI_IDENT_FILE))
 ROOTFS_ISO9660_ISOLINUX_BOOT_MENU = $(call qstrip,$(BR2_TARGET_ROOTFS_ISO9660_ISOLINUX_BOOT_MENU))
 ROOTFS_ISO9660_HYBRID_APPEND_PARTITION = $(call qstrip,$(BR2_TARGET_ROOTFS_ISO9660_HYBRID_APPEND_PARTITION))
+ROOTFS_ISO9660_HYBRID_APPEND_PARTITION_TYPE = $(call qstrip,$(BR2_TARGET_ROOTFS_ISO9660_HYBRID_APPEND_PARTITION_TYPE))
 
 ################################################################################
 # Architecture-specific variables
@@ -370,7 +372,7 @@ ROOTFS_ISO9660_PRE_GEN_HOOKS += ROOTFS_ISO9660_INSTALL_BOOTLOADERS
 # modern Debian distributions (see .disk/mkisofs inside one of their ISOs)
 ################################################################################
 
-ROOTFS_ISO9660_OPTS += -r -V 'ISO9660' -J -joliet-long -cache-inodes
+ROOTFS_ISO9660_OPTS += -r -V '$(ROOTFS_ISO9660_VOLUME_NAME)' -J -joliet-long -cache-inodes
 
 ifeq ($(BR2_TARGET_ROOTFS_ISO9660_BOTH)$(BR2_TARGET_ROOTFS_ISO9660_HYBRID),yy)
 # BOTH + HYBRID (uses ISOLINUX)
@@ -429,10 +431,11 @@ ROOTFS_ISO9660_OPTS += \
 	$(ROOTFS_ISO9660_OPTS_BIOS) \
 	-eltorito-alt-boot \
 	$(ROOTFS_ISO9660_OPTS_EFI)
-# Append an extra FAT16 partition image (if one was provided, for hybrid mode)
+# Append an extra partition image, if one was provided (for hybrid images)
 ifneq ($(ROOTFS_ISO9660_HYBRID_APPEND_PARTITION),)
 ROOTFS_ISO9660_OPTS += \
-	-append_partition 3 0x0e $(BINARIES_DIR)/$(ROOTFS_ISO9660_HYBRID_APPEND_PARTITION) \
+	-append_partition 3 $(ROOTFS_ISO9660_HYBRID_APPEND_PARTITION_TYPE) \
+		$(BINARIES_DIR)/$(ROOTFS_ISO9660_HYBRID_APPEND_PARTITION) \
 	-partition_cyl_align all
 endif
 
