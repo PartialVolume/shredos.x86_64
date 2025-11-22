@@ -41,7 +41,7 @@ NOTE! There may be pre-release versions that are newer than the latest versions 
 
 ### For all releases including latest and more recent pre-releases [releases](https://github.com/PartialVolume/shredos.x86_64/releases)
 
-Note for versions **after** _v2024.11_27_x86-64_0.38_: The .img files for burning to USB flash drives support both BIOS/UEFI booting, as well as saving of generated PDF reports to the USB flash drive. The .iso image also supports both BIOS/UEFI booting, burning to USB flash drives and CD/DVD-ROM, but not (yet) saving of generated PDF reports to the USB flash drive (unless being written in "ISO-Mode" with some tools, such as Rufus). Use the .img file whenever needing these generated PDF reports or planning to customize ShredOS (`autonuke` setups, kernel parameters, ...). The .img file allows direct interaction with the filesystem and modification of the GRUB boot menu, e.g. appending of kernel parameters, which the .iso file does not support due to filesystem constraints.
+Note for versions **after** _v2024.11_27_x86-64_0.38_: The .img files for burning to USB flash drives support both BIOS/UEFI booting, as well as saving of generated PDF reports to the USB flash drive. The .iso image also supports both BIOS/UEFI booting, burning to USB flash drives and CD/DVD-ROM, but not (yet) saving of generated PDF reports to the USB flash drive (unless being written in "ISO-Mode" with some tools, such as Rufus). Use the .img file whenever needing these generated PDF reports or planning to customize ShredOS (`autonuke` setups, kernel parameters, ...). The .img file also allows direct interaction with the filesystem and modification of the GRUB boot menu, e.g. appending of kernel parameters, which the .iso file does not support due to filesystem constraints.
 
 Note for versions **until** _v2024.11_27_x86-64_0.38_: The .img files for burning to USB flash drives support both BIOS/UEFI booting. The .iso image supports legacy BIOS booting only and not UEFI, however, a BIOS/UEFI version of the .iso is available in newer ShredOS versions.
 You can also consider [VENTOY (Open Source tool to create bootable USB drive for ISO/WIM/IMG/VHD(x)/EFI files)](https://github.com/ventoy/Ventoy) as a workaround to avoid BIOS/UEFI issues.
@@ -905,7 +905,7 @@ If launched without arguments, it will show a usage manual on the screen.
 make_img_file.sh is a bash script, the main purpose of which is to generate the .img file located in output/images/. However it is also used to copy the compiled .efi file and other files such as the shredos.ico, autorun.inf for Windows, README.txt. The contents of board/shredos/version.txt is also used to rename the .img file with version info and the current date and time.
 		
 #### ../board/shredos/make_iso_file.sh
-make_iso_file.sh is a bash script, the main purpose of which is to generate the .iso file located in output/images/. The contents of board/shredos/version.txt is used to rename the .iso file with version info and the current date and time.
+make_iso_file.sh is a bash script, the main purpose of which is to rename the .iso file located in output/images/. The contents of board/shredos/version.txt is used to rename the .iso file with version info and the current date and time.
 		
 #### ../board/shredos/grub.cfg
 The USB image's GRUB configuration, which both the BIOS and UEFI bootloader will use.
