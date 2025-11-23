@@ -1,3 +1,26 @@
+# shredos-pc
+
+This is a fork to incorporate the experimental `nwipe-pc` changes into ShredOS:
+
+https://github.com/desertwitch/nwipe-pc
+
+As well as a base for development and contributions to upstream ShredOS itself.
+
+**You should use upstream ShredOS unless depending on Unraid-specific features.**
+
+For the Unraid-specific releases of this fork, visit the `Releases` section of
+this repository (which can be found to the right or in the tabs menu bar above).
+IMG files can be flashed to USB, and ISO files both to USB and CD/DVD-ROM. The
+IMG files should be used when wanting to customize ShredOS (`autonuke` setups,
+specific kernel parameters, ...) or otherwise needing the PDF reports generated
+by ShredOS.
+
+Do beware that below README may be behind/ahead of the upstream ShredOS project,
+and while contained information may be relevant for this fork, all contained
+links will point only to the upstream ShredOS project.
+
+# ShredOS - Disk Eraser
+
 <!-- ShredOS LOGO -->
 <br />
 <p align="left">
@@ -9,8 +32,6 @@
 	<a href="https://www.buymeacoffee.com/Shredos" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" "height="60" width="217"></a>
 		</p>
 </p>
-
-# ShredOS x86_64 - Disk Eraser
 
 ## For PCs, Servers and Macs with Intel and AMD 64 & 32 bit processors
 
