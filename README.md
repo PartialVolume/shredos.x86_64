@@ -1,22 +1,22 @@
 # shredos-pc
 
-This is a fork to incorporate the experimental `nwipe-pc` changes into ShredOS:
+**shredos-pc is a fork of shredos, with patched-in support for pre-clearing disks for Unraid.**
 
-https://github.com/desertwitch/nwipe-pc
+It also serves as a base for development and contributions to upstream ShredOS itself.
 
-As well as a base for development and contributions to upstream ShredOS itself.
-
-**You should use upstream ShredOS unless depending on Unraid-specific features.**
+It utilizes the forked `nwipe-pc` under the hood: https://github.com/desertwitch/nwipe-pc
 
 For the Unraid-specific releases of this fork, visit the `Releases` section of
 this repository (which can be found to the right or in the tabs menu bar above).
-IMG files can be flashed to USB, and ISO files both to USB and CD/DVD-ROM. The
-IMG files should be used when wanting to customize ShredOS (`autonuke` setups,
+IMG files can be flashed to USB, and ISO files both to USB and CD/DVD-ROM. IMG
+files should be used when wanting to customize ShredOS (`autonuke` setups,
 specific kernel parameters, ...) or otherwise needing the PDF reports generated
 by ShredOS.
 
-Do beware that below README may be behind/ahead of the upstream ShredOS project,
-and while contained information may be relevant for this fork, all contained
+**You should use upstream ShredOS unless depending on Unraid-specific features.**
+
+Beware that below README may be behind/ahead of the upstream ShredOS project,
+and while contained information will be relevant for this fork, all contained
 links will point only to the upstream ShredOS project.
 
 # ShredOS - Disk Eraser
