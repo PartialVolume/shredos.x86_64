@@ -1,5 +1,3 @@
-BR2_x86_64=y
-BR2_x86_nocona=y
 BR2_PACKAGE_GLIBC_UTILS=y
 BR2_TOOLCHAIN_BUILDROOT_CXX=y
 BR2_TOOLCHAIN_GLIBC_GCONV_LIBS_COPY=y
@@ -111,7 +109,6 @@ BR2_PACKAGE_PYTHON_PYNDIFF=y
 BR2_PACKAGE_PYTHON_SCAPY=y
 BR2_PACKAGE_LZ4=y
 BR2_PACKAGE_LIBGCRYPT=y
-BR2_PACKAGE_LIBJPEG=y
 BR2_PACKAGE_STB=y
 BR2_PACKAGE_LIBHID=y
 BR2_PACKAGE_JSON_GLIB=y
@@ -176,7 +173,7 @@ BR2_TARGET_ROOTFS_ISO9660_HYBRID=y
 # BR2_TARGET_ROOTFS_TAR is not set
 BR2_TARGET_GRUB2=y
 BR2_TARGET_GRUB2_I386_PC=y
-BR2_TARGET_GRUB2_X86_64_EFI=y
+BR2_TARGET_GRUB2_I386_EFI=y
 BR2_TARGET_GRUB2_BUILTIN_MODULES_PC="boot linux ext2 fat squash4 part_msdos part_gpt normal progress biosdisk all_video video_cirrus video_bochs net tftp gzio test eval read true gfxterm gfxterm_menu gfxmenu gfxterm_background png usb usb_keyboard search configfile"
 BR2_TARGET_GRUB2_BUILTIN_CONFIG_PC="board/shredos/embed/grub.cfg"
 BR2_TARGET_GRUB2_BUILTIN_MODULES_EFI="boot linux ext2 fat squash4 part_msdos part_gpt normal progress efi_gop efi_uga all_video video_cirrus video_bochs net efinet tftp gzio test eval read true gfxterm gfxterm_menu gfxmenu gfxterm_background png usb usb_keyboard search configfile iso9660"

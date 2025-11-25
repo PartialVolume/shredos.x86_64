@@ -1,0 +1,16 @@
+This file is embedded into the GRUB bootloaders at build-time.
+Helps GRUB find our ShredOS volume when it cannot (Ventoy BIOS).
+There is no point to put it anywhere on the USB - so don't do that.
+
+Keep consistent with BR2_TARGET_ROOTFS_ISO9660_GRUB2_EFI_IDENT_FILE
+when building any configurations that build both an ISO and the IMG.
+
+Do not use the version file as identification file though, because
+read-only ISO9660 filesystem doesn't have it (but has needed grub.cfg),
+so you should always use a unique file not otherwise used for anything.
+
+Also ensure it is in a location where users cannot delete it by accident.
+
+Note that contrary to the GNU manual the BIOS bootloader seems to need the
+explicit "configfile" directive, otherwise the Buildroot static prefix takes
+precedence over the actual found volume path (which may be entirely different).
