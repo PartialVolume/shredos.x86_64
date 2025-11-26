@@ -1,11 +1,50 @@
 config BR2_PACKAGE_NWIPE
-        bool "nwipe"
+	bool "nwipe"
 	select BR2_PACKAGE_NCURSES
 	select BR2_PACKAGE_PARTED
 	select BR2_PACKAGE_COREUTILS
 	select BR2_PACKAGE_DMIDECODE
 	select BR2_PACKAGE_LIBCONFIG
-        help
-          NWipe
+	help
+	  NWipe – secure disk wiping tool (fork of Darik's Boot and Nuke).
 
-comment "nwipe"
+if BR2_PACKAGE_NWIPE
+
+config BR2_PACKAGE_NWIPE_SITE
+	string "nwipe Git repository URL"
+	default "https://github.com/martijnvanbrummelen/nwipe.git"
+	help
+	  Git repository used to fetch the nwipe sources.
+	  This can be changed to point to a custom fork, e.g.:
+	    - https://github.com/youruser/nwipe.git
+	    - git@github.com:youruser/nwipe.git
+
+choice
+	prompt "nwipe version"
+	default BR2_PACKAGE_NWIPE_VERSION_STABLE
+	help
+	  Select which nwipe version (Git ref) should be built.
+
+config BR2_PACKAGE_NWIPE_VERSION_STABLE
+	bool "Stable tag (v0.39)"
+	help
+	  Use the previously hard-coded tag (v0.39) as a stable baseline.
+
+config BR2_PACKAGE_NWIPE_VERSION_GIT_REVISION
+	bool "Git revision"
+	help
+	  Use a user-specified Git revision (full commit SHA-1 or tag).
+
+endchoice
+
+config BR2_PACKAGE_NWIPE_GIT_REVISION
+	string "Git revision (full commit SHA-1 or tag)"
+	depends on BR2_PACKAGE_NWIPE_VERSION_GIT_REVISION
+	help
+	  When 'Git revision' is selected above, this string is passed as the
+	  Git ref to check out. Examples:
+	    - 051e1aa0c9572b26301a33d40689adb544927d11 (full commit SHA-1)
+	    - v0.39 (tag)
+
+endif
+
