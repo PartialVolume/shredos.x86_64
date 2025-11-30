@@ -1,0 +1,49 @@
+From a2a08fdf4a4adf00a26666198483e7f2797b1a26 Mon Sep 17 00:00:00 2001
+From: Bernd Kuhls <bernd@kuhls.net>
+Date: Sun, 30 Nov 2025 12:09:02 +0100
+Subject: [PATCH] libkbdfile: fix zlib build
+
+Buildroot autobuilders fail to build kbd since version 2.9.0:
+https://autobuild.buildroot.net/results/8ff/8ff6c3d940b68069f748f12646f7516ec86172c1/build-end.log
+
+kbdfile-zlib.c: In function 'dlopen_note':
+elf-note.h:27:30: error: 'sym_gzopen' undeclared (first use in this function); did you mean 'sym_gzopen64'?
+   27 | #define DLSYM_ARG(symbol__) &sym_##symbol__, STRINGIFY(symbol__),
+
+kbdfile-zlib.c: In function 'kbdfile_decompressor_zlib':
+kbdfile-zlib.c:61:15: error: implicit declaration of function 'sym_gzopen'; did you mean 'sym_gzopen64'?
+ [-Wimplicit-function-declaration]
+   61 |         gzf = sym_gzopen(file->pathname, "rb");
+
+Upstream: https://github.com/legionus/kbd/pull/150
+
+Signed-off-by: Bernd Kuhls <bernd@kuhls.net>
+---
+ src/libkbdfile/kbdfile-zlib.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/src/libkbdfile/kbdfile-zlib.c b/src/libkbdfile/kbdfile-zlib.c
+index f495003..4b9a0de 100644
+--- a/src/libkbdfile/kbdfile-zlib.c
++++ b/src/libkbdfile/kbdfile-zlib.c
+@@ -16,7 +16,7 @@
+ 
+ #define DL_SYMBOL_TABLE(M)	\
+ 	M(gzclose)		\
+-	M(gzopen)		\
++	M(gzopen64)		\
+ 	M(gzerror)		\
+ 	M(gzread)
+ 
+@@ -58,7 +58,7 @@ FILE *kbdfile_decompressor_zlib(struct kbdfile *file)
+ 		goto cleanup;
+ 	}
+ 
+-	gzf = sym_gzopen(file->pathname, "rb");
++	gzf = sym_gzopen64(file->pathname, "rb");
+ 	if (!gzf) {
+ 		ERR(file->ctx, "zlib: unable to open archive: %s",
+ 		    kbd_strerror(errno, errbuf, sizeof(errbuf)));
+-- 
+2.47.3
+
