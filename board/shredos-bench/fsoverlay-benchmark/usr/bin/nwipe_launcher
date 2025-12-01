@@ -1,0 +1,869 @@
+#!/bin/bash
+
+# trap the ctrl+c signal
+#
+trap "echo" INT
+
+# ignore the case
+shopt -s nocasematch
+
+# date format used by nwipe & shredos in all logs
+date_format="+%Y/%m/%d %H:%M:%S"
+
+# Check dmesg for USB activity, do not proceed until there has been no
+# activity for 5 seconds or automatically proceed after 30 seconds.
+#
+previous_sha1=""
+loop_count=0
+
+#Flag indicates whether boot disc should be excluded from wipe and display
+exclude_boot_disc=0
+
+# Flag indicates user specified drives to be excluded from list or autonuke
+exclude_drives=0
+
+# Flag indicates whether a transfer failure occurred when outputing pdfs & logs to server
+transfer_status="SUCCESS"
+
+# supplementary nwipe options are appended to this string by this launcher script
+launcher_options=""
+
+# These are the errors that tftp can output upon transfer failure. We check for these via grep when
+# sending via tftp. We do not check for these on getting files from the tftp server as we
+# check for the existence of the received file. Unfortunately these two methods of checking
+# is required as tftp does not set the return status to non zero on transfer failure.
+tftp_errors="ERROR\|Transfer Timed out\|Network is unreachable"
+
+# countdown on screen from 30s with numeric digits, checking the sha1 of dmesg every 5 secs
+# will exit countdown before reaching zero if no USB activity for 5 seconds
+loop_count_total=30
+loop_count_check=10
+printf "\n"
+
+while (( loop_count_total > 0 )); do
+	sha1=$(dmesg | grep -i USB | sha1sum)
+	if [[ "$previous_sha1" == "$sha1" ]]; then
+		break
+	fi
+	previous_sha1=$sha1
+	while (( loop_count_check > 0 )); do
+		printf "Waiting for all USB devices to be initialised, timeout $loop_count_total \r"
+		((loop_count_total--))
+		((loop_count_check--))
+		sleep 1
+	done
+	loop_count_check=10
+done
+printf "\n"
+
+echo "[`date "$date_format"`] Transfer log" > transfer.log
+echo "[`date "$date_format"`] wget log" > wget.log
+
+# If it doesn't already exist create a directory where we can
+# store the incoming config file when using a remote server.
+#
+test -d /imported
+if [ $? != 0 ]
+then
+	mkdir /imported
+	if [ $? == 0 ]
+	then
+		printf "[`date "$date_format"`] Created the /imported directory\n" 2>&1 | tee -a transfer.log
+	else
+		printf "[`date "$date_format"`] FAILED to create the /imported directory\n" 2>&1 | tee -a transfer.log
+	fi
+fi
+
+# same goes for the /etc/nwipe directory
+#
+test -d /etc/nwipe
+if [ $? != 0 ]
+then
+	mkdir /etc/nwipe
+	if [ $? == 0 ]
+	then
+		printf "[`date "$date_format"`] Created the /etc/nwipe directory\n" 2>&1 | tee -a transfer.log
+	else
+		printf "[`date "$date_format"`] FAILED to create the /etc/nwipe directory\n" 2>&1 | tee -a transfer.log
+	fi
+fi
+
+# same goes for the /exported directory
+#
+if [ ! -d "exported" ]; then
+	mkdir /exported
+	if [ $? == 0 ]
+	then
+		printf "[`date "$date_format"`] Created the /exported directory\n" 2>&1 | tee -a transfer.log
+	else
+		printf "[`date "$date_format"`] FAILED to create the /exported directory\n" 2>&1 | tee -a transfer.log
+	fi
+fi
+
+# Try to locate the ShredOS exFAT/FAT32/FAT16 formatted boot disc. If the program
+# 'find_shredos_boot_disc.sh' can't find the boot disc then it returns the first
+# exFAT/FAT32/FAT16 drive it comes across. If it doesn't find any exFAT/FAT32/FAT16
+# drive then it reurns "".
+#
+printf "[`date "$date_format"`] nwipe_launcher: Searching for exFAT/FAT32/FAT16 USB drive.\n" 2>&1 | tee -a transfer.log
+drive_partition=$(find_shredos_boot_disc.sh)
+
+if [ "$drive_partition" == "" ]; then
+	printf "[`date "$date_format"`] nwipe_launcher: No exFAT/FAT32/FAT16 USB drive found: Unable to archive PDF/logs $drive.\n" 2>&1 | tee -a transfer.log
+else
+	printf "[`date "$date_format"`] nwipe_launcher: Found a exFAT/FAT32/FAT16 USB drive $drive\n" 2>&1 | tee -a transfer.log
+	if [ -f /boot_device.txt ]
+	then
+		drive=$(cat /boot_device.txt)
+	fi
+fi
+
+# Has shredos_exclude_boot_disc="yes" been placed on the kernel command line?
+exclude_boot_disc_cmd=""
+exclude_boot_disc_status=$(kernel_cmdline_extractor shredos_exclude_boot_disc)
+if [ $? == 0 ]
+then
+	if [[ "${exclude_boot_disc_status,,}" == "yes" ]]
+	then
+		exclude_boot_disc_cmd="--exclude=$drive"
+	fi
+else
+	if [ -f "/exclude_disc.txt" ]
+	then
+		exclude_boot_disc_cmd="--exclude=$drive"
+	fi
+fi
+
+
+
+# ----
+# Read the kernel command line for the option shredos_config
+# and if it exists and starts with tftp then try reading nwipe.conf and
+# nwipe_customers.csv from it.
+#
+lftp_command_line=""
+config_protocol=""
+config_ip=""
+config_path=""
+config_user=""
+config_password=""
+config_debug=""
+config_file="nwipe.conf"
+customers_file="nwipe_customers.csv"
+dmesg_file="dmesg.txt"
+transfer_log_file="transfer.log"
+shredos_config_cmd_exists=""
+
+# Search /proc/cmdline for example: shredos_config="ftp:192.168.0.2:/home/joe/ftpdata/:jo:488993d:d"
+# Adding a trailing :d tells lftp to log in debug mode.
+shredos_config_string=$(kernel_cmdline_extractor shredos_config)
+if [ $? == 0 ]
+then
+	printf "______________________________________________________________________________\n" 2>&1  | tee -a transfer.log
+	printf " Found the shredos_config command on the kernel cmdline line. The log entries \n" 2>&1  | tee -a transfer.log
+	printf " in this section show the status of the commands that restore the nwipe.conf  \n" 2>&1  | tee -a transfer.log
+	printf " and nwipe_customers.csv files from the user's remote server but also sent the\n" 2>&1  | tee -a transfer.log
+	printf " dmseg.txt file to the user's remote server.                                  \n\n" 2>&1  | tee -a transfer.log
+
+	shredos_config_cmd_exists="yes"
+
+	# Extract the individual fields from the from shredos_config=".."
+	config_protocol=$(echo "$shredos_config_string" | cut -d : -f 1 )
+	config_ip=$(echo "$shredos_config_string" | cut -d : -f 2 )
+	config_path=$(echo "$shredos_config_string" | cut -d : -f 3 )
+	config_user=$(echo "$shredos_config_string" | cut -d : -f 4 )
+	config_password=$(echo "$shredos_config_string" | cut -d : -f 5 )
+	config_debug=$(echo "$shredos_config_string" | cut -d : -f 6 )
+
+	# Integrity check: If the user puts anything other than d in the 6th column
+	# replace with an empty string. If user puts d in the 6th column replace with -d
+	if [[ "$config_debug" == "d" ]]
+	then
+		config_debug="-d"
+	else
+		config_debug=""
+	fi
+
+	printf "[`date "$date_format"`] Remote Server protocol = $config_protocol\n" 2>&1 | tee -a transfer.log
+	printf "[`date "$date_format"`] Remote Server IP = $config_ip\n" 2>&1 | tee -a transfer.log
+	printf "[`date "$date_format"`] Remote Server path = $config_path\n" 2>&1 | tee -a transfer.log
+
+	# Ping the ftp at 1 second intervals. Proceed as soon as a response is received
+	# If no response after 30 seconds proceed anyway and log a warning.
+	# It is necessary for the server to be online BEFORE nwipe starts, on some systems
+	# the ethernet can be slow to initialise and this check deals with those situations
+	loop_count_total=30
+	config_server_status="offline"
+	while (( loop_count_total > 0 )); do
+            ping -c1 $config_ip >> transfer.log 2>&1
+            if test ${PIPESTATUS[0]} -eq 0
+            then
+                config_server_status="online"
+                printf "[`date "$date_format"`] Server $config_ip online\n"
+                break
+            fi
+            printf "[`date "$date_format"`] Waiting for ping response from sftp/ftp server, timeout in  $loop_count_total \r"
+            ((loop_count_total--))
+            sleep 1
+        done
+        if (( $loop_count_total == 0 ))
+        then
+            printf "[`date "$date_format"`] \nsftp/ftp ping timout\n"
+        fi
+
+	if [[ "$config_server_status" == "online" ]]
+	then
+		# ***** FTP TRANSFER *****
+		# If the protocol in shredos_config=".." is ftp then read the remote nwipe.conf and customers.csv files
+		if [[ "$config_protocol" == "ftp" ]]
+		then
+			printf "[`date "$date_format"`][FTP:] Using ftp protocol\n" 2>&1 | tee -a transfer.log
+			# we test lftp transferred successfully by checking whether the file exists
+			lftp $config_debug -c "set xfer:clobber yes; open $config_ip; user $config_user $config_password; cd $config_path; get -O /imported -c $config_file; close" 2>&1 | tee -a transfer.log
+			test -f "/imported/nwipe.conf"
+			if [ $? == 0 ]
+			then
+				cp "/imported/nwipe.conf" "/etc/nwipe/nwipe.conf" 2>&1  | tee -a transfer.log
+				if test ${PIPESTATUS[0]} -eq 0
+				then
+					printf "[`date "$date_format"`][FTP:] Retrieved nwipe.conf from ftp server $config_ip:$config_path\n" 2>&1  | tee -a transfer.log
+				else
+					printf "[`date "$date_format"`][FTP:] [FAILED] to copy nwipe.conf from /imported/ to /etc/nwipe/\n" 2>&1  | tee -a transfer.log
+				fi
+			else
+				printf "[`date "$date_format"`][FTP:][FAILED] Could not retrieve nwipe.conf from ftp server $config_ip:$config_path\n" 2>&1  | tee -a transfer.log
+			fi
+
+			lftp $config_debug -c "set xfer:clobber yes; open $config_ip; user $config_user $config_password; cd $config_path; get -O /imported -c $customers_file; close" 2>&1 | tee -a transfer.log
+			test -f "/imported/nwipe_customers.csv"
+			if [ $? == 0 ]
+			then
+				cp "/imported/nwipe_customers.csv" "/etc/nwipe/nwipe_customers.csv" 2>&1  | tee -a transfer.log
+				if test ${PIPESTATUS[0]} -eq 0
+				then
+					printf "[`date "$date_format"`][FTP:] Retrieved nwipe_customers.csv from ftp server $config_ip:$config_path\n" 2>&1  | tee -a transfer.log
+				else
+					printf "[`date "$date_format"`][FTP:] [FAILED] to copy nwipe_customers.csv from /imported/ to /etc/nwipe/\n" 2>&1  | tee -a transfer.log
+				fi
+			else
+				printf "[`date "$date_format"`][FTP:][FAILED] Could not retrieve nwipe_customers.csv from ftp server $config_ip:$config_path\n" 2>&1  | tee -a transfer.log
+			fi
+
+			# Send a copy of dmesg
+			dmesg > dmesg.txt
+			lftp $config_debug -c "set xfer:clobber yes; open $config_ip; user $config_user $config_password; cd $config_path; put -e $dmesg_file; close" 2>&1 | tee -a transfer.log
+			if test ${PIPESTATUS[0]} -eq 0
+			then
+				printf "[`date "$date_format"`][FTP:] Sent dmesg.txt to ftp server $config_ip:$config_path\n" 2>&1 | tee -a transfer.log
+			else
+				printf "[`date "$date_format"`][FTP:][FAILED] Could not send dmesg.txt to ftp server $config_ip:$config_path\n" 2>&1 | tee -a transfer.log
+			fi
+		else
+			# ***** TFTP TRANSFER *****
+			#
+			if [[ "$config_protocol" == "tftp" ]]
+			then
+				printf "[`date "$date_format"`][TFTP:]Using tftp protocol\n" 2>&1 | tee -a transfer.log
+				# tftp uses a subset of the ftp commands. It does not support authentication or changing directories
+				# It also uses port 69 as standard unlike ftp which uses 20 & 21. The tftp server needs to support
+				# write access and creation of files by the client. In the case of tftpd_hpa that means adding -c
+				# to TFTP_OPTIONS, i.e TFTP_OPTIONS="--secure -v -c" in the config file /etc/default/tftpd-hpa on
+				# your tftp server.
+				#
+				tftp $config_ip -v -m binary -c get $config_path/$config_file /imported/$config_file 2>&1 | tee -a transfer.log
+				test -f "/imported/nwipe.conf"
+				if [ $? == 0 ]
+				then
+					cp "/imported/nwipe.conf" "/etc/nwipe/nwipe.conf" 2>&1  | tee -a transfer.log
+					if test ${PIPESTATUS[0]} -eq 0
+					then
+						printf "[`date "$date_format"`][TFTP:] Retrieved nwipe.conf from tftp server $config_ip:$config_path\n" 2>&1  | tee -a transfer.log
+					else
+						printf "[`date "$date_format"`][TFTP:][FAILED] to copy nwipe.conf from /imported/ to /etc/nwipe/\n" 2>&1  | tee -a transfer.log
+					fi
+				else
+					printf "[`date "$date_format"`][TFTP:][FAILED] Could not retrieve nwipe.conf from tftp server $config_ip:$config_path\n" 2>&1  | tee -a transfer.log
+				fi
+
+				tftp $config_ip -v -m binary -c get $config_path/$customers_file /imported/$customers_file 2>&1 | tee -a transfer.log
+				test -f "/imported/nwipe_customers.csv"
+				if [ $? == 0 ]
+				then
+					cp "/imported/nwipe_customers.csv" "/etc/nwipe/nwipe_customers.csv" 2>&1  | tee -a transfer.log
+					if test ${PIPESTATUS[0]} -eq 0
+					then
+						printf "[`date "$date_format"`][TFTP:] Retrieved nwipe_customers.csv from tftp server $config_ip:$config_path\n" 2>&1  | tee -a transfer.log
+					else
+						printf "[`date "$date_format"`][TFTP:] [FAILED] to copy nwipe_customers.csv from /imported/ to /etc/nwipe/\n" 2>&1  | tee -a transfer.log
+					fi
+				else
+					printf "[`date "$date_format"`][TFTP:][FAILED] Could not retrieve nwipe_customers.csv from tftp server $config_ip:$config_path\n" 2>&1  | tee -a transfer.log
+				fi
+
+				# Send a copy of dmesg
+				dmesg > dmesg.txt
+				tftp $config_ip -v -m binary -c put $config_path/$dmesg_file 2>&1 | tee -a transfer.log
+				if test ${PIPESTATUS[0]} -eq 0
+				then
+					printf "[`date "$date_format"`][TFTP:] Sent dmesg.txt to tftp server $config_ip:$config_path\n" 2>&1 | tee -a transfer.log
+				else
+					printf "[`date "$date_format"`][TFTP:][FAILED] Could not send dmesg.txt to tftp server $config_ip:$config_path\n" 2>&1 | tee -a transfer.log
+				fi
+			fi
+		fi
+	else
+		printf "[`date "$date_format"`] [FAILED] No ping response from $config_ip, Check RJ45 network connection\n" 2>&1 | tee -a transfer.log
+	fi
+else
+	# if the shredos_config=".." doesn't exist on the kernel cmdline then we have to assume we booted from USB
+	#
+	# archive dmesg.txt and nwipe logs prior to launching nwipe. This is done just
+	# in case there are any display issues and we want to take a look at the dmesg data.
+	#
+	# archive_log.sh -r also reads the /etc/nwipe/nwipe.conf and /etc/nwipe/customers.csv
+	# files from the USB flash drive to ShredOS's ram disc
+	/usr/bin/archive_log.sh -r
+fi
+
+# initialise
+#
+country_code=""
+nwipe_options_string=""
+lftp_command_line=""
+http_post_url=""
+autopoweroff=0
+logfile="nwipe_log_$(date +%Y%m%d-%H%M%S).txt"
+
+# read the kernel command line for the loadkeys label for setting the correct keyboard layout
+#
+country_code=$(kernel_cmdline_extractor loadkeys)
+if [ $? == 0 ]
+then
+	if [ "$country_code" != "" ]
+	then
+		loadkeys $country_code
+	fi
+fi
+
+# read the kernel command line for nwipe options
+#
+nwipe_options_string=$(kernel_cmdline_extractor nwipe_options)
+if [ $? == 0 ]
+then
+	# set some flags
+	nwipe_options_flag=1
+
+	# Remove the --autopoweroff string if present from the nwipe options.
+	# We do this because we don't want nwipe itself to power down the system.
+	# ShredOS will handle the auto power down once the logs and dmesg output
+	# have been transferred to the USB flash drive after the wipe completes.
+	# One feature of nwipes autopoweroff is that it does not require the user
+	# to press a key to exit. So that nwipe doesn't pause waiting for the
+	# user to press a key which is nwipes default behaviour, we replace
+	# --autopoweroff with --nowait.
+
+	case "$nwipe_options_string" in
+	*--autopoweroff*) autopoweroff=1 ;;
+	*               ) autopoweroff=0 ;;
+	esac
+	
+	if [ $autopoweroff == 1 ]
+	then
+		echo $nwipe_options_string > nwipe_options.txt
+		sed -i 's/--autopoweroff/--nowait/g' nwipe_options.txt
+		nwipe_options_string=`cat nwipe_options.txt`
+		rm nwipe_options.txt
+	fi
+
+	# Check whether user has specified a /dev/loop0 or /dev/loop1 etc
+	# device and if yes, create alternating 500K/1Mbyte loop devices.
+	# These are used for testing by devs. It is suggested a max of 20 devices be
+	# created but they must all be contiguous, i.e no gaps in the sequence
+	# As the loop will stop on the first non existant loop device.
+	# /dev/loop0, /dev/loop1, /dev/loop2, /dev/loop3 is good
+	# /dev/loop0, /dev/loop1, /dev/loop2, /dev/loop4 will create loops 0,1,2 only.
+	# The dev would specify these loop devices in the nwipe_options on
+	# the kernel command line in /boot/grub/grub.cfg and /EFI/BOOT/grub.cfg
+
+	toggle_size=0
+	loop_n=0
+	while true; do
+		case "$nwipe_options_string" in
+		*/dev/loop$loop_n*) createloop=1 ;;
+		*           	  ) createloop=0 ;;
+		esac
+
+		if [ $createloop == 1 ]
+		then
+			if [ $toggle_size == 0 ]
+			then
+				truncate -s 1M loopback$loop_n.img
+				losetup -fP loopback$loop_n.img
+				toggle_size=1
+			else
+				truncate -s 500K loopback$loop_n.img
+				losetup -fP loopback$loop_n.img
+				toggle_size=0
+			fi
+		else
+			break
+		fi
+		((loop_n++))
+
+	done
+
+	# Has user specified shredos_autoreboot=enable on kernel command line?
+	# If yes, we need to makesure the --nowait option is applied as
+	# a command line option when we launch nwipe. However first
+	# we check the nwipe_options string to see if --nowait has already
+	# been applied. If no existing --nowait then we add it as a
+	# supplemental options.
+        autoreboot=$(kernel_cmdline_extractor shredos_autoreboot)
+	if [[ "$autoreboot" == "enable" ]]
+	then
+            case "$nwipe_options_string" in
+		*--nowait*)  ;;
+		*         ) launcher_options+="--nowait" ;;
+            esac
+        else
+            autoreboot=""
+        fi
+
+
+else
+	nwipe_options_flag=0	
+fi
+
+# --- RAM-backed per-core loop devices (benchmark/debug mode) ---
+# If shredos_ramloops=enable is present on the kernel cmdline,
+# create one tmpfs-backed loop device per CPU core and add those
+# devices to the nwipe invocation.
+ramloops=$(kernel_cmdline_extractor shredos_ramloops)
+if [ $? == 0 ] && [[ "${ramloops,,}" == "enable" ]]; then
+	printf "[`date "$date_format"`] shredos_ramloops=enable: creating RAM-backed loop devices per core\n" 2>&1 | tee -a transfer.log
+
+	ram_loopdevs=$(/usr/sbin/nwipe-benchmark-ramloops.sh)
+	if [ $? == 0 ] && [ -n "$ram_loopdevs" ]; then
+		printf "[`date "$date_format"`] RAM loop devices: $ram_loopdevs\n" 2>&1 | tee -a transfer.log
+		# Add the loop devices as extra positional arguments for nwipe
+		launcher_options+=" $ram_loopdevs"
+	else
+		printf "[`date "$date_format"`] Failed to create RAM loop devices, falling back to normal device selection\n" 2>&1 | tee -a transfer.log
+	fi
+fi
+# --- end RAM-backed loop block ---
+
+# Pause for a couple of seconds before launching nwipe so the messages can be read by the user.
+sleep 2
+
+# run nwipe with a time stamped log file
+#
+while true
+do
+	if [ $nwipe_options_flag == 0 ]
+	then
+		/usr/bin/nwipe --logfile=$logfile $launcher_options $exclude_boot_disc_cmd
+	else
+		/usr/bin/nwipe --logfile=$logfile $launcher_options $nwipe_options_string $exclude_boot_disc_cmd
+	fi
+
+	# ----
+	# read the kernel command line for a lftp command
+	# example lftp command "open 192.168.1.60; user joe joe's_password; cd data; mput nwipe_*.txt
+	#
+
+	lftp_command_line=$(kernel_cmdline_extractor lftp)
+	if [ $? == 0 ]
+	then
+		printf "[`date "$date_format"`] Found lftp commands on kernel command line in grub.cfg\n"
+		printf "[`date "$date_format"`] Executing users lftp commands\n"
+		lftp -c "$lftp_command_line"
+		if [ $? == 0 ]
+		then
+			printf "[`date "$date_format"`] lftp completed sucessfully\n" 2>&1 | tee -a transfer.log
+			printf "[`date "$date_format"`] moving nwipe logs to ../exported\n" 2>&1 | tee -a transfer.log
+			mv $logfile exported/
+		else
+			printf "[`date "$date_format"`] lftp command failed, See above and transfer.log for details\n" 2>&1 | tee -a transfer.log
+		fi
+	fi
+
+	http_post_url=$(kernel_cmdline_extractor http_post_url)
+	if [ $? == 0 ]
+	then
+		printf "[`date "$date_format"`] Found http_post config on kernel command line in grub.cfg\n"
+		printf "[`date "$date_format"`] Executing users http_post request\n"
+		wget --method PUT --body-file="$logfile" "$http_post_url" -O - -nv >> wget.log
+		if [ $? == 0 ]
+		then
+			printf "[`date "$date_format"`] wget completed sucessfully\n"
+			printf "[`date "$date_format"`] moving nwipe logs to ../exported\n"
+			mv $logfile exported/
+		else
+			printf "[`date "$date_format"`] wget command failed, See above and wget.log for details\n"
+		fi
+	fi
+
+	output_protocol=""
+	output_ip=""
+	output_path=""
+	output_user=""
+	output_password=""
+	output_debug=""
+	output_file="nwipe.conf"
+
+	# Search /proc/cmdline for a command such as shredos_output="ftp:192.168.0.2:/home/joe/ftpdata/:jo:488993d:d"
+	# Format:
+	# shredos_output="protcol:IP_address:path:username:password:debug"
+	# where:
+	# protocol = ftp, tftp
+	# path     =
+	# username = username to access remote server, enter nothing between the colon delimiter and shredos will
+	#            interatively ask for a username at boot up. Enter 'no user' if the server does not require a
+	#            username.
+	# password = password to access remote server, enter nothing between the colon delimiter and shredos will
+	#            interatively ask for a password at boot up if using a protocol that supports authentication
+	#            such as ftp, stfp (but not tftp). Enter 'no password' if the server does not require a
+	#            password.
+	# debug    = enter 'd' to enable debug mode in some protocols. In ftp mode this enables a detailed log of
+	#            communication between ShredOS and the server. Only enable if you are trying to diagnose a
+	#            communication error. View the contents of /transfer.log for a transcript of communications.
+	#
+	# Example:
+	# A command to access a ftp server that has no authentication, writes to the default directory and is in debug
+	# mode and does not require a interative request for username/password would look like this.
+	# shredos_output="ftp:192.168.0.2::no user:no password:d"
+	#
+	# Adding a trailing :d tells the comms program to log in debug mode.
+	shredos_output_string=$(kernel_cmdline_extractor shredos_output)
+	if [ $? == 0 ]
+	then
+		printf "______________________________________________________________________________\n" 2>&1  | tee -a transfer.log
+		printf " Found the shredos_output command on the kernel cmdline line. The log entries \n" 2>&1  | tee -a transfer.log
+		printf " in this section show the status of the commands that send the PDF reports /  \n" 2>&1  | tee -a transfer.log
+		printf " certificates and nwipe log files to the user's remote server.                \n\n" 2>&1  | tee -a transfer.log
+
+		# Extract the individual fields from the from shredos_output=".."
+		output_protocol=$(echo "$shredos_output_string" | cut -d : -f 1 )
+		output_ip=$(echo "$shredos_output_string" | cut -d : -f 2 )
+		output_path=$(echo "$shredos_output_string" | cut -d : -f 3 )
+		output_user=$(echo "$shredos_output_string" | cut -d : -f 4 )
+		output_password=$(echo "$shredos_output_string" | cut -d : -f 5 )
+		output_debug=$(echo "$shredos_output_string" | cut -d : -f 6 )
+
+		# Integrity check: If the user puts anything other than d in the 6th column
+		# replace with an empty string. If user puts d in the 6th column replace with -d
+		if [[ "$output_debug" == "d" ]]
+		then
+			output_debug="-d"
+		else
+			output_debug=""
+		fi
+
+		printf "[`date "$date_format"`] Remote Server protocol = $output_protocol\n" 2>&1  | tee -a transfer.log
+		printf "[`date "$date_format"`] Remote Server IP = $output_ip\n" 2>&1 | tee -a transfer.log
+		printf "[`date "$date_format"`] Remote Server path = $output_path\n" 2>&1 | tee -a transfer.log
+
+                # Ping the ftp at 1 second intervals. Proceed as soon as a response is received
+                # If no response after 30 seconds proceed anyway and log a warning.
+                loop_count_total=30
+                output_server_status="offline"
+                while (( loop_count_total > 0 )); do
+                    ping -c1 $output_ip >> transfer.log 2>&1
+                    if test ${PIPESTATUS[0]} -eq 0
+                    then
+                        output_server_status="online"
+                        printf "[`date "$date_format"`] Server $output_ip online\n"
+                        break
+                    fi
+                    printf "[`date "$date_format"`] Waiting for ping response from sftp/ftp server, timeout in  $loop_count_total \r"
+                    ((loop_count_total--))
+                    sleep 1
+                    done
+                if (( $loop_count_total == 0 ))
+                then
+                    printf "\nsftp/ftp ping timout\n"
+                fi
+
+		if [[ "$output_server_status" == "online" ]]
+		then
+			# ***** FTP TRANSFER *****
+			#
+			# If the protocol in shredos_config=".." is tftp then read the remote nwipe.conf and customers.csv files
+			if [[ "$output_protocol" == "ftp" ]]
+			then
+				# loop through all nwipe pdf files
+				for pdf in *.pdf
+				do
+					lftp $output_debug -c "set xfer:clobber yes; open $output_ip; user $output_user $output_password; lcd /; cd $output_path; put -e $pdf; close" 2>&1 | tee -a transfer.log
+					if test ${PIPESTATUS[0]} -eq 0
+					then
+						printf "[`date "$date_format"`] Sent $pdf to ftp server $output_ip:$output_path\n" 2>&1 | tee -a transfer.log
+						mv $pdf exported/  2>&1 | tee -a transfer.log
+					else
+						printf "[`date "$date_format"`] Failed to send $pdf to ftp server $output_ip:$output_path\n" 2>&1 | tee -a transfer.log
+						transfer_status="FAIL"
+					fi
+				done
+
+				#loop through all the logs
+				for log in nwipe_log*.txt
+				do
+					lftp $output_debug -c "set xfer:clobber yes; open $output_ip; user $output_user $output_password; lcd /; cd $output_path; put -e $log; close" 2>&1 | tee -a transfer.log
+					if test ${PIPESTATUS[0]} -eq 0
+					then
+						printf "[`date "$date_format"`] Sent $log to ftp server $output_ip:$output_path\n" 2>&1 | tee -a transfer.log
+						mv $log exported/  2>&1 | tee -a transfer.log
+					else
+						printf "[`date "$date_format"`] Failed to send $log to ftp server $output_ip:$output_path\n" 2>&1 | tee -a transfer.log
+						transfer_status="FAIL"
+                                        fi
+				done
+			else
+				# ***** TFTP TRANSFER *****
+				#
+				if [[ "$output_protocol" == "tftp" ]]
+				then
+					# loop through all nwipe pdf files
+					for pdf in *.pdf
+					do
+						tftp $output_ip -v -m binary -c put $output_path/$pdf 2>&1 | tee -a transfer.log tftp_status.txt
+						more tftp_status.txt | grep -i "$tftp_errors"
+						if test ${PIPESTATUS[1]} -ne 0
+						then
+							printf "[`date "$date_format"`] Sent $pdf to tftp server $output_ip:$output_path\n\n" 2>&1 | tee -a transfer.log
+							mv $pdf exported/  2>&1 | tee -a transfer.log
+						else
+							printf "[`date "$date_format"`] FAILED to send $pdf to tftp server $output_ip:$output_path\n\n" 2>&1 | tee -a transfer.log
+							transfer_status="FAIL"
+						fi
+						rm tftp_status.txt
+					done
+
+					#loop through all the logs
+					for log in nwipe_log*.txt
+					do
+						tftp $output_ip -v -m binary -c put $output_path/$log 2>&1 | tee -a transfer.log tftp_status.txt
+						more tftp_status.txt | grep -i "$tftp_errors"
+						if test ${PIPESTATUS[1]} -ne 0
+						then
+							printf "[`date "$date_format"`] Sent $log to tftp server $output_ip:$output_path\n\n" 2>&1 | tee -a transfer.log
+							mv $log exported/  2>&1 | tee -a transfer.log
+						else
+							printf "[`date "$date_format"`] FAILED to send $log to tftp server $output_ip:$output_path\n\n" 2>&1 | tee -a transfer.log
+							transfer_status="FAIL"
+						fi
+						rm tftp_status.txt
+					done
+				fi
+			fi
+		else
+			printf "[`date "$date_format"`] Pinging $output_ip FAILED, Check RJ45 network connection\n" 2>&1 | tee -a transfer.log
+			transfer_status="FAIL"
+		fi
+	else
+		# if no shredos_output=".." on the kernel cmdline then assume we are booting from USB
+		#
+		# Now nwipe has exited, archive dmesg.txt, nwipe logs and PDF certificates to USB
+		# flash drive. This is done just in case there are any display issues and we want
+		# to take a look at the dmesg data.
+		#
+		# archive_log.sh -w also writes the /etc/nwipe/nwipe.conf and /etc/nwipe/customers.csv
+		# files to the USB flash drive from ShredOS's ram disc.
+		/usr/bin/archive_log.sh -w
+	fi
+
+	# If the config_ip was previously found on the kernel command line then
+	# write the config file and customers file to the tftp server.
+	#
+	if [[ "$shredos_config_cmd_exists" == "yes" ]]
+	then
+		printf "______________________________________________________________________________\n" 2>&1  | tee -a transfer.log
+		printf " The log entries in this section show the status of the commands that sent the\n" 2>&1  | tee -a transfer.log
+		printf " nwipe.conf, nwipe_customers.csv and dmesg.txt files to the user's remote     \n" 2>&1  | tee -a transfer.log
+		printf " server after nwipe has exited.                                               \n\n" 2>&1  | tee -a transfer.log
+
+		# ***** FTP TRANSFER *****
+		#
+		if [[ "$config_protocol" == "ftp" ]]; then
+			printf "[`date "$date_format"`] FTP protocol selected by the user\n" | tee -a transfer.log
+			lftp $output_debug -c "set xfer:clobber yes; open $config_ip; user $config_user $config_password; lcd /etc/nwipe; cd $config_path; put -e $config_file; close" 2>&1 | tee -a transfer.log
+			if test ${PIPESTATUS[0]} -eq 0
+			then
+				printf "[`date "$date_format"`] Sent nwipe.conf to ftp server $config_ip:$config_path\n\n" | tee -a transfer.log
+			else
+				printf "[`date "$date_format"`] FAILED to send nwipe.conf to ftp server $config_ip:$config_path\n\n" | tee -a transfer.log
+				transfer_status="FAIL"
+			fi
+
+			lftp $output_debug -c "set xfer:clobber yes; open $config_ip; user $config_user $config_password; lcd /etc/nwipe; cd $config_path; put -e $customers_file; close" 2>&1 | tee -a transfer.log
+			if test ${PIPESTATUS[0]} -eq 0
+			then
+				printf "[`date "$date_format"`] Sent customers.csv to ftp server $config_ip:$config_path\n\n" 2>&1 | tee -a transfer.log
+			else
+				printf "[`date "$date_format"`] FAILED to send customers.csv to ftp server $config_ip:$config_path\n\n" 2>&1 | tee -a transfer.log
+				transfer_status="FAIL"
+			fi
+
+			dmesg > dmesg.txt
+			lftp $output_debug -c "set xfer:clobber yes; open $config_ip; user $config_user $config_password; lcd /; cd $config_path; put -e $dmesg_file; close" 2>&1 | tee -a transfer.log
+			if [ ${PIPESTATUS[0]} -eq 0 ]
+			then
+				printf "[`date "$date_format"`] Sent dmesg.txt to ftp server $config_ip:$config_path\n\n" 2>&1 | tee -a transfer.log
+			else
+				printf "[`date "$date_format"`] FAILED to send dmesg.txt to ftp server $config_ip:$config_path\n\n" 2>&1 | tee -a transfer.log
+				transfer_status="FAIL"
+			fi
+
+			lftp $output_debug -c "set xfer:clobber yes; open $config_ip; user $config_user $config_password; lcd /; cd $config_path; put -e $transfer_log_file; close" 2>&1 | tee -a transfer.log
+			if [ ${PIPESTATUS[0]} -eq 0 ]
+			then
+				printf "[`date "$date_format"`] Sent $transfer_log_file to ftp server $config_ip:$config_path\n\n" 2>&1 | tee -a transfer.log
+			else
+				printf "[`date "$date_format"`] FAILED to send $transfer_log_file to ftp server $config_ip:$config_path\n\n" 2>&1 | tee -a transfer.log
+				transfer_status="FAIL"
+			fi
+		else
+			# ***** TFTP TRANSFER *****
+			#
+			if [[ "$config_protocol" == "tftp" ]]; then
+				printf "[`date "$date_format"`] TFTP protocol selected by the user\n" | tee -a transfer.log
+				tftp $config_ip -v -m binary -c put /etc/nwipe/$config_file $config_path/$config_file 2>&1 | tee -a transfer.log tftp_status.txt
+				more tftp_status.txt | grep -i "$tftp_errors"
+				if test ${PIPESTATUS[1]} -ne 0
+				then
+					printf "[`date "$date_format"`] Sent nwipe.conf to tftp server $config_ip:$config_path\n\n" | tee -a transfer.log
+				else
+					printf "[`date "$date_format"`] FAILED to send nwipe.conf to tftp server $config_ip:$config_path\n\n" | tee -a transfer.log
+					transfer_status="FAIL"
+				fi
+				rm tftp_status.txt
+
+				tftp $config_ip -v -m binary -c put /etc/nwipe/$customers_file $config_path/$customers_file 2>&1 | tee -a transfer.log tftp_status.txt
+				more tftp_status.txt | grep -i "$tftp_errors"
+				if test ${PIPESTATUS[1]} -ne 0
+				then
+					printf "[`date "$date_format"`] Sent customers.csv to tftp server $config_ip:$config_path\n\n" 2>&1 | tee -a transfer.log
+				else
+					printf "[`date "$date_format"`] FAILED to send customers.csv to tftp server $config_ip:$config_path\n\n" 2>&1 | tee -a transfer.log
+					transfer_status="FAIL"
+				fi
+                                rm tftp_status.txt
+
+				dmesg > dmesg.txt
+				tftp $config_ip -v -m binary -c put $config_path/$dmesg_file 2>&1 | tee -a transfer.log tftp_status.txt
+				more tftp_status.txt | grep -i "$tftp_errors"
+				if [ ${PIPESTATUS[1]} -ne 0 ]
+				then
+					printf "[`date "$date_format"`] Sent dmesg.txt to tftp server $config_ip:$config_path\n\n" 2>&1 | tee -a transfer.log
+				else
+					printf "[`date "$date_format"`] FAILED to send dmesg.txt to tftp server $config_ip:$config_path\n\n" 2>&1 | tee -a transfer.log
+					transfer_status="FAIL"
+				fi
+				rm tftp_status.txt
+
+				tftp $config_ip -v -m binary -c put $config_path/$transfer_log_file 2>&1 | tee -a transfer.log tftp_status.txt
+				more tftp_status.txt | grep -i "$tftp_errors"
+				if [ ${PIPESTATUS[1]} -ne 0 ]
+				then
+					printf "[`date "$date_format"`] Sent transfer.log to tftp server $config_ip:$config_path\n\n" 2>&1 | tee -a transfer.log
+				else
+					printf "[`date "$date_format"`] FAILED to send transfer.log to tftp server $config_ip:$config_path\n\n" 2>&1 | tee -a transfer.log
+					transfer_status="FAIL"
+				fi
+			fi
+		fi
+	fi
+		printf "______________________________________________________________________________\n" 2>&1  | tee -a transfer.log
+
+	# If the user has specified `shredos_autoreboot=enable` on the kernel command line
+	#
+	if [ "$autoreboot" == "enable" ]
+	then
+                if  [[ "$transfer_status" == "SUCCESS" ]]
+                then
+                        shutdown -r now
+                        # Waits while shutdown does it's stuff, without this sleep, the message above gets redisplayed.
+                        sleep 30
+                else
+                        printf "[`date "$date_format"`] Although auto reboot requested, a transfer error occurred, waiting for user to review transfer.log\n" 2>&1 | tee -a transfer.log
+                fi
+	fi
+
+	# If the user specified --autopoweroff as a nwipe option then shutdown now
+	#
+	if [ $autopoweroff == 1 ]
+	then
+                if  [[ "$transfer_status" == "SUCCESS" ]]
+                then
+                        init 0
+                else
+                        printf "[`date "$date_format"`] Although auto power off requested, a transfer error occurred, so wait for user to review transfer.log\n" 2>&1 | tee -a transfer.log
+                fi
+	fi
+
+	exitloop="1"
+	while [ "$exitloop" == "1" ]
+	do
+		printf ""
+
+                # Are there any *.pdf certificates left in the '/' of the shredos virtual drive? i.e. did transfer to USB
+                # or to a network server fail? If yes then change the 'reboot, shutdown, restart nwipe' message to include a
+                # option to archive to USB. So in the event of something going wrong, like the USB stick is missing or the
+                # network or server is offline, this allows the user to archive the certificates to a FAT formatted USB
+                # drive. Note once PDF files/logs have been sent to USB or network server they are moved from '/' to '/sent/'
+                # hence why we only search '/' for pdfs.
+                #
+                grep -i "Model" /*.pdf 2>/dev/null
+                if [ $? == 0 ]
+		then
+                    printf ">> WARNING << There are PDF's that have not been saved, plug in a USB drive\n"
+                    printf "              and press the 'a' key to archive to USB.\n\n"
+                    printf "Paused, press r=reboot, s=shutdown, a=archive to USB, spacebar=restart nwipe.\n"
+                    Final_message_plus=1
+                else
+                    printf "[GOOD] All PDFs and logs have been saved\n\n"
+                    printf "Paused.. press r to reboot, s to shutdown, spacebar to restart nwipe.\n"
+                    Final_message_plus=0
+                fi
+		printf ">"
+		read -rsn1 input
+		printf "\n"
+		case $input in
+			R)
+			printf "Reboot\n"
+			shutdown -r now
+			# Waits while shutdown does it's stuff, without this sleep, the message above gets redisplayed.
+			sleep 10
+			;;
+
+			S)
+			printf "Shutdown\n"
+			shutdown -h now
+			# Waits while shutdown does it's stuff, without this sleep, the message above gets redisplayed.
+			sleep 10
+			;;
+
+			A)
+			if [ $Final_message_plus == 1 ]
+			then
+                            # no need to tee the output of archive_log.sh, it's done in the script.
+                            archive_log.sh write
+                        fi
+                        ;;
+
+			'')
+			printf "Restart Nwipe\n"
+			exitloop="0"
+			;;
+
+			*)
+			printf "Unknown command?\n"
+			;;
+		esac
+	done
+	printf " >> Restarting Nwipe <<"
+	sleep 1
+done
+# end of never ending while loop
+

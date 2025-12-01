@@ -1,0 +1,2 @@
+tmux new-session \; splitw -p 33 \; splitw -t 0 -d \; splitw -h \; splitw -t 1 -h \; splitw -t 0 -h
+

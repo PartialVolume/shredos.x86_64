@@ -1,0 +1,30 @@
+#!/bin/sh                                                                                
+                                                                                         
+# trap the ctrl+c signal                                                                 
+trap "echo" INT                                                                          
+                                                                                         
+# Don't allow telnetd to start unless telnetd=enable exists                              
+# on the kernel command line. If it doesn't exist, S50telnet                             
+# is changed to D50telnet. The user can manually start the                               
+# telnetd process with /etc/init.d/D50telnet start                                       
+                                                                                         
+# initialise                                                                             
+telnetd_enable=""                                                                        
+                                                                                         
+# Rename the telnet init script so it doesn't start
+# That's the default. No telnet server, unless specifically
+# requested by the user by placing telnetd=enable on
+# the kernel command line.
+mv /etc/init.d/S50telnet /etc/init.d/D50telnet                                           
+                                                                                         
+# read the kernel command line for the telnetd label                                     
+telnetd_enable=$(kernel_cmdline_extractor telnetd)                                       
+if [ $? == 0 ]                                                                           
+then                                                                                     
+        # Only re-enable if explicitly requested.                                        
+        if [ "$telnetd_enable" == "enable" ]                                             
+        then                                                                             
+                mv /etc/init.d/D50telnet /etc/init.d/S50telnet                           
+        fi                                                                               
+fi
+

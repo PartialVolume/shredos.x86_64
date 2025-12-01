@@ -1,0 +1,33 @@
+#!/bin/bash
+#
+# Start the network using shredos_net.sh which handles
+# bringing the network up and down when the network
+# cable is plugged in or unplugged.
+#
+# Based on the buildroot version of S40network.
+#
+# Debian ifupdown needs the /run/network lock directory
+mkdir -p /run/network
+
+case "$1" in
+	start)
+		printf "Starting network with shredos_net.sh (hot plug): "
+		nohup /usr/bin/shredos_net.sh &
+		[ $? = 0 ] && echo "OK" || echo "FAIL"
+		;;
+	stop)
+		printf "Stopping network: "
+		/sbin/ifdown -a
+		[ $? = 0 ] && echo "OK" || echo "FAIL"
+		;;
+	restart|reload)
+		"$0" stop
+		"$0" start
+		;;
+	*)
+		echo "Usage: $0 {start|stop|restart}"
+		exit 1
+esac
+
+exit $?
+
