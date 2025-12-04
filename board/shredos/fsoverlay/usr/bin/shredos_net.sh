@@ -1,173 +1,183 @@
 #!/bin/bash
 #
-# Determine all the network devices, i.e those devices that start with
-# 'en' (ethernet) or wl (wifi) and then populate /etc/network/interfaces
-# with those devices set up as DHCP hot plug. We then monitor the link
-# state (whether the ethernet cable is connected).
+# ShredOS network setup & simple hotplug (Realtek-friendly)
 #
-version=1.1-211123-1901
+# - Brings loopback and at most ONE Ethernet interface up via DHCP
+# - Gentle hotplug: reacts only on link state changes
+# - Workaround for OOM issues with Realtek drivers:
+#   * slower polling interval
+#   * limit ifup retries per interface
+#   * avoid endless ifup/ifdown loops
 #
-# Forcefully shutdown all network interfaces if any are up
-ifdown -f -a
+version=1.2-workaround-rlk-oom
 
-# Bring up loopback device
-ifup lo
+set -u
 
-# delete the existing non populated interfaces file
-rm /etc/network/interfaces
+# ------------------------------------------------------------
+# Helper: read from sysfs without spawning "more" or "cat"
+# ------------------------------------------------------------
+read_sysfs() {
+    local path="$1"
+    if [[ -r "$path" ]]; then
+        local v
+        v=$(< "$path" 2>/dev/null)
+        printf '%s\n' "$v"
+    else
+        printf '%s\n' ""
+    fi
+}
 
-# Re-create the interfaces file starting with the loopback device
-echo "auto lo" > /etc/network/interfaces
-echo "iface lo inet loopback" >> /etc/network/interfaces
-echo "" >> /etc/network/interfaces
+# ------------------------------------------------------------
+# Option: completely disable networking
+# Kernel cmdline flags: "nonet" or "shredos_nonet"
+# ------------------------------------------------------------
+if grep -Eq '(^| )nonet(=| |$)|(^| )shredos_nonet(=| |$)' /proc/cmdline 2>/dev/null; then
+    ifdown -f -a >/dev/null 2>&1 || true
+    ifup lo >/dev/null 2>&1 || true
+    echo "[INFO] Network disabled via kernel cmdline (nonet/shredos_nonet)."
+    exit 0
+fi
 
-# Create a list of all network devices
-net_devices=$(ls -1 /sys/class/net)
+# ------------------------------------------------------------
+# Bring everything down, then loopback up
+# ------------------------------------------------------------
+ifdown -f -a >/dev/null 2>&1 || true
+ifup lo >/dev/null 2>&1 || true
 
+# ------------------------------------------------------------
+# Rebuild /etc/network/interfaces
+# ------------------------------------------------------------
+rm -f /etc/network/interfaces
+
+{
+    echo "auto lo"
+    echo "iface lo inet loopback"
+    echo
+} > /etc/network/interfaces
+
+net_devices=$(ls -1 /sys/class/net 2>/dev/null || echo "")
 active_device="none"
 
-# Populate /etc/network/interfaces with each network device if ethernet or wifi
-for device in $net_devices
-do
-	# We are only interested in ethernet enxxxx or ethxx devices
-	if [[ "$device" == en* ]] || [[ "$device" == et* ]]
-	then
-		echo "auto $device" >> /etc/network/interfaces
-		echo "iface $device inet dhcp" >> /etc/network/interfaces
-	fi
+for device in $net_devices; do
+    # Only Ethernet devices: en* or eth*
+    if [[ "$device" == en* || "$device" == eth* ]]; then
+        {
+            echo "auto $device"
+            echo "iface $device inet dhcp"
+            echo
+        } >> /etc/network/interfaces
+    fi
 done
 
-# Check for existing active ethernet devices and set active_device variable
-for device in $net_devices
-do
-	# We're only interested in ethernet enxxxx or ethxx devices
-	if [[ "$device" == en* ]] || [[ "$device" == et* ]]
-	then
-		# initial creation of device operstate and status variables for
-		# each network device, indirectly referenced so you won't see
-		# those variable names in this code, but even so they are there.
-		# Variable such as enp6s0_operstate, enp6s0_carrier, enp6s0_status
-		# are created for each device.
+# ------------------------------------------------------------
+# Per-device state (bash associative arrays)
+# ------------------------------------------------------------
+declare -A last_operstate
+declare -A last_carrier
+declare -A last_status       # "up" / "down"
+declare -A ifup_failures     # number of ifup failures
+declare -A disabled          # 0 = active, 1 = do not touch anymore
 
-		device_operstate="$device"_operstate
-		device_status="$device"_status
-		device_carrier="$device"_carrier
-		
-		# no need to check the return status, whether it works or not we need
-		# to initialise the device statuses.
-#		ifdown $device
+# Initial state and one-shot bring-up for first device with carrier
+for device in $net_devices; do
+    [[ "$device" != en* && "$device" != eth* ]] && continue
 
-		# Obtain network device link status
-		eval "$device_operstate"=$(more /sys/class/net/$device/operstate)
-		eval device_operstate_result="\${$device_operstate}"
+    operstate=$(read_sysfs "/sys/class/net/$device/operstate")
+    [[ -z "$operstate" ]] && operstate="down"
 
-		# If the device link status is up record the current state
-		if [ $device_operstate_result == "up" ];
-		then
-			eval "$device_status"="up"
-			echo "[OK] $device is up"
-			active_device="$device"
-		else
-			eval "$device_status"="down"
-			echo "[OK] $device is down"
-			if [ "$active_device" == "$device" ];
-			then
-				active_device="none"
-			fi
-		fi
-	fi
+    carrier=$(read_sysfs "/sys/class/net/$device/carrier")
+    # Only "0" or "1" make sense here; treat everything else as "0"
+    [[ "$carrier" != "1" ]] && carrier="0"
+
+    last_operstate["$device"]="$operstate"
+    last_carrier["$device"]="$carrier"
+    last_status["$device"]="down"
+    ifup_failures["$device"]=0
+    disabled["$device"]=0
+
+    # First device with carrier=1 gets a one-shot ifup
+    if [[ "$active_device" == "none" && "$carrier" == "1" ]]; then
+        if ifup "$device" >/dev/null 2>&1; then
+            last_status["$device"]="up"
+            active_device="$device"
+            echo "[OK] $device is up (initial DHCP)."
+        else
+            ifup_failures["$device"]=1
+            echo "[WARN] $device initial ifup failed."
+        fi
+    fi
 done
 
-# Now Monitor the link status of each network device
-# If we lose the link status 'down' then we bring down that network
-# device. ie it's association with an IPv4/IPv6 address is removed.
-# When the link status is 'up' then we bring the network back up
-# which means we request a IP address via DHCP. This is therefore
-# acting as a hotplug for ethernet. We only need one active ethernet
-# connection, so on a system with multiple ethernet points as soon
-# as one is active and succesfully retrieves a IP addres via DHCP we
-# no longer try to bring the rest up.
-#
+if [[ "$net_devices" == "" ]]; then
+    echo "[INFO] No network devices found."
+fi
 
-while [ 1 ];
-do
-	for device in $net_devices
-	do
+# ------------------------------------------------------------
+# Hotplug monitor
+# - Poll every 5 seconds
+# - Only act on state changes
+# - Max 3 ifup attempts per device
+# ------------------------------------------------------------
+while :; do
+    for device in $net_devices; do
+        [[ "$device" != en* && "$device" != eth* ]] && continue
+        [[ "${disabled[$device]}" -eq 1 ]] && continue
 
-		# We're only interested in ethernet enxxxx or ethxx devices
-        	if [[ "$device" == en* ]] || [[ "$device" == eth* ]]
-        	then
+        # Only manage one active device at a time
+        if [[ "$active_device" != "$device" && "$active_device" != "none" ]]; then
+            continue
+        fi
 
-			# and we are only interested in one device being active at any one time
-        	if [ "$active_device" == "$device" ] || [ "$active_device" == "none" ];
-        	then
-				# Obtain network device link status and carrier states
-				device_operstate="$device"_operstate
-				eval "$device_operstate"=$(more /sys/class/net/$device/operstate)
-				eval device_operstate_result="\${$device_operstate}"
+        operstate=$(read_sysfs "/sys/class/net/$device/operstate")
+        [[ -z "$operstate" ]] && operstate="down"
 
-				device_carrier="$device"_carrier
-				eval "$device_carrier"=$(more /sys/class/net/$device/carrier)
-				eval device_carrier_result="\${$device_carrier}"
+        carrier=$(read_sysfs "/sys/class/net/$device/carrier")
+        [[ "$carrier" != "1" ]] && carrier="0"
 
-				device_status="$device"_status
-				eval device_status_result="\${$device_status}"
+        prev_oper="${last_operstate[$device]}"
+        prev_carrier="${last_carrier[$device]}"
+        status="${last_status[$device]}"
+        fails="${ifup_failures[$device]}"
 
-#				eval echo "device=$device, status=""\${$device_status}"", device_operstate_result=$device_operstate_result, device_carrier_result=$device_carrier_result, device_status_result=$device_status_result"
+        # Only do something if anything changed
+        if [[ "$operstate" != "$prev_oper" || "$carrier" != "$prev_carrier" ]]; then
+            last_operstate["$device"]="$operstate"
+            last_carrier["$device"]="$carrier"
 
-				if [[ $device_carrier_result != 1 ]];
-				then
-					if [[ $device_carrier_result != 0 ]];
-					then
-						ifup $device
-						if [ $? == 0 ];
-						then
-							eval "$device_status"="up"
-							echo "[OK] $device is up"
-							active_device="$device"
-						else
-							eval "$device_status"="down"
-							echo "[FAIL] $device ifup failed"
-							if [ "$active_device" == "$device" ];
-							then
-								active_device="none"
-							fi
-						fi
-					fi
-				fi	
+            # Carrier went 0 -> 1 and interface is down: try ifup
+            if [[ "$carrier" == "1" && "$status" == "down" && "$fails" -lt 3 ]]; then
+                if ifup "$device" >/dev/null 2>&1; then
+                    last_status["$device"]="up"
+                    active_device="$device"
+                    echo "[OK] $device is up (carrier on)."
+                    ifup_failures["$device"]=0
+                else
+                    fails=$((fails + 1))
+                    ifup_failures["$device"]="$fails"
+                    echo "[WARN] $device ifup failed ($fails/3)."
+                    if [[ "$fails" -ge 3 ]]; then
+                        disabled["$device"]=1
+                        echo "[WARN] $device disabled after repeated ifup failures."
+                        [[ "$active_device" == "$device" ]] && active_device="none"
+                    fi
+                fi
+            fi
 
-				if [[ $device_operstate_result == down ]];
-				then
-					if [[ $device_status_result == up ]];
-					then
-						ifdown -f $device
-						if [ $? == 0 ];
-						then
-							eval "$device_status"="down"
-							echo "[OK] $device is down"
-						else
-							echo "[FAIL] $device ifdown failed"
-						fi
-					fi
-				else
-					if [[ $device_status_result == down ]];
-					then
-						ifup $device
-						if [ $? == 0 ];
-						then
-							eval "$device_status"="up"
-							echo "[OK] $device is up"
-						else
-							echo "[FAIL] $device ifup failed"
-						fi
-					fi
-				fi
-			fi
-		fi
-	done
-	
-	# Never remove this sleep statement ! Could be changed to 1 second for
-	# a less responsive hotplug, however 0.5 seconds provides sufficient
-	# responsiveness while not wasting CPU cycles.
-	sleep 0.5
+            # operstate went to "down" and interface was up: bring it down
+            if [[ "$operstate" == "down" && "$status" == "up" ]]; then
+                if ifdown -f "$device" >/dev/null 2>&1; then
+                    last_status["$device"]="down"
+                    echo "[OK] $device is down (operstate down)."
+                    if [[ "$active_device" == "$device" ]]; then
+                        active_device="none"
+                    fi
+                else
+                    echo "[WARN] $device ifdown failed."
+                fi
+            fi
+        fi
+    done
+
+    # Less aggressive polling to avoid stressing drivers
+    sleep 5
 done
