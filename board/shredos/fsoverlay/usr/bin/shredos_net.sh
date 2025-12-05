@@ -5,7 +5,7 @@
 # with those devices set up as DHCP hot plug. We then monitor the link
 # state (whether the ethernet cable is connected).
 #
-version=1.1-211123-1901
+version=1.2-251205-0017
 #
 # Forcefully shutdown all network interfaces if any are up
 ifdown -f -a
@@ -52,10 +52,21 @@ do
 		device_operstate="$device"_operstate
 		device_status="$device"_status
 		device_carrier="$device"_carrier
-		
+		device_carrier_up_count="$device"_carrier_up_count
+		device_carrier_down_count="$device"_carrier_down_count
+
+ 		# Keep a record of the previous carrier up and down counts so
+		# we know if anything has changed and can take the appropriate action
+		device_carrier_up_count="$device"_carrier_up_count
+		eval "$device_carrier_up_count"=$(more /sys/class/net/$device/carrier_up_count)
+		eval device_carrier_up_count_previous_result="\${$device_carrier_up_count}"
+
+		device_carrier_down_count="$device"_carrier_down_count
+		eval "$device_carrier_down_count"=$(more /sys/class/net/$device/carrier_down_count)
+		eval device_carrier_down_count_previous_result="\${$device_carrier_down_count}"
+
 		# no need to check the return status, whether it works or not we need
 		# to initialise the device statuses.
-#		ifdown $device
 
 		# Obtain network device link status
 		eval "$device_operstate"=$(more /sys/class/net/$device/operstate)
@@ -74,15 +85,33 @@ do
 			then
 				active_device="none"
 			fi
+			ifup $device
+			if [ $? == 0 ];
+			then
+				eval "$device_status"="up"
+				echo "[OK] $device is up"
+				active_device="$device"
+			else
+				eval "$device_status"="down"
+				echo "[FAIL] $device ifup failed"
+				if [ "$active_device" == "$device" ];
+				then
+					active_device="none"
+				fi
+			fi
 		fi
 	fi
 done
 
-# Now Monitor the link status of each network device
-# If we lose the link status 'down' then we bring down that network
-# device. ie it's association with an IPv4/IPv6 address is removed.
-# When the link status is 'up' then we bring the network back up
-# which means we request a IP address via DHCP. This is therefore
+# Now Monitor the carrier up down values of each network device
+# If carrier up or down changes, i.e. the network lead is unplugged
+# then we bring down that network device. It's association with an
+# IPv4/IPv6 address is removed. We then bring the interface back up,
+# even though no network lead may not be plugged in.
+#
+# When the link status is 'up' then we issue an ifup to makesure
+# its up. As it most likely is, it will say device already configured.
+# An IP address is requested via the DHCP protocol. This is therefore
 # acting as a hotplug for ethernet. We only need one active ethernet
 # connection, so on a system with multiple ethernet points as soon
 # as one is active and succesfully retrieves a IP addres via DHCP we
@@ -94,73 +123,70 @@ do
 	for device in $net_devices
 	do
 
-		# We're only interested in ethernet enxxxx or ethxx devices
+			# We're only interested in ethernet enxxxx or ethxx devices
         	if [[ "$device" == en* ]] || [[ "$device" == eth* ]]
         	then
 
-			# and we are only interested in one device being active at any one time
-        	if [ "$active_device" == "$device" ] || [ "$active_device" == "none" ];
-        	then
+				# and we are only interested in one device being active at any one time
+        		if [ "$active_device" == "$device" ] || [ "$active_device" == "none" ];
+        		then
+
 				# Obtain network device link status and carrier states
 				device_operstate="$device"_operstate
 				eval "$device_operstate"=$(more /sys/class/net/$device/operstate)
 				eval device_operstate_result="\${$device_operstate}"
 
-				device_carrier="$device"_carrier
-				eval "$device_carrier"=$(more /sys/class/net/$device/carrier)
-				eval device_carrier_result="\${$device_carrier}"
+				device_carrier_up_count="$device"_carrier_up_count
+				eval "$device_carrier_up_count"=$(more /sys/class/net/$device/carrier_up_count)
+				eval device_carrier_up_count_result="\${$device_carrier_up_count}"
+
+				device_carrier_down_count="$device"_carrier_down_count
+				eval "$device_carrier_down_count"=$(more /sys/class/net/$device/carrier_down_count)
+				eval device_carrier_down_count_result="\${$device_carrier_down_count}"
 
 				device_status="$device"_status
 				eval device_status_result="\${$device_status}"
 
-#				eval echo "device=$device, status=""\${$device_status}"", device_operstate_result=$device_operstate_result, device_carrier_result=$device_carrier_result, device_status_result=$device_status_result"
-
-				if [[ $device_carrier_result != 1 ]];
+				if [ $device_carrier_down_count_previous_result != $device_carrier_down_count_result ];
 				then
-					if [[ $device_carrier_result != 0 ]];
+					ifdown -f $device
+					if [ $? == 0 ];
 					then
-						ifup $device
-						if [ $? == 0 ];
-						then
-							eval "$device_status"="up"
-							echo "[OK] $device is up"
-							active_device="$device"
-						else
-							eval "$device_status"="down"
-							echo "[FAIL] $device ifup failed"
-							if [ "$active_device" == "$device" ];
-							then
-								active_device="none"
-							fi
-						fi
+						eval "$device_status"="down"
+						echo "[OK] $device is down"
+					else
+						echo "[FAIL] $device ifdown failed"
 					fi
-				fi	
+					device_carrier_down_count="$device"_carrier_down_count
+					eval "$device_carrier_down_count"=$(more /sys/class/net/$device/carrier_down_count)
+					eval device_carrier_down_count_previous_result="\${$device_carrier_down_count}"
 
-				if [[ $device_operstate_result == down ]];
+					# After the carrier is lost and the interface brought down, bring it back up
+					# so DHCP requests will be issued as soon as it's plugged back in.
+					ifup $device
+					if [ $? == 0 ];
+					then
+						eval "$device_status"="up"
+						echo "[OK] $device is up"
+					else
+						echo "[FAIL] $device ifup failed"
+					fi
+				fi
+
+				if [ $device_carrier_up_count_previous_result != $device_carrier_up_count_result ];
 				then
-					if [[ $device_status_result == up ]];
+					ifup $device
+					if [ $? == 0 ];
 					then
-						ifdown -f $device
-						if [ $? == 0 ];
-						then
-							eval "$device_status"="down"
-							echo "[OK] $device is down"
-						else
-							echo "[FAIL] $device ifdown failed"
-						fi
+						eval "$device_status"="up"
+						echo "[OK] $device is up"
+					else
+						echo "[FAIL] $device ifup failed"
 					fi
-				else
-					if [[ $device_status_result == down ]];
-					then
-						ifup $device
-						if [ $? == 0 ];
-						then
-							eval "$device_status"="up"
-							echo "[OK] $device is up"
-						else
-							echo "[FAIL] $device ifup failed"
-						fi
-					fi
+					# update previous carrier up count value
+					device_carrier_up_count="$device"_carrier_up_count
+					eval "$device_carrier_up_count"=$(more /sys/class/net/$device/carrier_up_count)
+					eval device_carrier_up_count_previous_result="\${$device_carrier_up_count}"
 				fi
 			fi
 		fi
