@@ -13,6 +13,15 @@ ifdown -f -a
 # Bring up loopback device
 ifup lo
 
+# ------------------------------------------------------------
+# Option: completely disable networking
+# Kernel cmdline flags: "nonet" or "shredos_nonet"
+# ------------------------------------------------------------
+if grep -Eq '(^| )nonet(=| |$)|(^| )shredos_nonet(=| |$)' /proc/cmdline 2>/dev/null; then
+    echo "[INFO] Network disabled via kernel cmdline (nonet/shredos_nonet)."
+    exit 0
+fi
+
 # delete the existing non populated interfaces file
 rm /etc/network/interfaces
 
