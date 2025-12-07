@@ -7,24 +7,12 @@
 #
 ################################################################################
 
-# Download method commands
-export CURL := $(call qstrip,$(BR2_CURL))
-export WGET := $(call qstrip,$(BR2_WGET))
-export SVN := $(call qstrip,$(BR2_SVN))
-export CVS := $(call qstrip,$(BR2_CVS))
-export BZR := $(call qstrip,$(BR2_BZR))
-export GIT := $(call qstrip,$(BR2_GIT))
-export HG := $(call qstrip,$(BR2_HG))
-export SCP := $(call qstrip,$(BR2_SCP))
-export SFTP := $(call qstrip,$(BR2_SFTP))
-export LOCALFILES := $(call qstrip,$(BR2_LOCALFILES))
-
 # Version of the format of the archives we generate in the corresponding
 # download backend and post-process:
 BR_FMT_VERSION_git = -git4
 BR_FMT_VERSION_svn = -svn5
 BR_FMT_VERSION_go = -go2
-BR_FMT_VERSION_cargo = -cargo2
+BR_FMT_VERSION_cargo = -cargo4
 
 DL_WRAPPER = support/download/dl-wrapper
 
@@ -39,7 +27,7 @@ else
 BR2_DL_DIR = $(DL_DIR)
 endif
 
-# ensure it exists and a absolute path, derefrecing symlinks
+# ensure it exists and a absolute path, dereferencing symlinks
 DL_DIR := $(shell mkdir -p $(DL_DIR) && cd $(DL_DIR) >/dev/null && pwd -P)
 
 #
@@ -118,6 +106,16 @@ define DOWNLOAD
 	$(Q)$(DOWNLOAD_SET_UMASK) $(EXTRA_ENV) \
 	$($(PKG)_DL_ENV) \
 	TAR="$(TAR)" \
+	BZR="$(call qstrip,$(BR2_BZR))" \
+	CURL="$(call qstrip,$(BR2_CURL))" \
+	CVS="$(call qstrip,$(BR2_CVS))" \
+	GIT="$(call qstrip,$(BR2_GIT))" \
+	HG="$(call qstrip,$(BR2_HG))" \
+	LOCALFILES="$(call qstrip,$(BR2_LOCALFILES))" \
+	SCP="$(call qstrip,$(BR2_SCP))" \
+	SFTP="$(call qstrip,$(BR2_SFTP))" \
+	SVN="$(call qstrip,$(BR2_SVN))" \
+	WGET="$(call qstrip,$(BR2_WGET))" \
 	BR_NO_CHECK_HASH_FOR="$(if $(BR2_DOWNLOAD_FORCE_CHECK_HASHES),,$(BR_NO_CHECK_HASH_FOR))" \
 		flock $($(PKG)_DL_DIR)/.lock $(DL_WRAPPER) \
 		-c '$($(PKG)_DL_VERSION)' \

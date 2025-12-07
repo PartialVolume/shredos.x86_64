@@ -4,9 +4,9 @@
 #
 ################################################################################
 
-IGT_GPU_TOOLS_VERSION = 0ee4074685c1e184f2d3612ea6eb4d126f9a2e23
-IGT_GPU_TOOLS_SOURCE = igt-gpu-tools-$(IGT_GPU_TOOLS_VERSION).tar.bz2
-IGT_GPU_TOOLS_SITE = https://gitlab.freedesktop.org/drm/igt-gpu-tools/-/archive/$(IGT_GPU_TOOLS_VERSION)
+IGT_GPU_TOOLS_VERSION = 2.2
+IGT_GPU_TOOLS_SOURCE = igt-gpu-tools-$(IGT_GPU_TOOLS_VERSION).tar.xz
+IGT_GPU_TOOLS_SITE = https://www.x.org/releases/individual/app
 IGT_GPU_TOOLS_LICENSE = MIT
 IGT_GPU_TOOLS_LICENSE_FILES = COPYING
 IGT_GPU_TOOLS_INSTALL_STAGING = YES
@@ -24,8 +24,13 @@ IGT_GPU_TOOLS_DEPENDENCIES = \
 	zlib
 
 IGT_GPU_TOOLS_CONF_OPTS = \
-	-Dchamelium=disabled \
-	-Dtests=disabled
+	-Dchamelium=disabled
+
+ifeq ($(BR2_PACKAGE_IGT_GPU_TOOLS_TESTS),y)
+IGT_GPU_TOOLS_CONF_OPTS += -Dtests=enabled
+else
+IGT_GPU_TOOLS_CONF_OPTS += -Dtests=disabled
+endif
 
 # On x86 systems, libigt resolves igt_half_to_float and igt_float_to_half as
 # indirect functions at runtime by checking CPU features with igt_x86_features.

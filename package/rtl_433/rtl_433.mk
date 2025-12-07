@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-RTL_433_VERSION = 23.11
+RTL_433_VERSION = 25.02
 RTL_433_SITE = $(call github,merbanan,rtl_433,$(RTL_433_VERSION))
 RTL_433_LICENSE = GPL-2.0+
 RTL_433_LICENSE_FILES = COPYING
@@ -17,6 +17,9 @@ RTL_433_CONF_OPTS = \
 	-DBUILD_TESTING=OFF \
 	-DBUILD_TESTING_ANALYZER=OFF \
 	-DENABLE_SOAPYSDR=OFF
+
+# do not include Buildroot git info in version output
+RTL_433_CONF_ENV = GIT_DIR=.
 
 ifeq ($(BR2_PACKAGE_LIBRTLSDR),y)
 RTL_433_DEPENDENCIES += librtlsdr

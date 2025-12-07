@@ -1,6 +1,0 @@
-config BR2_PACKAGE_SHREDOS
-        bool "shredos"
-        help
-          Shredos 
-
-comment "shredos"

@@ -16,11 +16,22 @@ COMPILER_RT_SUPPORTS_IN_SOURCE_BUILD = NO
 COMPILER_RT_INSTALL_STAGING = YES
 COMPILER_RT_INSTALL_TARGET = NO
 
-COMPILER_RT_CONF_OPTS=-DCOMPILER_RT_STANDALONE_BUILD=OFF \
+COMPILER_RT_EXTRA_DOWNLOADS = third-party-$(COMPILER_RT_VERSION).src.tar.xz
+
+define COMPILER_RT_THIRD_PARTY_EXTRACT
+	$(call suitable-extractor,$(notdir $(COMPILER_RT_EXTRA_DOWNLOADS))) \
+		$(COMPILER_RT_DL_DIR)/$(notdir $(COMPILER_RT_EXTRA_DOWNLOADS)) | \
+		$(TAR) -C $(@D) $(TAR_OPTIONS) -
+endef
+COMPILER_RT_POST_EXTRACT_HOOKS += COMPILER_RT_THIRD_PARTY_EXTRACT
+
+COMPILER_RT_CONF_OPTS = \
 	-DCOMPILER_RT_STANDALONE_BUILD=ON \
 	-DCOMPILER_RT_DEFAULT_TARGET_TRIPLE=$(GNU_TARGET_NAME) \
 	-DLLVM_CONFIG_PATH=$(HOST_DIR)/bin/llvm-config \
-	-DCMAKE_MODULE_PATH=$(HOST_DIR)/lib/cmake/llvm
+	-DCMAKE_MODULE_PATH=$(HOST_DIR)/lib/cmake/llvm \
+	-DLLVM_THIRD_PARTY_DIR=$(@D)/third-party-$(COMPILER_RT_VERSION).src \
+	-DLLVM_COMMON_CMAKE_UTILS=$(HOST_DIR)/lib/cmake/llvm
 
 # The installation of the target runtime libraries defaults to DESTDIR, however
 # host-clang resources directory needs a link so Clang can find the runtime
@@ -29,9 +40,9 @@ COMPILER_RT_CONF_OPTS=-DCOMPILER_RT_STANDALONE_BUILD=OFF \
 # assumed, as compiler-rt is usually build at the same time as Clang and not
 # standalone.
 define COMPILER_RT_SETUP_RUNTIME_LIBS
-	mkdir -p $(HOST_DIR)/lib/clang/$(HOST_CLANG_VERSION)/lib
-	ln -sf ../../../../$(GNU_TARGET_NAME)/sysroot/usr/lib/linux $(HOST_DIR)/lib/clang/$(HOST_CLANG_VERSION)/lib/linux
-	ln -sf ../../../../$(GNU_TARGET_NAME)/sysroot/usr/share $(HOST_DIR)/lib/clang/$(HOST_CLANG_VERSION)/share
+	mkdir -p $(HOST_DIR)/lib/clang/$(CLANG_VERSION_MAJOR)/lib
+	ln -sf ../../../../$(GNU_TARGET_NAME)/sysroot/usr/lib/linux $(HOST_DIR)/lib/clang/$(CLANG_VERSION_MAJOR)/lib/linux
+	ln -sf ../../../../$(GNU_TARGET_NAME)/sysroot/usr/share $(HOST_DIR)/lib/clang/$(CLANG_VERSION_MAJOR)/share
 endef
 COMPILER_RT_POST_INSTALL_STAGING_HOOKS += COMPILER_RT_SETUP_RUNTIME_LIBS
 

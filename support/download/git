@@ -22,6 +22,7 @@ set -e
 #   GIT      : the git command to call
 
 # shellcheck disable=SC1090 # Only provides mk_tar_gz()
+# shellcheck disable=SC1091
 . "${0%/*}/helpers"
 
 # Save our path and options in case we need to call ourselves again
@@ -91,6 +92,7 @@ _git() {
 # Note: please keep command below aligned with what is printed above
 _plain_git() {
     # shellcheck disable=SC2086 # We want word-splitting for GIT
+    # shellcheck disable=SC2294
     eval GIT_DIR="${git_cache}/.git" ${GIT} "${@}"
 }
 
@@ -131,8 +133,8 @@ fi
 _git remote set-url origin "'${uri}'"
 
 printf "Fetching all references\n"
-_git fetch origin
-_git fetch origin -t -f
+_git fetch "${@}" origin
+_git fetch "${@}" origin -t -f
 
 # Try to get the special refs exposed by some forges (pull-requests for
 # github, changes for gerrit...). There is no easy way to know whether
@@ -141,7 +143,7 @@ _git fetch origin -t -f
 # below, if there is an issue anyway. Since most of the cset we're gonna
 # have to clone are not such special refs, consign the output to oblivion
 # so as not to alarm unsuspecting users, but still trace it as a warning.
-if ! _git fetch origin "'${cset}:${cset}'" >/dev/null 2>&1; then
+if ! _git fetch "${@}" origin "'${cset}:${cset}'" >/dev/null 2>&1; then
     printf "Could not fetch special ref '%s'; assuming it is not special.\n" "${cset}"
 fi
 

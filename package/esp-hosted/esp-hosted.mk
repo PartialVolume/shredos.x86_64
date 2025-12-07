@@ -4,11 +4,12 @@
 #
 ################################################################################
 
-ESP_HOSTED_VERSION = 91b093365cc58214532b976dd8749f65523d1e6d
-ESP_HOSTED_SITE = $(call github,espressif,esp-hosted,$(ESP_HOSTED_VERSION))
+ESP_HOSTED_VERSION = 1.0.4.0.0
+ESP_HOSTED_SITE = $(call github,espressif,esp-hosted,release/ng-v$(ESP_HOSTED_VERSION))
+ESP_HOSTED_SOURCE = ng-v$(ESP_HOSTED_VERSION).tar.gz
 ESP_HOSTED_DEPENDENCIES = linux
 ESP_HOSTED_LICENSE = GPL-2.0
-ESP_HOSTED_LICENSE_FILE = LICENSE
+ESP_HOSTED_LICENSE_FILES = esp_hosted_ng/host/LICENSE
 ESP_HOSTED_MODULE_SUBDIRS = esp_hosted_ng/host
 
 define ESP_HOSTED_LINUX_CONFIG_FIXUPS

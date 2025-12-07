@@ -7,15 +7,16 @@ class TestZfsBase(infra.basetest.BRTest):
     timeout = 60 * 3
     config = \
         """
-        BR2_x86_64=y
-        BR2_x86_corei7=y
+        BR2_aarch64=y
         BR2_TOOLCHAIN_EXTERNAL=y
+        BR2_TOOLCHAIN_EXTERNAL_BOOTLIN=y
+        BR2_TARGET_GENERIC_GETTY_PORT="ttyAMA0"
         BR2_ROOTFS_DEVICE_CREATION_DYNAMIC_EUDEV=y
         BR2_LINUX_KERNEL=y
         BR2_LINUX_KERNEL_CUSTOM_VERSION=y
-        BR2_LINUX_KERNEL_CUSTOM_VERSION_VALUE="5.15.35"
+        BR2_LINUX_KERNEL_CUSTOM_VERSION_VALUE="6.12.9"
         BR2_LINUX_KERNEL_USE_CUSTOM_CONFIG=y
-        BR2_LINUX_KERNEL_CUSTOM_CONFIG_FILE="board/qemu/x86_64/linux.config"
+        BR2_LINUX_KERNEL_CUSTOM_CONFIG_FILE="board/qemu/aarch64-virt/linux.config"
         BR2_LINUX_KERNEL_NEEDS_HOST_LIBELF=y
         BR2_PACKAGE_ZFS=y
         BR2_PACKAGE_PYTHON3=y
@@ -28,13 +29,14 @@ class TestZfsBase(infra.basetest.BRTest):
         """
 
     def base_test_run(self):
-        kernel = os.path.join(self.builddir, "images", "bzImage")
+        kernel = os.path.join(self.builddir, "images", "Image")
         cpio_file = os.path.join(self.builddir, "images", "rootfs.cpio")
         self.emulator.boot(
-            arch="x86_64",
+            arch="aarch64",
             kernel=kernel,
-            kernel_cmdline=["console=ttyS0"],
-            options=["-cpu", "Nehalem", "-m", "320", "-initrd", cpio_file],
+            kernel_cmdline=["console=ttyAMA0"],
+            options=["-M", "virt", "-cpu", "cortex-a57", "-m", "320M",
+                     "-initrd", cpio_file],
         )
         self.emulator.login()
 
@@ -64,7 +66,7 @@ class TestZfsBase(infra.basetest.BRTest):
 class TestZfsGlibc(TestZfsBase):
     config = TestZfsBase.config + \
         """
-        BR2_TOOLCHAIN_EXTERNAL_BOOTLIN_X86_64_CORE_I7_GLIBC_STABLE=y
+        BR2_TOOLCHAIN_EXTERNAL_BOOTLIN_AARCH64_GLIBC_STABLE=y
         """
 
     def test_run(self):
@@ -72,9 +74,18 @@ class TestZfsGlibc(TestZfsBase):
 
 
 class TestZfsUclibc(TestZfsBase):
-    config = TestZfsBase.config + \
+    # The Bootling aarch64 uclibc stable 2025.08-1 needs to be
+    # rebuild with uClibc-ng 1.0.55.
+    # See: https://github.com/wbx-github/uclibc-ng/commit/94c1297d52263e20cd9715601afa37f49d008d93
+    config = TestZfsBase.config.replace('BR2_TOOLCHAIN_EXTERNAL=y\n', '')
+    config = config.replace('BR2_TOOLCHAIN_EXTERNAL_BOOTLIN=y\n', '') + \
         """
-        BR2_TOOLCHAIN_EXTERNAL_BOOTLIN_X86_64_CORE_I7_UCLIBC_STABLE=y
+        BR2_TOOLCHAIN_BUILDROOT_UCLIBC=y
+        BR2_KERNEL_HEADERS_5_4=y
+        BR2_TOOLCHAIN_BUILDROOT_LOCALE=y
+        BR2_PTHREAD_DEBUG=y
+        BR2_TOOLCHAIN_BUILDROOT_CXX=y
+        BR2_GCC_ENABLE_OPENMP=y
         """
 
     def test_run(self):
@@ -84,7 +95,7 @@ class TestZfsUclibc(TestZfsBase):
 class TestZfsMusl(TestZfsBase):
     config = TestZfsBase.config + \
         """
-        BR2_TOOLCHAIN_EXTERNAL_BOOTLIN_X86_64_MUSL_STABLE=y
+        BR2_TOOLCHAIN_EXTERNAL_BOOTLIN_AARCH64_MUSL_STABLE=y
         """
 
     def test_run(self):

@@ -1,7 +1,0 @@
-config BR2_PACKAGE_OPENSEACHEST
-        bool "openseachest"
-
-        help
-          OpenSeaChest
-
-comment "openseachest"

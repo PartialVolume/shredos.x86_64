@@ -1,0 +1,87 @@
+From 463c64020b288b8ddfd32a63c4a23ab7369b9669 Mon Sep 17 00:00:00 2001
+From: Maxime Ripard <maxime.ripard@free-electrons.com>
+Date: Wed, 22 Feb 2017 17:45:14 -0800
+Subject: [PATCH] Add an option to disable IDLE
+
+IDLE is an IDE embedded into python, written using Tk, so it doesn't make
+much sense to have it into our build.
+
+Upstream: N/A
+
+Signed-off-by: Maxime Ripard <maxime.ripard@free-electrons.com>
+[ Andrey Smirnov: ported to Python 3.6 ]
+Signed-off-by: Andrey Smirnov <andrew.smirnov@gmail.com>
+[ Adam Duskett: ported to Python 3.10.0 ]
+Signed-off-by: Adam Duskett <aduskett@gmail.com>
+[ Adam Duskett: ported to Python 3.12.1 ]
+Signed-off-by: Adam Duskett <adam.duskett@amarulasolutions.com>
+[ Vincent Fazio: ported to Python 3.13.2 ]
+Signed-off-by: Vincent Fazio <vfazio@gmail.com>
+---
+ Makefile.pre.in | 9 ++++++++-
+ configure.ac    | 6 ++++++
+ 2 files changed, 14 insertions(+), 1 deletion(-)
+
+diff --git a/Makefile.pre.in b/Makefile.pre.in
+index 81f3fd54ee4..2d067730633 100644
+--- a/Makefile.pre.in
++++ b/Makefile.pre.in
+@@ -2279,7 +2279,9 @@ bininstall: commoninstall altbininstall
+ 	-rm -f $(DESTDIR)$(LIBPC)/python3-embed.pc
+ 	(cd $(DESTDIR)$(LIBPC); $(LN) -s python-$(VERSION)-embed.pc python3-embed.pc)
+ 	-rm -f $(DESTDIR)$(BINDIR)/idle3
++ifeq (@IDLE@,yes)
+ 	(cd $(DESTDIR)$(BINDIR); $(LN) -s idle$(VERSION) idle3)
++endif
+ 	-rm -f $(DESTDIR)$(BINDIR)/pydoc3
+ ifeq (@PYDOC@,yes)
+ 	(cd $(DESTDIR)$(BINDIR); $(LN) -s pydoc$(VERSION) pydoc3)
+@@ -2327,7 +2329,6 @@ LIBSUBDIRS=	asyncio \
+ 		ensurepip ensurepip/_bundled \
+ 		html \
+ 		http \
+-		idlelib idlelib/Icons \
+ 		importlib importlib/resources importlib/metadata \
+ 		json \
+ 		logging \
+@@ -2495,6 +2496,10 @@ ifeq (@PYDOC@,yes)
+ LIBSUBDIRS += pydoc_data
+ endif
+ 
++ifeq (@IDLE@,yes)
++LIBSUBDIRS += idlelib idlelib/Icons
++endif
++
+ TEST_MODULES=@TEST_MODULES@
+ 
+ .PHONY: libinstall
+@@ -2721,7 +2726,9 @@ libainstall: all scripts
+ 	$(INSTALL_SCRIPT) $(srcdir)/install-sh $(DESTDIR)$(LIBPL)/install-sh
+ 	$(INSTALL_SCRIPT) python-config.py $(DESTDIR)$(LIBPL)/python-config.py
+ 	$(INSTALL_SCRIPT) python-config $(DESTDIR)$(BINDIR)/python$(LDVERSION)-config
++ifeq (@IDLE@,yes)
+ 	$(INSTALL_SCRIPT) $(SCRIPT_IDLE) $(DESTDIR)$(BINDIR)/idle$(VERSION)
++endif
+ ifeq (@PYDOC@,yes)
+ 	$(INSTALL_SCRIPT) $(SCRIPT_PYDOC) $(DESTDIR)$(BINDIR)/pydoc$(VERSION)
+ endif
+diff --git a/configure.ac b/configure.ac
+index 7ed4fa578f3..d5dac4bf8bc 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -7927,6 +7927,12 @@ PY_STDLIB_MOD([xxlimited_35], [test "$TEST_MODULES" = yes], [test "$ac_cv_func_d
+ # substitute multiline block, must come after last PY_STDLIB_MOD()
+ AC_SUBST([MODULE_BLOCK])
+ 
++AC_SUBST(IDLE)
++
++AC_ARG_ENABLE(idle3,
++	AS_HELP_STRING([--disable-idle3], [disable idle3 IDE]),
++	[ IDLE="${enableval}" ], [ IDLE=yes ])
++
+ # generate output files
+ AC_CONFIG_FILES(m4_normalize([
+   Makefile.pre
+-- 
+2.50.1
+

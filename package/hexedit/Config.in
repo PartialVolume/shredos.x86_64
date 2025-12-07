@@ -1,6 +1,0 @@
-config BR2_PACKAGE_HEXEDIT
-        bool "hexedit"
-        help
-          Hexedit 
-
-comment "hexedit"

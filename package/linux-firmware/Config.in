@@ -17,6 +17,15 @@ config BR2_PACKAGE_LINUX_FIRMWARE_INTEL_SST_DSP
 
 endmenu # Audio
 
+menu "CPU Microcode"
+
+config BR2_PACKAGE_LINUX_FIRMWARE_AMD_UCODE
+	bool "amd-ucode"
+	help
+	  Firmware blobs for AMD CPUs (amd-ucode).
+
+endmenu # CPU Microcode
+
 menu "Video firmware"
 
 config BR2_PACKAGE_LINUX_FIRMWARE_AMDGPU
@@ -24,10 +33,26 @@ config BR2_PACKAGE_LINUX_FIRMWARE_AMDGPU
 	help
 	  Firmware files for AMD GPU video cards.
 
+config BR2_PACKAGE_LINUX_FIRMWARE_CDNS_MHDP8546
+	bool "Cadence MHDP8546"
+	help
+	  Firmware file for the Cadence MHDP8546 DPI/DP bridge.
+
+config BR2_PACKAGE_LINUX_FIRMWARE_CNM_WAVE521C_K3_CODEC
+	bool "Chips&Media Wave 521C codec IP for K3"
+	help
+	  Firmware files for the Chips&Media Wave521C decoder
+	  needed by the Linux TI j721s2-wave521c driver.
+
 config BR2_PACKAGE_LINUX_FIRMWARE_I915
 	bool "Intel i915 video card firmware"
 	help
 	  Firmware files for the Intel i915 video cards.
+
+config BR2_PACKAGE_LINUX_FIRMWARE_XE
+	bool "Intel Xe video card firmware"
+	help
+	  Firmware files for the Intel Xe video cards.
 
 config BR2_PACKAGE_LINUX_FIRMWARE_RADEON
 	bool "AMD Radeon video card firmware"
@@ -61,8 +86,8 @@ config BR2_PACKAGE_LINUX_FIRMWARE_AMLOGIC
 config BR2_PACKAGE_LINUX_FIRMWARE_IBT
 	bool "Intel Wireless Bluetooth"
 	help
-	  Firmware files for Intel 3160/7260/7265/8260/8265 Wireless
-	  bluetooth support.
+	  Firmware files for Intel 3160/7260/7265/8260/8265/9xxx/6E/7
+	  Wireless bluetooth support.
 
 config BR2_PACKAGE_LINUX_FIRMWARE_MEDIATEK_MT7650
 	bool "MediaTek MT7650"
@@ -335,6 +360,12 @@ config BR2_PACKAGE_LINUX_FIRMWARE_IWLWIFI_6E
 	  Firmware files for the Intel Wi-Fi 6 and Wi-Fi 6E devices
 	  supported by the iwlwifi kernel driver.
 
+config BR2_PACKAGE_LINUX_FIRMWARE_IWLWIFI_7
+	bool "Intel iwlwifi 7"
+	help
+	  Firmware files for the Intel Wi-Fi 7 (BE20x) devices
+	  supported by the iwlwifi kernel driver.
+
 config BR2_PACKAGE_LINUX_FIRMWARE_IWLWIFI_QUZ
 	bool "Intel iwlwifi QuZ"
 	help
@@ -454,10 +485,27 @@ config BR2_PACKAGE_LINUX_FIRMWARE_MEDIATEK_MT7925
 	help
 	  MediaTek MT7925
 
+config BR2_PACKAGE_LINUX_FIRMWARE_MEDIATEK_MT7986
+	bool "MediaTek MT7986 SOC WiFi"
+	help
+	  MediaTek MT7986 SOC WiFi
+
 config BR2_PACKAGE_LINUX_FIRMWARE_QUALCOMM_6174
 	bool "Qualcomm Atheros 6174"
 	help
 	  Firmware files for the Qualcomm Atheros QCA6174 chip
+
+config BR2_PACKAGE_LINUX_FIRMWARE_QUALCOMM_QCN9274
+	bool "Qualcomm QCN9274"
+	help
+	  Firmware files for the Qualcomm 802.11be QCN9274 chip
+	  supported by the ath12k kernel driver.
+
+config BR2_PACKAGE_LINUX_FIRMWARE_QUALCOMM_WCN7850
+	bool "Qualcomm WCN7850"
+	help
+	  Firmware files for the Qualcomm 802.11be WCN7850 chip
+	  supported by the ath12k kernel driver.
 
 config BR2_PACKAGE_LINUX_FIRMWARE_RALINK_RT61
 	bool "Ralink rt2501/rt61"
@@ -569,6 +617,12 @@ config BR2_PACKAGE_LINUX_FIRMWARE_CXGB4_T5
 	help
 	  Firmware files for Chelsio T5 1Gb and 10Gb ethernet cards
 	  (cxgb4)
+
+config BR2_PACKAGE_LINUX_FIRMWARE_CXGB4_T6
+	bool "Chelsio T6"
+	help
+	  Firmware files for Chelsio T6 1/10/25/40/50/100 Gb ethernet
+	  cards (cxgb4)
 
 config BR2_PACKAGE_LINUX_FIRMWARE_INTEL_E100
 	bool "Intel e100 825xx"
@@ -709,6 +763,11 @@ config BR2_PACKAGE_LINUX_FIRMWARE_ARM_MALI_CSF
 	  Firmware files for Arm Mali 10th generation GPU
 	  needed by the linux panthor kernel driver.
 
+config BR2_PACKAGE_LINUX_FIRMWARE_POWERVR_ROGUE
+	bool "PowerVR Technologies Rogue GPU firmware"
+	help
+	  Firmware files for PowerVR Technologies Rogue video cards.
+
 endmenu
 
 menu "Serial adapters firmware"
@@ -718,6 +777,19 @@ config BR2_PACKAGE_LINUX_FIRMWARE_RP2
 	help
 	  Firmware files for the Comtrol RocketPort EXPRESS/INFINITY
 	  needed by the Linux rp2 kernel driver.
+
+endmenu
+
+menu "NPU Firmware"
+
+config BR2_PACKAGE_LINUX_FIRMWARE_INTEL_NPU
+	bool "Intel NPU firmware"
+	help
+	  Firmware files for Intel NPU device. Intel NPU device is an
+	  AI inference accelerator integrated with Intel client CPUs.
+	  The full device name is Neural Processing Unit, but the
+	  Linux kernel driver uses the older name Versatile Processing
+	  Unit (VPU).
 
 endmenu
 

@@ -5,7 +5,7 @@
 ################################################################################
 
 # _VERSION, _SOURCE and _SITE must be kept empty to avoid downloading anything
-NODEJS_COMMON_VERSION = 22.11.0
+NODEJS_COMMON_VERSION = 22.15.1
 NODEJS_COMMON_SOURCE = node-v$(NODEJS_COMMON_VERSION).tar.xz
 NODEJS_COMMON_SITE = http://nodejs.org/dist/v$(NODEJS_COMMON_VERSION)
 
@@ -32,8 +32,7 @@ PNPM = $(NODEJS_BIN_ENV) $(HOST_DIR)/bin/pnpm
 YARN = $(NODEJS_BIN_ENV) $(HOST_DIR)/bin/yarn
 endif
 
-NODEJS_DEPENDENCIES = nodejs-src
-$(eval $(generic-package))
+$(eval $(virtual-package))
 $(eval $(host-virtual-package))
 
 include $(sort $(wildcard package/nodejs/*/*.mk))

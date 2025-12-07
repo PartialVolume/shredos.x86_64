@@ -166,25 +166,10 @@ config BR2_PACKAGE_GPSD_NMEA2000
 	help
 	  NMEA2000/CAN support
 
-config BR2_PACKAGE_GPSD_OCEANSERVER
-	bool "OceanServer"
-	help
-	  OceanServer Digital Compass support
-
 config BR2_PACKAGE_GPSD_ONCORE
 	bool "OnCore"
 	help
 	  OnCore support
-
-config BR2_PACKAGE_GPSD_RTCM104V2
-	bool "RTCM104 v2"
-	help
-	  RTCM104 v2 support
-
-config BR2_PACKAGE_GPSD_RTCM104V3
-	bool "RTCM104 v3"
-	help
-	  RTCM104 v3 support
 
 config BR2_PACKAGE_GPSD_SIRF
 	bool "SiRF"
@@ -216,11 +201,6 @@ config BR2_PACKAGE_GPSD_TRUE_NORTH
 	help
 	  True North Technologies support
 
-config BR2_PACKAGE_GPSD_UBX
-	bool "UBX"
-	help
-	  uBlox UBX binary support
-
 endif  # GPSD_DAEMON
 
 config BR2_PACKAGE_GPSD_CLIENTS
@@ -238,6 +218,7 @@ config BR2_PACKAGE_GPSD_PYTHON
 	bool "build Python support and modules"
 	depends on BR2_USE_WCHAR # python3
 	select BR2_PACKAGE_PYTHON3
+	select BR2_PACKAGE_PYTHON_SERIAL # runtime
 	help
 	  Python libraries and tools for the gpsd service daemon
 	  including gpsfake test harness.

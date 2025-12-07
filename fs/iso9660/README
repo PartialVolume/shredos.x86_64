@@ -1,8 +1,0 @@
-ISO9660 filesystem was updated to modern standards as of 20/11/2025.
-The changes have - at the time of this writing - not been upstreamed.
-Do compare (and port 'fs/iso9660' over) when updating the Buildroot release.
-
-The following variables are filled in at build-time:
-  - __EFI_ID_FILE__
-  - __KERNEL_PATH__
-  - __INITRD_PATH__ (automatically removed if not used)

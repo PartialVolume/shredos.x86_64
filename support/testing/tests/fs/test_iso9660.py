@@ -4,16 +4,9 @@ import infra.basetest
 
 BASIC_CONFIG = \
     """
-    BR2_x86_pentium4=y
+    BR2_x86_core2=y
     BR2_TOOLCHAIN_EXTERNAL=y
-    BR2_TOOLCHAIN_EXTERNAL_CUSTOM=y
-    BR2_TOOLCHAIN_EXTERNAL_DOWNLOAD=y
-    BR2_TOOLCHAIN_EXTERNAL_URL="http://autobuild.buildroot.org/toolchains/tarballs/br-i386-pentium4-full-2017.05-1078-g95b1dae.tar.bz2"
-    BR2_TOOLCHAIN_EXTERNAL_GCC_6=y
-    BR2_TOOLCHAIN_EXTERNAL_HEADERS_3_2=y
-    BR2_TOOLCHAIN_EXTERNAL_LOCALE=y
-    # BR2_TOOLCHAIN_EXTERNAL_HAS_THREADS_DEBUG is not set
-    BR2_TOOLCHAIN_EXTERNAL_CXX=y
+    BR2_TOOLCHAIN_EXTERNAL_BOOTLIN_X86_CORE2_GLIBC_STABLE=y
     BR2_TARGET_GENERIC_GETTY_PORT="ttyS0"
     BR2_TARGET_GENERIC_GETTY_BAUDRATE_115200=y
     BR2_LINUX_KERNEL=y
@@ -135,28 +128,6 @@ class TestIso9660Grub2EFI(infra.basetest.BRTest):
         """.format(infra.filepath("conf/grub2-efi.cfg"),
                    infra.filepath("conf/grub2.cfg"))
 
-    def __init__(self, names):
-        """Setup common test variables."""
-        super(TestIso9660Grub2EFI, self).__init__(names)
-        """All EDK2 releases <= edk2-stable202408 can't be fetched from git
-           anymore due to a missing git submodule as reported by [1].
-
-           Usually Buildroot fall-back using https://sources.buildroot.net
-           thanks to BR2_BACKUP_SITE where a backup of the generated archive
-           is available. But the BRConfigTest remove BR2_BACKUP_SITE default
-           value while generating the .config used by TestIso9660Grub2EFI.
-
-           Replace the BR2_BACKUP_SITE override from BRConfigTest in order
-           to continue testing EDK2 package using the usual backup site.
-
-           To be removed with the next EDK2 version bump using this commit
-           [2].
-
-           [1] https://github.com/tianocore/edk2/issues/6398
-           [2] https://github.com/tianocore/edk2/commit/95d8a1c255cfb8e063d679930d08ca6426eb5701
-        """
-        self.config = self.config.replace('BR2_BACKUP_SITE=""\n', '')
-
     def test_run(self):
         exit_code = test_mount_internal_external(self.emulator,
                                                  self.builddir, internal=True,
@@ -184,28 +155,6 @@ class TestIso9660Grub2Hybrid(infra.basetest.BRTest):
         BR2_TARGET_EDK2=y
         """.format(infra.filepath("conf/grub2-efi.cfg"),
                    infra.filepath("conf/grub2.cfg"))
-
-    def __init__(self, names):
-        """Setup common test variables."""
-        super(TestIso9660Grub2Hybrid, self).__init__(names)
-        """All EDK2 releases <= edk2-stable202408 can't be fetched from git
-           anymore due to a missing git submodule as reported by [1].
-
-           Usually Buildroot fall-back using https://sources.buildroot.net
-           thanks to BR2_BACKUP_SITE where a backup of the generated archive
-           is available. But the BRConfigTest remove BR2_BACKUP_SITE default
-           value while generating the .config used by TestIso9660Grub2Hybrid.
-
-           Replace the BR2_BACKUP_SITE override from BRConfigTest in order
-           to continue testing EDK2 package using the usual backup site.
-
-           To be removed with the next EDK2 version bump using this commit
-           [2].
-
-           [1] https://github.com/tianocore/edk2/issues/6398
-           [2] https://github.com/tianocore/edk2/commit/95d8a1c255cfb8e063d679930d08ca6426eb5701
-        """
-        self.config = self.config.replace('BR2_BACKUP_SITE=""\n', '')
 
     def test_run(self):
         exit_code = test_mount_internal_external(self.emulator,

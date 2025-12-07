@@ -32,11 +32,12 @@ II. User guide
         8.6. Environment variables
         8.7. Dealing efficiently with filesystem images
         8.8. Details about packages
-        8.9. Graphing the dependencies between packages
-        8.10. Graphing the build duration
-        8.11. Graphing the filesystem size contribution of packages
-        8.12. Top-level parallel build
-        8.13. Advanced usage
+        8.9. Generating CycloneDX SBOM
+        8.10. Graphing the dependencies between packages
+        8.11. Graphing the build duration
+        8.12. Graphing the filesystem size contribution of packages
+        8.13. Top-level parallel build
+        8.14. Advanced usage
     9. Project-specific customization
         9.1. Recommended directory structure
         9.2. Keeping customizations outside of Buildroot
@@ -138,6 +139,10 @@ IV. Appendix
         27.3. Migrating to 2017.08
         27.4. Migrating to 2023.11
         27.5. Migrating to 2024.05
+        27.6. Migrating to 2025.02
+        27.7. Migrating to 2025.05
+        27.8. Migrating to 2025.08
+        27.9. Migrating to 2025.11
 
 List of Examples
 
@@ -149,14 +154,14 @@ List of Examples
 
 ---------------------------------------------------------------------
 
-Buildroot 2024.11 manual generated on 2024-12-08 10:19:53 UTC from
-git revision 8f9ce0c913
+Buildroot 2025.11-rc2 manual generated on 2025-11-30 19:19:47 UTC
+from git revision 2b4ee4e72f
 
 The Buildroot manual is written by the Buildroot developers. It is
 licensed under the GNU General Public License, version 2. Refer to
-the COPYING [http://git.buildroot.org/buildroot/tree/COPYING?id=
-8f9ce0c913bc00127126456df89379daf9c1e03a] file in the Buildroot
-sources for the full text of this license.
+the COPYING [https://gitlab.com/buildroot.org/buildroot/-/blob/master
+/COPYING] file in the Buildroot sources for the full text of this
+license.
 
 Copyright © The Buildroot developers <>
 
@@ -236,6 +241,7 @@ vary between distributions).
       + file (must be in /usr/bin/file)
       + bc
       + findutils
+      + awk
   * Source fetching tools:
 
       + wget
@@ -304,7 +310,7 @@ Buildroot releases are made every 3 months, in February, May, August
 and November. Release numbers are in the format YYYY.MM, so for
 example 2013.02, 2014.08.
 
-Release tarballs are available at http://buildroot.org/downloads/.
+Release tarballs are available at https://buildroot.org/downloads/.
 
 For your convenience, a Vagrantfile [https://www.vagrantup.com/] is
 available in support/misc/Vagrantfile in the Buildroot source tree to
@@ -323,8 +329,9 @@ If you are on Windows, paste this into your powershell:
 vagrant up
 
 If you want to follow development, you can use the daily snapshots or
-make a clone of the Git repository. Refer to the Download page [http:
-//buildroot.org/download] of the Buildroot website for more details.
+make a clone of the Git repository. Refer to the Download page
+[https://buildroot.org/download.html] of the Buildroot website for
+more details.
 
 Chapter 4. Buildroot quick start
 
@@ -378,7 +385,7 @@ To start the build process, simply run:
 
 By default, Buildroot does not support top-level parallel build, so
 running make -jN is not necessary. There is however experimental
-support for top-level parallel build, see Section 8.12, “Top-level
+support for top-level parallel build, see Section 8.13, “Top-level
 parallel build”.
 
 The make command will generally perform the following steps:
@@ -454,10 +461,10 @@ Mailing List
 
     Only subscribers to the Buildroot mailing list are allowed to
     post to this list. You can subscribe via the mailing list info
-    page [http://lists.buildroot.org/mailman/listinfo/buildroot].
+    page [https://lists.buildroot.org/mailman/listinfo/buildroot].
 
     Mails that are sent to the mailing list are also available in the
-    mailing list archives, available through Mailman [http://
+    mailing list archives, available through Mailman [https://
     lists.buildroot.org/pipermail/buildroot] or at lore.kernel.org
     [https://lore.kernel.org/buildroot/].
 
@@ -524,11 +531,12 @@ Table of Contents
     8.6. Environment variables
     8.7. Dealing efficiently with filesystem images
     8.8. Details about packages
-    8.9. Graphing the dependencies between packages
-    8.10. Graphing the build duration
-    8.11. Graphing the filesystem size contribution of packages
-    8.12. Top-level parallel build
-    8.13. Advanced usage
+    8.9. Generating CycloneDX SBOM
+    8.10. Graphing the dependencies between packages
+    8.11. Graphing the build duration
+    8.12. Graphing the filesystem size contribution of packages
+    8.13. Top-level parallel build
+    8.14. Advanced usage
 9. Project-specific customization
     9.1. Recommended directory structure
     9.2. Keeping customizations outside of Buildroot
@@ -1083,7 +1091,7 @@ well as the configuration:
 
 Notes. If ccache is enabled, running make clean or distclean does not
 empty the compiler cache used by Buildroot. To delete it, refer to
-Section 8.13.3, “Using ccache in Buildroot”.
+Section 8.14.3, “Using ccache in Buildroot”.
 
 Dumping the internal make variables: One can dump the variables known
 to make, along with their values:
@@ -1256,7 +1264,7 @@ above simply manipulate these stamp files to force Buildroot to
 restart a specific set of steps of a package build process.
 
 Further details about package special make targets are explained in
-Section 8.13.5, “Package-specific make targets”.
+Section 8.14.5, “Package-specific make targets”.
 
 8.4. Offline builds
 
@@ -1326,7 +1334,7 @@ passed to make or set in the environment:
   * BR2_DL_DIR to override the directory in which Buildroot stores/
     retrieves downloaded files. Note that the Buildroot download
     directory can also be set from the configuration interface, so
-    through the Buildroot .config file. See Section 8.13.4, “Location
+    through the Buildroot .config file. See Section 8.14.4, “Location
     of downloaded packages” for more details on how you can set the
     download directory.
   * BR2_GRAPH_ALT, if set and non-empty, to use an alternate
@@ -1334,12 +1342,12 @@ passed to make or set in the environment:
   * BR2_GRAPH_OUT to set the filetype of generated graphs, either pdf
     (the default), or png.
   * BR2_GRAPH_DEPS_OPTS to pass extra options to the dependency
-    graph; see Section 8.9, “Graphing the dependencies between
+    graph; see Section 8.10, “Graphing the dependencies between
     packages” for the accepted options
   * BR2_GRAPH_DOT_OPTS is passed verbatim as options to the dot
     utility to draw the dependency graph.
   * BR2_GRAPH_SIZE_OPTS to pass extra options to the size graph; see
-    Section 8.11, “Graphing the filesystem size contribution of
+    Section 8.12, “Graphing the filesystem size contribution of
     packages” for the acepted options
 
 An example that uses config files located in the toplevel directory
@@ -1409,7 +1417,29 @@ a newer upstream version for those packages.
 
 make pkg-stats
 
-8.9. Graphing the dependencies between packages
+8.9. Generating CycloneDX SBOM
+
+Based on the output of show-info Buildroot can generate a SBOM in the
+CycloneDX format. While it doesn’t offer any additional information,
+CycloneDX is a format specification that can be consumed by other
+projects.
+
+make show-info | utils/generate-cyclonedx
+
+For more information check the help of the generate-cyclonedx script,
+the script call can be tailored to your project.
+
+utils/generate-cyclonedx --help
+
+Similarly to pkg-stats, CycloneDX SBOM’s can be enriched with
+vulnerability analysis from the NVD database.
+
+make show | utils/generate-cyclonedx > sbom.cdx.json
+cat sbom.cdx.json | support/scripts/cve-check --nvd-path dl/buildroot-nvd/
+
+For more information about CycloneDX see https://cyclonedx.org/.
+
+8.10. Graphing the dependencies between packages
 
 One of Buildroot’s jobs is to know the dependencies between packages,
 and make sure they are built in the right order. These dependencies
@@ -1471,7 +1501,7 @@ are:
 
 BR2_GRAPH_DEPS_OPTS='-d 3 --no-transitive --colors=red,green,blue' make graph-depends
 
-8.10. Graphing the build duration
+8.11. Graphing the build duration
 
 When the build of a system takes a long time, it is sometimes useful
 to be able to understand which packages are the longest to build, to
@@ -1506,7 +1536,7 @@ The only other format supported is PNG:
 
 BR2_GRAPH_OUT=png make graph-build
 
-8.11. Graphing the filesystem size contribution of packages
+8.12. Graphing the filesystem size contribution of packages
 
 When your target system grows, it is sometimes useful to understand
 how much each Buildroot package is contributing to the overall root
@@ -1536,8 +1566,8 @@ argparse module if you’re using a Python version older than 2.7
 
 Just like for the duration graph, a BR2_GRAPH_OUT environment
 variable is supported to adjust the output file format. See
-Section 8.9, “Graphing the dependencies between packages” for details
-about this environment variable.
+Section 8.10, “Graphing the dependencies between packages” for
+details about this environment variable.
 
 Additionally, one may set the environment variable
 BR2_GRAPH_SIZE_OPTS to further control the generated graph. Accepted
@@ -1566,7 +1596,7 @@ details:
 
 utils/size-stats-compare -h
 
-8.12. Top-level parallel build
+8.13. Top-level parallel build
 
 Note. This section deals with a very experimental feature, which is
 known to break even in some non-unusual situations. Use at your own
@@ -1611,9 +1641,9 @@ effects:
     will be empty and it’s only at the very end of the build that
     they will be populated.
 
-8.13. Advanced usage
+8.14. Advanced usage
 
-8.13.1. Using the generated toolchain outside Buildroot
+8.14.1. Using the generated toolchain outside Buildroot
 
 You may want to compile, for your target, your own programs or other
 software that are not packaged in Buildroot. In order to do this you
@@ -1658,7 +1688,7 @@ provides some useful commands. Note however that once this script is
 sourced, the environment is setup only for cross-compilation, and no
 longer for native compilation.
 
-8.13.2. Using gdb in Buildroot
+8.14.2. Using gdb in Buildroot
 
 Buildroot allows to do cross-debugging, where the debugger runs on
 the build machine and communicates with gdbserver on the target to
@@ -1703,7 +1733,7 @@ Finally, to connect to the target from the cross gdb:
 
 (gdb) target remote <target ip address>:2345
 
-8.13.3. Using ccache in Buildroot
+8.14.3. Using ccache in Buildroot
 
 ccache [http://ccache.samba.org] is a compiler cache. It stores the
 object files resulting from each compilation process, and is able to
@@ -1766,7 +1796,7 @@ variable: when set to 1, usage of ccache is enabled (default during
 the Buildroot build), when unset or set to a value different from 1,
 usage of ccache is disabled.
 
-8.13.4. Location of downloaded packages
+8.14.4. Location of downloaded packages
 
 The various tarballs that are downloaded by Buildroot are all stored
 in BR2_DL_DIR, which by default is the dl directory. If you want to
@@ -1787,7 +1817,7 @@ The download location can also be set in the .config file, with the
 BR2_DL_DIR option. Unlike most options in the .config file, this
 value is overridden by the BR2_DL_DIR environment variable.
 
-8.13.5. Package-specific make targets
+8.14.5. Package-specific make targets
 
 Running make <package> builds and installs that particular package
 and its dependencies.
@@ -1890,7 +1920,7 @@ Additionally, there are some other useful make targets:
 |                       |the build directory                 |
 +------------------------------------------------------------+
 
-8.13.6. Using Buildroot during development
+8.14.6. Using Buildroot during development
 
 The normal operation of Buildroot is to download a tarball, extract
 it, configure, compile and install the software component found
@@ -2084,6 +2114,7 @@ choice is up to you.
 |           +-- package2.mk
 |
 +-- Config.in (if using a br2-external tree)
++-- Makefile (if using a custom top makefile)
 +-- external.mk (if using a br2-external tree)
 +-- external.desc (if using a br2-external tree)
 
@@ -2139,6 +2170,46 @@ BR2_GLOBAL_PATCH_DIR="board/<company>/common/patches board/<company>/fooboard/pa
 
 then first the patches from the common layer would be applied,
 followed by the patches from the fooboard layer.
+
+9.1.2. Custom top Makefile
+
+You normally launch Buildroot from the buildroot source directory,
+pointing BR2_EXTERNAL and O to the right places for the build you
+want to make. You can simplify this by adding a Makefile to your
+br2-external that sets these variables and calls into buildroot.
+
+You can add additional, custom rules to this Makefile for various
+tasks you need to perform, e.g. integrate multiple configurations
+into a single image, upload to a release server or to a test device,
+include multiple br2-external configurations, etc.
+
+A basic Makefile looks like this. It assumes the buildroot source is
+available (e.g. as a git submodule) in the buildroot subdirectory. It
+makes sure that the download directory is shared between different
+builds, and it organizes the output directories in a structure under
+outputs/.
+
+# SPDX-License-Identifier: GPL-2.0
+
+# Avoid surprises by disabling default rules
+MAKEFLAGS += --no-builtin-rules
+.SUFFIXES:
+
+THIS_EXTERNAL_PATH := $(abspath $(dir $(lastword $(MAKEFILE_LIST))))
+
+# Put downloads in this directory instead of in the Buildroot directory
+ifeq ($(BR2_DL_DIR),)
+BR2_DL_DIR = $(THIS_EXTERNAL_PATH)/dl
+endif
+
+OUTPUT_BASEDIR = $(THIS_EXTERNAL_PATH)/output
+OUTPUT_DIR = $(OUTPUT_BASEDIR)/$(patsubst %_defconfig,%,$@)
+
+MAKE_BUILDROOT = $(MAKE) -C $(THIS_EXTERNAL_PATH)/buildroot BR2_EXTERNAL=$(THIS_EXTERNAL_PATH)
+
+%: $(THIS_EXTERNAL_PATH)/configs/%
+        $(MAKE_BUILDROOT) O=$(OUTPUT_DIR) $@
+        sed -i /^BR2_DL_DIR=.*/s%%BR2_DL_DIR=$(BR2_DL_DIR)% $(OUTPUT_DIR)/.config
 
 9.2. Keeping customizations outside of Buildroot
 
@@ -2649,6 +2720,12 @@ Root filesystem overlays (BR2_ROOTFS_OVERLAY)
     such a situation, should the overlay have any programs or
     libraries, they should be placed in /usr/bin, /usr/sbin and /usr/
     lib.
+
+    Additionally, when BR2_ROOTFS_MERGED_BIN is enabled, then the
+    overlay must not contain the /usr/sbin directory, as Buildroot
+    will create it as a symbolic link to /usr/bin. In such a
+    situation, should the overlay have any programs, they should be
+    placed in /usr/bin.
 
     As shown in Section 9.1, “Recommended directory structure”, the
     recommended path for this overlay is board/<company>/<boardname>/
@@ -3400,7 +3477,7 @@ help reduce the build time:
     not prevent you to switch back to an internal toolchain (that may
     provide a higher level of customization) once the rest of your
     system is working;
-  * Use the ccache compiler cache (see: Section 8.13.3, “Using ccache
+  * Use the ccache compiler cache (see: Section 8.14.3, “Using ccache
     in Buildroot”);
   * Learn about rebuilding only the few packages you actually care
     about (see Section 8.3, “Understanding how to rebuild packages”),
@@ -3416,7 +3493,7 @@ help reduce the build time:
     a bit.
   * Buy new hardware. SSDs and lots of RAM are key to speeding up the
     builds.
-  * Experiment with top-level parallel build, see Section 8.12,
+  * Experiment with top-level parallel build, see Section 8.13,
     “Top-level parallel build”.
 
 11.9. How does Buildroot support Y2038?
@@ -4970,7 +5047,9 @@ information is (assuming the package name is libfoo) :
     server-side checking for user logins and passwords, or to use a
     proxy. All download methods valid for LIBFOO_SITE_METHOD are
     supported; valid options depend on the download method (consult
-    the man page for the respective download utilities).
+    the man page for the respective download utilities). For git,
+    FOO_DL_OPTS will only be passed to git fetch and no other git
+    command (esp. not to git lfs fetch or git submodule update).
   * LIBFOO_EXTRA_DOWNLOADS is a space-separated list of additional
     files that Buildroot should download. If an entry contains ://
     then Buildroot will assume it is a complete URL and will download
@@ -5033,6 +5112,13 @@ information is (assuming the package name is libfoo) :
         that for local packages, no patches are applied. If you need
         to still patch the source code, use LIBFOO_POST_RSYNC_HOOKS,
         see Section 18.23.1, “Using the POST_RSYNC hook”.
+      + smb for retrieving source code from a SMB share. Used by
+        default when LIBFOO_SITE begins with smb://. It uses curl as
+        download backend. Syntax expected: LIBFOO_SITE=smb://<server>
+        /<share>/<path>. This method might require to define -u
+        option in LIBFOO_DL_OPTS. For more information, please refer
+        to the curl documentation [https://curl.se/docs/
+        tutorial.html].
   * LIBFOO_GIT_SUBMODULES can be set to YES to create an archive with
     the git submodules in the repository. This is only available for
     packages downloaded with git (i.e. when LIBFOO_SITE_METHOD=git).
@@ -5299,6 +5385,11 @@ different steps of the build process.
     KCONFIG_ENABLE_OPT, KCONFIG_DISABLE_OPT, or KCONFIG_SET_OPT. This
     is seldom used, as package usually have no strict requirements on
     the kernel options.
+  * LIBFOO_BUSYBOX_CONFIG_FIXUPS lists the Busybox configuration
+    options that are needed to use this package especially in some
+    scripts, or at contrario the useless options. This shall be a set
+    of calls to one of the kconfig tweaking option:
+    KCONFIG_ENABLE_OPT, KCONFIG_DISABLE_OPT, or KCONFIG_SET_OPT.
 
 The preferred way to define these variables is:
 
@@ -5328,7 +5419,7 @@ In the action definitions, you can use the following variables:
     to the current package host, staging and target directories. In
     both cases, it doesn’t make any difference from the package point
     of view: it should simply use HOST_DIR, STAGING_DIR and
-    TARGET_DIR. See Section 8.12, “Top-level parallel build” for more
+    TARGET_DIR. See Section 8.13, “Top-level parallel build” for more
     details about per-package directory support.
 
 Finally, you can also use hooks. See Section 18.23, “Hooks available
@@ -5742,10 +5833,9 @@ therefore only use a few of them, or none.
     packages) and HOST_PKG_PYTHON_PEP517_ENV (for flit/pep517 host
     packages).
   * PYTHON_FOO_BUILD_OPTS, to specify additional options to pass to
-    the Python setup.py script during the build step, this generally
-    only makes sense to use for setuptools based packages as flit/
-    pep517 based packages do not pass these options to a setup.py
-    script but instead pass them to support/scripts/pyinstaller.py.
+    the Python python -m build call. To pass additional options to
+    the build backend use the --config-setting= (-C) flag of the
+    build module.
   * PYTHON_FOO_INSTALL_TARGET_OPTS, PYTHON_FOO_INSTALL_STAGING_OPTS,
     HOST_PYTHON_FOO_INSTALL_OPTS to specify additional options to
     pass to the Python setup.py script (for setuptools packages) or
@@ -6732,25 +6822,29 @@ therefore only use a few of them, or none.
     $(call github,bar,foo,$(FOO_VERSION)). The Go package
     infrastructure will automatically generate a minimal go.mod file
     in the package source tree if it doesn’t exist.
-  * FOO_LDFLAGS and FOO_TAGS can be used to pass respectively the
-    LDFLAGS or the TAGS to the go build command.
+  * FOO_LDFLAGS, FOO_EXTLDFLAGS, and FOO_TAGS can be used to pass
+    respectively the go LDFLAGS (via the -ldflags command line flag),
+    the external linker flags EXTLDFLAGS (via the -extldflags command
+    line flag), or the TAGS to the go build command.
   * FOO_BUILD_TARGETS can be used to pass the list of targets that
     should be built. If FOO_BUILD_TARGETS is not specified, it
     defaults to .. We then have two cases:
 
       + FOO_BUILD_TARGETS is .. In this case, we assume only one
-        binary will be produced, and that by default we name it after
-        the package name. If that is not appropriate, the name of the
-        produced binary can be overridden using FOO_BIN_NAME.
-      + FOO_BUILD_TARGETS is not .. In this case, we iterate over the
-        values to build each target, and for each produced a binary
-        that is the non-directory component of the target. For
-        example if FOO_BUILD_TARGETS = cmd/docker cmd/dockerd the
-        binaries produced are docker and dockerd.
-  * FOO_INSTALL_BINS can be used to pass the list of binaries that
-    should be installed in /usr/bin on the target. If
-    FOO_INSTALL_BINS is not specified, it defaults to the lower-case
-    name of package.
+        binary will be built and installed, and by default we name it
+        after the package name; if that is not appropriate, the name
+        of the binary can be overridden using FOO_BIN_NAME.
+      + FOO_BUILD_TARGETS is not .. In this case, it is interpreted
+        as a space-separated list, and we iterate over the targets to
+        build and install a binary named after the non-directory
+        component of the target. For example if FOO_BUILD_TARGETS =
+        cmd/docker cmd/dockerd, the binaries built and installed are
+        docker and dockerd. If FOO_BUILD_TARGETS contains only one
+        target, then it is possible to override the built and
+        installed binary by setting FOO_BIN_NAME, as above; if
+        FOO_BUILD_TARGETS contains two or more targets, then it is
+        not possible to override the names of the installed binaries
+        (use a post-install hook for that).
 
 With the Go infrastructure, all the steps required to build and
 install the packages are already defined, and they generally work
@@ -7204,8 +7298,7 @@ The Buildroot’s Linux kernel extensions infrastructure provides a
 simple solution to automatically do this, just after the kernel
 sources are extracted and before the kernel patches are applied.
 Examples of extensions packaged using this mechanism are the
-real-time extensions Xenomai and RTAI, as well as the set of
-out-of-tree LCD screens drivers fbtft.
+real-time extensions Xenomai and RTAI.
 
 Let’s look at an example on how to add a new Linux extension foo.
 
@@ -7452,7 +7545,7 @@ it under various conditions: does it build for all architectures?
 Does it build with the different C libraries? Does it need threads,
 NPTL? And so on…
 
-Buildroot runs autobuilders [http://autobuild.buildroot.org/] which
+Buildroot runs autobuilders [https://autobuild.buildroot.org/] which
 continuously test random configurations. However, these only build
 the master branch of the git tree, and your new fancy package is not
 yet there.
@@ -7606,6 +7699,74 @@ FOO_SOURCE = foo-$(FOO_VERSION).tar.bz2
 If there is a specific tarball uploaded by the upstream developers in
 https://gitlab.com/<project>/releases/, do not use this macro, but
 rather use directly the link to the tarball.
+
+18.25.6. Accessing a private repository for a package
+
+If you want to create a package in a br2-external tree and its source
+is in a private repository (e.g. on gitlab, github, bitbucket, …),
+you have to write it in a way that it is buildable both by developers
+and in CI. This poses a challenge, because you need to authenticate
+in order to access it.
+
+There are several ways you can approach this. The following two are
+the most practical ones.
+
+18.25.6.1. Using SSH and insteadOf
+
+Configure your private packages to use SSH.
+
+FOO_SITE = git@githosting.com:/<group>/<package>.git
+
+Developers already have an ssh key installed so they can access it
+this way. The only limitation is that if they build in docker, they
+have to make sure the ssh key is accessible from within the
+container. Either mount the SSH directory into the container by
+passing the options -v ~/.ssh:<homedir>/.ssh, or load the private key
+into ssh-agent and pass --mount type=bind,source=
+$SSH_AUTH_SOCK,target=/ssh-agent --env SSH_AUTH_SOCK=/ssh-agent
+
+CI builders typically will not have an SSH key that allows access to
+other repositories. For those, you’ll need to generate an access
+token. Then you configure git to replace the SSH access with HTTPS
+access. As a preparation step in CI, run the following command.
+
+git config --global url."https://<token>:x-oauth-basic@githosting.com/<group>/".insteadOf "git@githosting.com:/<group>/"
+
+The way to use a token for basic authentication differs between
+different git hosting providers, and sometimes between different
+types of tokens. Consult your provider’s documentation to find out
+how to access git over HTTPS with a token.
+
+18.25.6.2. Use HTTPS and .netrc
+
+If, for any reason, developers don’t have an SSH key already, then it
+may be simpler to use HTTPS authentication. For this, every developer
+will have to generate a token that has (read) access to all relevant
+repositories. Some git hosting providers have a command-line utility
+that can generate such a token, otherwise you’ll need to generate it
+in the web interface. The token has a limited lifetime so you’ll need
+to regularly refresh it.
+
+To make sure the token is used in the Buildroot build, add it to ~
+/.netrc
+
+machine githosting.com
+    login <username>
+    password <token>
+
+The <username> and <password> to use are again different for
+different git hosting providers.
+
+In CI, generate the .netrc file as a preparation step.
+
+Configure your private packages to use HTTPS.
+
+FOO_SITE = https://githosting.com/<group>/<package>.git
+
+Both wget (https) and git will use .netrc to get login information.
+This approach is potentially somewhat less secure because .netrc
+cannot be password-protected. The advantage is that users and CI use
+the exact same way of providing credentials.
 
 18.26. Conclusion
 
@@ -7869,8 +8030,8 @@ various toolchains, and with a random selection of packages. With the
 large commit activity on Buildroot, these autobuilders are a great
 help in detecting problems very early after commit.
 
-All build results are available at http://autobuild.buildroot.org,
-statistics are at http://autobuild.buildroot.org/stats.php. Every
+All build results are available at https://autobuild.buildroot.org,
+statistics are at https://autobuild.buildroot.org/stats.php. Every
 day, an overview of all failed packages is sent to the mailing list.
 
 Detecting problems is great, but obviously these problems have to be
@@ -7888,11 +8049,11 @@ basically two things that can be done:
 
      1. Check if you can reproduce the problem by building with the
         same configuration. You can do this manually, or use the
-        br-reproduce-build [http://git.buildroot.org/buildroot-test/
-        tree/utils/br-reproduce-build] script that will automatically
-        clone a Buildroot git repository, checkout the correct
-        revision, download and set the right configuration, and start
-        the build.
+        br-reproduce-build [https://gitlab.com/buildroot.org/
+        buildroot-test/-/blob/master/utils/br-reproduce-build] script
+        that will automatically clone a Buildroot git repository,
+        checkout the correct revision, download and set the right
+        configuration, and start the build.
      2. Analyze the problem and create a fix.
      3. Verify that the problem is really fixed by starting from a
         clean Buildroot tree and only applying your fix.
@@ -7904,7 +8065,7 @@ basically two things that can be done:
         patch fixing an autobuild failure, add a reference to the
         build result directory, as follows:
 
-Fixes: http://autobuild.buildroot.org/results/51000a9d4656afe9e0ea6f07b9f8ed374c2e4069
+Fixes: https://autobuild.buildroot.org/results/51000a9d4656afe9e0ea6f07b9f8ed374c2e4069
 
 22.3. Reviewing and testing patches
 
@@ -8146,9 +8307,13 @@ Now check the coding style for the changes you committed:
 
 $ utils/docker-run make check-package
 
-Now, you are ready to generate then submit your patch set.
+This command (unlike calling utils/check-package directly) will also
+warn about any stale entries in the .checkpackageignore file that
+your patches might have resolved. If this is the case, make sure to
+remove those lines from .checkpackageignore as well.
 
-To generate it, run:
+Now, you are ready to generate then submit your patch set. To
+generate it, run:
 
 $ git format-patch -M -n -s -o outgoing origin/master
 
@@ -8628,6 +8793,10 @@ Table of Contents
     27.3. Migrating to 2017.08
     27.4. Migrating to 2023.11
     27.5. Migrating to 2024.05
+    27.6. Migrating to 2025.02
+    27.7. Migrating to 2025.05
+    27.8. Migrating to 2025.08
+    27.9. Migrating to 2025.11
 
 Chapter 25. Makedev syntax documentation
 
@@ -8995,4 +9164,47 @@ sed -r -i -e 's/(\.tar\.gz)$/-cargo2\1/' $(
 
 Note that the hash will have changed, so that needs to be updated
 (manually) as well.
+
+27.6. Migrating to 2025.02
+
+Mender now requires a special bootstrap artifact to be placed in /var
+/lib/mender. This replaces the artifact_info file. Just like a normal
+artifact, the bootstrap artifact is generated with
+host-mender-artifact. See board/mender/x86_64/post-image-efi.sh for
+an example of how to generate the bootstrap.mender file. See the
+release notes [https://docs.mender.io/release-information/
+release-notes-changelog/mender-client#mender-3-5-0-1], under
+features, for more information.
+
+27.7. Migrating to 2025.05
+
+In 2025.05, for SYS-V-like systems (busybox, sysvinit, openrc), the /
+etc/resolv.conf symlink was changed to point to /run/resolv.conf,
+rather than the legacy location in /tmp. Users of a custom fstab will
+need to ensure that /run is writable before resolv.conf is created
+(usually by a DHCP client), either with an entry for /run, or with a
+startup script.
+
+Note that systems using systemd are not impacted: systemd always
+ensures that /run is writable. Systems further using systemd-resolved
+already had a /etc/resolv.conf that pointed into /run anyway.
+
+Due to the update of Rust to a version greater than 1.84.0 making the
+Cargo.lock file mandatory and the change from .cargo/config to .cargo
+/config.toml, tarballs generated by Cargo-fetched packages have
+changed. Therefore the suffix of such tarballs has been changed from
+-cargo2 to -cargo4.
+
+27.8. Migrating to 2025.08
+
+In 2025.08, starting with systemd version 257, systemd-networkd
+requires kernel 5.4 or later. If you are still using a kernel older
+than 5.4, please update your kernel or use an alternative network
+manager.
+
+27.9. Migrating to 2025.11
+
+In 2025.11, the FOO_INSTALL_BINS variable for golang packages is no
+longer supported; the list of binaries to install is automatically
+derived from the FOO_BULD_TARGETS variable.
 

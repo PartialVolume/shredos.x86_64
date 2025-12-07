@@ -1,0 +1,29 @@
+config BR2_PACKAGE_SANE_AIRSCAN
+	bool "sane-airscan"
+	depends on !BR2_STATIC_LIBS # avahi, gnutls, sane-backends
+	depends on BR2_TOOLCHAIN_HAS_THREADS # avahi, dbus
+	depends on BR2_USE_WCHAR # avahi, gnutls
+	depends on BR2_USE_MMU # dbus, sane-backends
+	select BR2_PACKAGE_AVAHI
+	select BR2_PACKAGE_AVAHI_DAEMON # needed to get avahi-client
+	select BR2_PACKAGE_DBUS # needed by avahi to get avahi-client
+	select BR2_PACKAGE_GNUTLS
+	select BR2_PACKAGE_JPEG
+	select BR2_PACKAGE_LIBPNG
+	select BR2_PACKAGE_LIBXML2
+	select BR2_PACKAGE_SANE_BACKENDS
+	select BR2_PACKAGE_TIFF
+	help
+	  SANE backend for AirScan (eSCL) and WSD document scanners
+
+	  Similar to how most modern network printers support
+	  "driverless" printing, using the universal vendor-neutral
+	  printing protocol, many modern network scanners and MFPs
+	  support "driverless" scanning.
+
+	  https://github.com/alexpevzner/sane-airscan
+
+comment "sane-airscan needs a toolchain w/ wchar, dynamic library, threads"
+	depends on BR2_USE_MMU
+	depends on !BR2_USE_WCHAR || BR2_STATIC_LIBS || \
+		!BR2_TOOLCHAIN_HAS_THREADS

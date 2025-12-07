@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-RAUC_VERSION = 1.12
+RAUC_VERSION = 1.15
 RAUC_SITE = https://github.com/rauc/rauc/releases/download/v$(RAUC_VERSION)
 RAUC_SOURCE = rauc-$(RAUC_VERSION).tar.xz
 RAUC_LICENSE = LGPL-2.1
@@ -61,6 +61,7 @@ RAUC_CONF_OPTS += -Dstreaming=false
 endif
 
 HOST_RAUC_DEPENDENCIES = \
+	host-json-glib \
 	host-pkgconf \
 	host-openssl \
 	host-libglib2 \
@@ -68,9 +69,9 @@ HOST_RAUC_DEPENDENCIES = \
 	$(if $(BR2_PACKAGE_HOST_LIBP11),host-libp11)
 
 HOST_RAUC_CONF_OPTS += \
+	-Djson=enabled \
 	-Dnetwork=false \
 	-Dstreaming=false \
-	-Djson=disabled \
 	-Dservice=false \
 	-Dtests=false
 

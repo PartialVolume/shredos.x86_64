@@ -1,7 +1,5 @@
-/output
-/dist
+/output*
 /dl
-/build_all_shredos.log
 /.auto.deps
 /.config.cmd
 /.config.old
@@ -15,5 +13,3 @@
 *.rej
 *~
 *.pyc
-.DS_Store
-*.tar.gz

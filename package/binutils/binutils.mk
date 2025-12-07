@@ -9,13 +9,13 @@
 BINUTILS_VERSION = $(call qstrip,$(BR2_BINUTILS_VERSION))
 ifeq ($(BINUTILS_VERSION),)
 ifeq ($(BR2_arc),y)
-BINUTILS_VERSION = arc-2023.09-release
+BINUTILS_VERSION = arc-2024.12-release
 else
-BINUTILS_VERSION = 2.42
+BINUTILS_VERSION = 2.43.1
 endif
 endif # BINUTILS_VERSION
 
-ifeq ($(BINUTILS_VERSION),arc-2023.09-release)
+ifeq ($(BINUTILS_VERSION),arc-2024.12-release)
 BINUTILS_SITE = $(call github,foss-for-synopsys-dwc-arc-processors,binutils-gdb,$(BINUTILS_VERSION))
 BINUTILS_SOURCE = binutils-gdb-$(BINUTILS_VERSION).tar.gz
 BINUTILS_FROM_GIT = y
@@ -31,6 +31,9 @@ BINUTILS_LICENSE = GPL-3.0+, libiberty LGPL-2.1+
 BINUTILS_LICENSE_FILES = COPYING3 COPYING.LIB
 BINUTILS_CPE_ID_VENDOR = gnu
 
+# 0003-objdump-memleak.patch
+BINUTILS_IGNORE_CVES += CVE-2025-3198
+
 ifeq ($(BINUTILS_FROM_GIT),y)
 BINUTILS_DEPENDENCIES += host-flex host-bison
 HOST_BINUTILS_DEPENDENCIES += host-flex host-bison
@@ -44,6 +47,13 @@ BINUTILS_DISABLE_GDB_CONF_OPTS = \
 	--disable-gdb
 
 # We need to specify host & target to avoid breaking ARM EABI
+#
+# --with-system-readline to never build readline, as binutils doesn't
+# need it (only gdb does). For binutils release tarballs, readline
+# is not shipped, but when we get it from git, it is present and
+# gets built which can cause build issues, so force skipping
+# it. Note: the configure script will not check for readline as it
+# doesn't need it.
 BINUTILS_CONF_OPTS = \
 	--disable-multilib \
 	--disable-werror \
@@ -55,7 +65,8 @@ BINUTILS_CONF_OPTS = \
 	--disable-gprofng \
 	$(BINUTILS_DISABLE_GDB_CONF_OPTS) \
 	$(BINUTILS_EXTRA_CONFIG_OPTIONS) \
-	--without-zstd
+	--without-zstd \
+	--with-system-readline
 
 ifeq ($(BR2_STATIC_LIBS),y)
 BINUTILS_CONF_OPTS += --disable-plugins
@@ -79,6 +90,13 @@ endif
 
 # "host" binutils should actually be "cross"
 # We just keep the convention of "host utility" for now
+#
+# --with-system-readline to never build readline, as binutils doesn't
+# need it (only gdb does). For binutils release tarballs, readline
+# is not shipped, but when we get it from git, it is present and
+# gets built which can cause build issues, so force skipping
+# it. Note: the configure script will not check for readline as it
+# doesn't need it.
 HOST_BINUTILS_CONF_OPTS = \
 	--disable-multilib \
 	--disable-werror \
@@ -92,7 +110,8 @@ HOST_BINUTILS_CONF_OPTS = \
 	--enable-lto \
 	$(BINUTILS_DISABLE_GDB_CONF_OPTS) \
 	$(BINUTILS_EXTRA_CONFIG_OPTIONS) \
-	--without-zstd
+	--without-zstd \
+	--with-system-readline
 
 ifeq ($(BR2_BINUTILS_GPROFNG),y)
 HOST_BINUTILS_DEPENDENCIES += host-bison

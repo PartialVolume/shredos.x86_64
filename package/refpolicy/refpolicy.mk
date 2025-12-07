@@ -23,7 +23,7 @@ REFPOLICY_SITE = $(call qstrip,$(BR2_PACKAGE_REFPOLICY_CUSTOM_REPO_URL))
 REFPOLICY_SITE_METHOD = git
 BR_NO_CHECK_HASH_FOR += $(REFPOLICY_SOURCE)
 else
-REFPOLICY_VERSION = 2.20240226
+REFPOLICY_VERSION = 2.20250923
 REFPOLICY_SOURCE = refpolicy-$(REFPOLICY_VERSION).tar.bz2
 REFPOLICY_SITE = https://github.com/SELinuxProject/refpolicy/releases/download/RELEASE_$(subst .,_,$(REFPOLICY_VERSION))
 endif
@@ -101,6 +101,21 @@ define REFPOLICY_CONFIGURE_SYSTEMD
 endef
 endif
 
+ifeq ($(BR2_REFPOLICY_ENABLEAUDIT),y)
+define REFPOLICY_CONFIGURE_ENABLEAUDIT
+	$(REFPOLICY_MAKE) -C $(@D) enableaudit
+endef
+endif
+
+# Override defaults for policy booleans. name=(true|false) will result
+# in the given value, just a name implies "true".
+define REFPOLICY_CONFIGURE_BOOLEANS
+	$(foreach b,$(call qstrip,$(BR2_REFPOLICY_SET_BOOLEANS)),
+		read -r name value < <(echo "$(subst =, ,$(b))"); \
+		$(SED) "/^$${name} =/c\\$${name} = $${value:-true}" $(@D)/policy/booleans.conf
+	)
+endef
+
 define REFPOLICY_CONFIGURE_CMDS
 	$(SED) "/OUTPUT_POLICY/c\OUTPUT_POLICY = $(REFPOLICY_POLICY_VERSION)" \
 		$(@D)/build.conf
@@ -111,7 +126,9 @@ define REFPOLICY_CONFIGURE_CMDS
 		$(REFPOLICY_COPY_EXTRA_MODULES)
 	)
 	$(REFPOLICY_MAKE) -C $(@D) bare conf
+	$(REFPOLICY_CONFIGURE_ENABLEAUDIT)
 	$(REFPOLICY_CONFIGURE_MODULES)
+	$(REFPOLICY_CONFIGURE_BOOLEANS)
 endef
 
 define REFPOLICY_BUILD_CMDS

@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-PROJ_VERSION = 9.5.0
+PROJ_VERSION = 9.5.1
 PROJ_SITE = http://download.osgeo.org/proj
 PROJ_LICENSE = MIT
 PROJ_LICENSE_FILES = COPYING
@@ -20,7 +20,7 @@ PROJ_CXXFLAGS += -O0
 endif
 
 PROJ_CONF_OPTS = \
-	-DBUILD_APPS=OFF \
+	-DBUILD_APPS=$(if $(BR2_PACKAGE_PROJ_APPS),ON,OFF) \
 	-DCMAKE_C_FLAGS="$(PROJ_CFLAGS)" \
 	-DCMAKE_CXX_FLAGS="$(PROJ_CXXFLAGS)"
 

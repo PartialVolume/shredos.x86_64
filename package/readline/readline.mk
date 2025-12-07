@@ -4,14 +4,17 @@
 #
 ################################################################################
 
-READLINE_VERSION = 8.2
+READLINE_VERSION = 8.3
 READLINE_SITE = $(BR2_GNU_MIRROR)/readline
 READLINE_INSTALL_STAGING = YES
 READLINE_DEPENDENCIES = ncurses host-autoconf
 HOST_READLINE_DEPENDENCIES = host-ncurses host-autoconf
 READLINE_CONF_ENV = bash_cv_func_sigsetjmp=yes \
 	bash_cv_wcwidth_broken=no
-READLINE_CONF_OPTS = --disable-install-examples
+READLINE_CONF_OPTS = \
+	--disable-install-examples \
+	--with-curses \
+	--with-shared-termcap-library
 READLINE_LICENSE = GPL-3.0+
 READLINE_LICENSE_FILES = COPYING
 READLINE_CPE_ID_VENDOR = gnu

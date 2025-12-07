@@ -1,5 +1,5 @@
-# Generated locally after checking GPG signature from https://github.com/cage-kiosk/cage/releases/download/v0.1.5/cage-0.1.5.tar.gz.sig
-sha256  ece0312e559289df0238289ea6c60e9fed32d27fe3ae8a8f83eeff26ddc239e1  cage-0.1.5.tar.gz
+# Locally computed
+sha256  9603ba1a130696dd39793ffab68397db504b378a733c09c0b86a5ebe3d6fe58d  cage-v0.2.1-git4.tar.gz
 
 # Hashes for license files:
 sha256  e117104073335dbaf78596fb1bedf89dda63c71f60f0b665947b2d369c77ecee  LICENSE

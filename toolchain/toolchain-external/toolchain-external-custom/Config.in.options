@@ -46,12 +46,19 @@ choice
 	  Set to the gcc version that is used by your external
 	  toolchain.
 
+config BR2_TOOLCHAIN_EXTERNAL_GCC_15
+	bool "15.x"
+	depends on !BR2_ARCH_NEEDS_GCC_AT_LEAST_16
+	select BR2_TOOLCHAIN_GCC_AT_LEAST_15
+
 config BR2_TOOLCHAIN_EXTERNAL_GCC_14
 	bool "14.x"
+	depends on !BR2_ARCH_NEEDS_GCC_AT_LEAST_15
 	select BR2_TOOLCHAIN_GCC_AT_LEAST_14
 
 config BR2_TOOLCHAIN_EXTERNAL_GCC_13
 	bool "13.x"
+	depends on !BR2_ARCH_NEEDS_GCC_AT_LEAST_14
 	select BR2_TOOLCHAIN_GCC_AT_LEAST_13
 
 config BR2_TOOLCHAIN_EXTERNAL_GCC_12
@@ -166,8 +173,32 @@ choice
 	  If your toolchain uses headers newer than the latest version
 	  in the choice, then select the latest version.
 
+config BR2_TOOLCHAIN_EXTERNAL_HEADERS_6_17
+	bool "6.17.x or later"
+	select BR2_TOOLCHAIN_HEADERS_AT_LEAST_6_17
+
+config BR2_TOOLCHAIN_EXTERNAL_HEADERS_6_16
+	bool "6.16.x"
+	select BR2_TOOLCHAIN_HEADERS_AT_LEAST_6_16
+
+config BR2_TOOLCHAIN_EXTERNAL_HEADERS_6_15
+	bool "6.15.x"
+	select BR2_TOOLCHAIN_HEADERS_AT_LEAST_6_15
+
+config BR2_TOOLCHAIN_EXTERNAL_HEADERS_6_14
+	bool "6.14.x"
+	select BR2_TOOLCHAIN_HEADERS_AT_LEAST_6_14
+
+config BR2_TOOLCHAIN_EXTERNAL_HEADERS_6_13
+	bool "6.13.x"
+	select BR2_TOOLCHAIN_HEADERS_AT_LEAST_6_13
+
+config BR2_TOOLCHAIN_EXTERNAL_HEADERS_6_12
+	bool "6.12.x"
+	select BR2_TOOLCHAIN_HEADERS_AT_LEAST_6_12
+
 config BR2_TOOLCHAIN_EXTERNAL_HEADERS_6_11
-	bool "6.11.x or later"
+	bool "6.11.x"
 	select BR2_TOOLCHAIN_HEADERS_AT_LEAST_6_11
 
 config BR2_TOOLCHAIN_EXTERNAL_HEADERS_6_10
