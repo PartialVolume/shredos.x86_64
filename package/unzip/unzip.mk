@@ -43,3 +43,8 @@ UNZIP_CONF_OPTS += \
 	-DCMAKE_CXX_FLAGS="$(UNZIP_TARGET_CXXFLAGS) -DLARGE_FILE_SUPPORT"
 
 $(eval $(cmake-package))
+
+define UNZIP_FIX_GMTIME_LOCALTIME
+	$(SED) '/gmtime(), *\*localtime();/d' $(@D)/unix/unxcfg.h
+endef
+UNZIP_POST_PATCH_HOOKS += UNZIP_FIX_GMTIME_LOCALTIME
