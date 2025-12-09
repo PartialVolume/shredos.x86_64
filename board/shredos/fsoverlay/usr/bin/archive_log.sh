@@ -46,6 +46,62 @@ archive_drive_directory="/archive_drive"
 # The nwipe logs that have been sent are moved into this directory in RAM disk.
 sent_directory="/sent"
 
+
+# Default PDF report path (same as nwipe default: current working directory,
+# mapped here to the RAM disk root).
+pdf_report_path="/"
+
+# Source directory on the RAM disk that contains nwipe PDF reports.
+pdf_src_dir="/"
+
+# Destination subdirectory on the USB drive (relative to $archive_drive_directory).
+pdf_dst_subpath=""
+
+# Extract nwipe_options from the kernel command line and honour -P / --PDFreportpath.
+nwipe_opts=$(kernel_cmdline_extractor nwipe_options)
+#cmdline="$(cat /proc/cmdline 2>/dev/null)"
+if [ $? == 0 ] then;
+    if [ -n "$nwipe_opts" ]; then
+        set -- $nwipe_opts
+        while [ $# -gt 0 ]; do
+            case "$1" in
+                -P|--PDFreportpath)
+                    shift
+                    if [ $# -gt 0 ]; then
+                        pdf_report_path="$1"
+                    fi
+                    ;;
+                --PDFreportpath=*)
+                    pdf_report_path="${1#--PDFreportpath=}"
+                    ;;
+            esac
+            shift
+        done
+    fi
+fi
+
+# Normalise PDF path:
+# - treat empty, "." and "noPDF" as "root" ("/") for the purpose of archiving
+# - ensure it is an absolute path without trailing slash
+if [ -z "$pdf_report_path" ] || [ "$pdf_report_path" = "." ] || [ "$pdf_report_path" = "noPDF" ]; then
+    pdf_report_path="/"
+fi
+
+pdf_report_path="${pdf_report_path%/}"
+case "$pdf_report_path" in
+    "") pdf_report_path="/";;
+    /*) ;;
+    *)  pdf_report_path="/$pdf_report_path";;
+esac
+
+if [ "$pdf_report_path" = "/" ]; then
+    pdf_src_dir="/"
+    pdf_dst_subpath=""
+else
+    pdf_src_dir="$pdf_report_path"
+    pdf_dst_subpath="$pdf_report_path"
+fi
+
 # From all the drives on the system, try to locate the ShredOS boot disc
 drive_partition=$(find_shredos_boot_disc.sh)
 
@@ -85,7 +141,16 @@ else
     fi
 
     # Copy the PDF certificates over to the exFAT/FAT32 partition
-    cp /nwipe_report_*pdf "$archive_drive_directory/"
+#    cp /nwipe_report_*pdf "$archive_drive_directory/"
+#    if [ $? != 0 ]; then
+    # Copy the PDF certificates over to the exFAT/FAT32 partition.
+    # If a custom PDF report path was specified via nwipe_options (-P / --PDFreportpath),
+    # mirror that subdirectory on the USB drive.
+    if [ -n "$pdf_dst_subpath" ]; then
+        mkdir -p "$archive_drive_directory$pdf_dst_subpath"
+    fi
+    cp "$pdf_src_dir"/nwipe_report_*pdf "$archive_drive_directory$pdf_dst_subpath/"
+
     if [ $? != 0 ]; then
 	printf "[`date "$date_format"`] archive_log.sh: Unable to copy the nwipe_report...pdf file to the root of $drive_partition:/\n" 2>&1 | tee -a transfer.log
     else
@@ -118,7 +183,8 @@ else
                             printf "[`date "$date_format"`] archive_log.sh: Moved the nwipe logs into the $sent_directory\n" 2>&1 | tee -a transfer.log
                 fi
                 # Move the nwipe PDF certificates into the RAM disc sent directory
-                mv /nwipe_report*pdf "$sent_directory/"
+#               mv /nwipe_report*pdf "$sent_directory/"
+                mv "$pdf_src_dir"/nwipe_report*pdf "$sent_directory/"
                 if [ $? != 0 ]; then
                             printf "[`date "$date_format"`] archive_log.sh: Unable to move the PDF certificates into the $sent_directory on the RAM disc\n" 2>&1 | tee -a transfer.log
                 else
