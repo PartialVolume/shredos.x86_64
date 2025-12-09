@@ -59,8 +59,7 @@ pdf_dst_subpath=""
 
 # Extract nwipe_options from the kernel command line and honour -P / --PDFreportpath.
 nwipe_opts=$(kernel_cmdline_extractor nwipe_options)
-#cmdline="$(cat /proc/cmdline 2>/dev/null)"
-if [ $? == 0 ] then;
+if [ $? == 0 ]; then
     if [ -n "$nwipe_opts" ]; then
         set -- $nwipe_opts
         while [ $# -gt 0 ]; do
@@ -183,7 +182,6 @@ else
                             printf "[`date "$date_format"`] archive_log.sh: Moved the nwipe logs into the $sent_directory\n" 2>&1 | tee -a transfer.log
                 fi
                 # Move the nwipe PDF certificates into the RAM disc sent directory
-#               mv /nwipe_report*pdf "$sent_directory/"
                 mv "$pdf_src_dir"/nwipe_report*pdf "$sent_directory/"
                 if [ $? != 0 ]; then
                             printf "[`date "$date_format"`] archive_log.sh: Unable to move the PDF certificates into the $sent_directory on the RAM disc\n" 2>&1 | tee -a transfer.log
