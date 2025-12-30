@@ -878,6 +878,9 @@ INFO: vfat(boot.vfat): cmd: "rm -f "/home/shredos/Downloads/shredos/mcopybug/shr
 make[1]: [Makefile:823: target-post-image] Error 1
 make: [Makefile:84: _all] Error 2
 
+- **Konsole randomly closes in the middle of a build** If you are building on a KDE based distro like KDE Neon and the konsole gets killed by the kernels oom (out of memory), killer. The first sign that you have a problem is a pop up message appearing that says the oom killer has killed various processes. Once this notification appears you can't get rid of it. The following may help to resolve why the oom killer is activated:
+  -- Check your /swapfile size, for some reason a default install of KDE Neon and very likley ubuntu only create a \swapfile that's 512Mbytes. This is nowhere near large enough and you will get the oom killer randomly killing processes including the terminal that your build process is running in. If you have the disc space make the swap file the same size as your system memory. There is some debate over what should be the best size but when  your system RAM is 16G and your swapfile is 0.5G that is asking for random processes to get killed especially if you are trying to build ShredOS.
+  -- Again, if building on the KDE platform with such a small swap file and 1Tbyte in your home directory the baloo file indexor will cause memory issues. So while building ShredOS, disable the file indexer. Your build will no longer crash and will be faster.
 
 ### Commands to configure buildroot, you will only need to use these if you are making changes to ShredOS
 
