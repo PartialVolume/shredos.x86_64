@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-MODEM_MANAGER_VERSION = 1.22.0
+MODEM_MANAGER_VERSION = 1.24.2
 MODEM_MANAGER_SOURCE = ModemManager-$(MODEM_MANAGER_VERSION).tar.gz
 MODEM_MANAGER_SITE = https://gitlab.freedesktop.org/mobile-broadband/ModemManager/-/archive/$(MODEM_MANAGER_VERSION)
 MODEM_MANAGER_LICENSE = GPL-2.0+ (programs, plugins), LGPL-2.0+ (libmm-glib)
@@ -46,6 +46,12 @@ MODEM_MANAGER_DEPENDENCIES += libqrtr-glib
 MODEM_MANAGER_CONF_OPTS += -Dqrtr=true
 else
 MODEM_MANAGER_CONF_OPTS += -Dqrtr=false
+endif
+
+ifeq ($(BR2_PACKAGE_MODEM_MANAGER_ATVIADBUS),y)
+MODEM_MANAGER_CONF_OPTS += -Dat_command_via_dbus=true
+else
+MODEM_MANAGER_CONF_OPTS += -Dat_command_via_dbus=false
 endif
 
 ifeq ($(BR2_PACKAGE_SYSTEMD),y)

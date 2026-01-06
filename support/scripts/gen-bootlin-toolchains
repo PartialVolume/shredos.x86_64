@@ -36,6 +36,7 @@ arches = {
     'arcle-750d': {
         'conditions': ['BR2_arcle', 'BR2_arc750d'],
         'prefix': 'arc',
+        'gdbserver': False,
     },
     'arcle-hs38': {
         'conditions': ['BR2_arcle', 'BR2_archs38'],
@@ -52,12 +53,12 @@ arches = {
         'prefix': 'arm',
     },
     'armv7-eabihf': {
-        'conditions': ['BR2_arm', 'BR2_ARM_CPU_ARMV7A', 'BR2_ARM_EABIHF'],
+        'conditions': ['BR2_arm', '(BR2_ARM_CPU_ARMV7A && BR2_ARM_EABIHF) || BR2_ARM_CPU_ARMV8A'],
         'test_options': ['BR2_arm', 'BR2_cortex_a8', 'BR2_ARM_EABIHF'],
         'prefix': 'arm',
     },
     'armebv7-eabihf': {
-        'conditions': ['BR2_armeb', 'BR2_ARM_CPU_ARMV7A', 'BR2_ARM_EABIHF'],
+        'conditions': ['BR2_armeb', '(BR2_ARM_CPU_ARMV7A && BR2_ARM_EABIHF) || BR2_ARM_CPU_ARMV8A'],
         'test_options': ['BR2_armeb', 'BR2_cortex_a8', 'BR2_ARM_EABIHF'],
         'prefix': 'armeb',
     },
@@ -117,10 +118,6 @@ arches = {
     'mips64r6el-n32': {
         'conditions': ['BR2_mips64el', 'BR2_mips_64r6', 'BR2_MIPS_NABI32', '!BR2_MIPS_SOFT_FLOAT'],
         'prefix': 'mips64el',
-    },
-    'nios2': {
-        'conditions': ['BR2_nios2'],
-        'prefix': 'nios2',
     },
     'openrisc': {
         'conditions': ['BR2_or1k'],
@@ -366,7 +363,7 @@ class Toolchain:
                 selects.append("BR2_ENABLE_LOCALE")
 
             # thread support
-            if frag.startswith("BR2_TOOLCHAIN_EXTERNAL_HAS_THREADS"):
+            if frag.startswith("BR2_TOOLCHAIN_EXTERNAL_HAS_THREADS="):
                 selects.append("BR2_TOOLCHAIN_HAS_THREADS")
 
             if frag.startswith("BR2_TOOLCHAIN_EXTERNAL_HAS_THREADS_DEBUG"):
@@ -482,6 +479,7 @@ def get_toolchains():
             elif parts[2].startswith("bleeding-edge-"):
                 variant = "bleeding-edge"
                 version = parts[2][len("bleeding-edge-"):]
+
             tmp[(arch, libc, variant)] = version
 
         if len(tmp) == 0:

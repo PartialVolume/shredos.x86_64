@@ -6,11 +6,21 @@ Intro
 These instructions apply to all models of the Raspberry Pi:
   - the original models A and B,
   - the "enhanced" models A+ and B+,
+  - the model CM (aka Raspberry Pi Compute Module).
+  - the model Zero (aka Raspberry Pi Zero)
+  - the model Zero W (aka Raspberry Pi Zero W)
+  - the model Zero 2 W (aka Raspberry Pi Zero 2 W)
   - the model B2 (aka Raspberry Pi 2)
   - the model B3 (aka Raspberry Pi 3).
+  - the model CM3 (aka Raspberry Pi Compute Module 3).
+  - the model CM3+ (aka Raspberry Pi Compute Module 3+).
   - the model B4 (aka Raspberry Pi 4).
+  - the model 400 (aka Raspberry Pi 400).
   - the model CM4 (aka Raspberry Pi Compute Module 4 and IO Board).
+  - the model CM4s (aka Raspberry Pi Compute Module 4s).
   - the model B5 (aka Raspberry Pi 5).
+  - the model 500 (aka Raspberry Pi 500).
+  - the model CM5 (aka Raspberry Pi Compute Module 5 and IO Board).
 
 How to build it
 ===============
@@ -21,7 +31,7 @@ Configure Buildroot
 There are several Raspberry Pi defconfig files in Buildroot, one for
 each major variant, which you should base your work on:
 
-For models A, B, A+ or B+:
+For models A, B, A+, B+ and CM:
 
   $ make raspberrypi_defconfig
 
@@ -37,23 +47,31 @@ For model Zero 2 W (model B3 in smaller form factor):
 
   $ make raspberrypizero2w_defconfig
 
+or for model Zero 2 W (model B3 in smaller form factor, 64-bit):
+
+  $ make raspberrypizero2w_64_defconfig
+
 For model 2 B:
 
   $ make raspberrypi2_defconfig
 
-For model 3 B and B+:
+or for model 2 B (Rev 1.2, model B3 without wireless LAN and Bluetooth, 64 bit):
+
+  $ make raspberrypi2_64_defconfig
+
+For model 3 B, B+, CM3 and CM3+:
 
   $ make raspberrypi3_defconfig
 
-or for model 3 B and B+ (64 bit):
+or for model 3 B, B+, CM3 and CM3+ (64 bit):
 
   $ make raspberrypi3_64_defconfig
 
-For model 4 B:
+For model 4 B, 400, CM4 and CM4s:
 
   $ make raspberrypi4_defconfig
 
-or for model 4 B (64 bit):
+or for model 4 B, 400, CM4 and CM4s (64 bit):
 
   $ make raspberrypi4_64_defconfig
 
@@ -65,9 +83,13 @@ or for CM4 (on IO Board - 64 bit):
 
   $ make raspberrypicm4io_64_defconfig
 
-For model 5 B:
+For model 5 B and 500:
 
   $ make raspberrypi5_defconfig
+
+For model CM5 (on IO Board):
+
+  $ make raspberrypicm5io_defconfig
 
 Build the rootfs
 ----------------
@@ -93,29 +115,32 @@ After building, you should obtain this tree:
     +-- bcm2708-rpi-cm.dtb          [1]
     +-- bcm2708-rpi-zero.dtb        [1]
     +-- bcm2708-rpi-zero-w.dtb      [1]
-    +-- bcm2710-rpi-zero-2-w.dtb    [1]
     +-- bcm2709-rpi-2-b.dtb         [1]
     +-- bcm2710-rpi-2-b.dtb         [1]
     +-- bcm2710-rpi-3-b.dtb         [1]
     +-- bcm2710-rpi-3-b-plus.dtb    [1]
     +-- bcm2710-rpi-cm3.dtb         [1]
+    +-- bcm2710-rpi-zero-2-w.dtb    [1]
     +-- bcm2711-rpi-4-b.dtb         [1]
     +-- bcm2711-rpi-400.dtb         [1]
     +-- bcm2711-rpi-cm4.dtb         [1]
     +-- bcm2711-rpi-cm4s.dtb        [1]
     +-- bcm2712-rpi-5-b.dtb         [1]
     +-- bcm2712d0-rpi-5-b.dtb       [1]
+    +-- bcm2712-rpi-500.dtb         [1]
+    +-- bcm2712-rpi-cm5-cm5io       [1]
+    +-- bcm2712-rpi-cm5l-cm5io      [1]
     +-- boot.vfat
     +-- rootfs.ext4
     +-- rpi-firmware/
-    |   +-- bootcode.bin
+    |   +-- bootcode.bin            [2]
     |   +-- cmdline.txt
     |   +-- config.txt
-    |   +-- fixup.dat               [1]
-    |   +-- fixup4.dat              [1]
-    |   +-- start.elf               [1]
-    |   +-- start4.elf              [1]
-    |   `-- overlays/               [2]
+    |   +-- fixup.dat               [3]
+    |   +-- fixup4.dat              [4]
+    |   +-- start.elf               [3]
+    |   +-- start4.elf              [4]
+    |   `-- overlays/               [5]
     +-- sdcard.img
     +-- Image                       [1]
     `-- zImage                      [1]
@@ -123,10 +148,19 @@ After building, you should obtain this tree:
 [1] Not all of them will be present, depending on the RaspberryPi
     model you are using.
 
-[2] Only for the Raspberry Pi 3/4 Models (overlay miniuart-bt is needed
-    to enable the RPi3 serial console otherwise occupied by the bluetooth
-    chip). Alternative would be to disable the serial console in cmdline.txt
-    and /etc/inittab.
+[2] Only for the Raspberry Pi 1, 2, 3, Zero, Zero W and Zero 2 W. The Raspberry
+    Pi 4, 400, 5 and the Compute Module 4, 4s and 5 load the second stage
+    bootloader from a SPI flash EEPROM.
+
+[3] Only for the Raspberry Pi 1, 2, 3, Zero and Zero 2.
+
+[4] Only for the Raspberry Pi 4, 400, Compute Module 4 and 4s.
+
+[5] Only for the Raspberry Pi installing device-tree overlays. The Raspberry Pi
+    with Bluetooth connectivity (Zero W, Zero 2 W, 3, 4, 400, Compute Module 4
+    and 4s) use the miniuart-bt overlay to enable UART0 for the serial console;
+    the Bluetooth uses the mini-UART instead. Alternative would be to disable
+    the serial console in cmdline.txt and /etc/inittab.
 
 How to write the SD card
 ========================
@@ -170,3 +204,33 @@ for CM4 modules with eMMC memory proceed as following:
 - power down CM4/IO Board
 - remove jumper on IO Board header J2 to re-enable eMMC boot
 - power up CM4/IO Board
+
+CM5 debug UART
+==============
+
+The debug UART header is not assembled on the Compute Module 5.
+
+	2.23. Debug UART
+
+	Space is provided for the user to fit a debug UART connector. This
+	connector provides the same functionality as Raspberry Pi 5. The
+	connector is a three-pin 1mm pitch JST-SH connector, Part number
+	BM03B-SRSS-TB. The signals are replicated on the bottom as test points.
+
+	Appendix B: Test Points
+
+	| Reference | X   | Y    | NAME          |
+	| TP35      | 11  | 37.8 | DEBUG_UART_TX |
+	| TP36      | 8.5 | 37.1 | DEBUG_UART_RX |
+
+	Debug UART
+
+	TP35 and TP36 are a TX and RX of the debug UART. TP46 should be used as
+	the ground. It is very useful to have access to these pins during
+	programming and initial boot.
+
+See https://datasheets.raspberrypi.com/cm5/cm5-datasheet.pdf.
+
+The signals are not wired up to 100-pin headers either. And thus, it is
+impossible to output early boot traces in the EEPROM firmware without
+assembling a JST-SH connector (or using the test points).

@@ -1,10 +1,30 @@
 if BR2_TOOLCHAIN_BARE_METAL_BUILDROOT
 
 config BR2_TOOLCHAIN_BARE_METAL_BUILDROOT_ARCH
-	string "architecture tuple"
+	string "list of architecture tuples"
 	help
-	  This option allows to define the architecture tuple for the
-	  bare-metal toolchain.
+	  This option allows to define the list of architecture
+	  tuples for which bare-metal toolchains will be created.
+	  One toolchain will be built for each of the architecture
+	  tuples specified in this option.
+
+	  For example, to build both a Microblaze and a RISC-V bare
+	  metal toolchain, use the following definition:
+	  "microblazeel-buildroot-elf riscv32-buildroot-elf"
+
+config BR2_TOOLCHAIN_BARE_METAL_BUILDROOT_MULTILIB
+	bool "Enable multilib"
+	help
+	  Sometimes the default GCC and newlib libraries for a given
+	  architecture are not the desired ABI. Since ABI
+	  definitions are different for each architecture, this
+	  option will enable multilib configuration, so that all
+	  available ABI libraries are built which will guarantee
+	  that the desired version will be available for user
+	  applications.
+
+	  When enabled, this option will apply to all architecture
+	  tuples in the list.
 
 source "package/newlib-bare-metal/Config.in"
 

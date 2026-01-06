@@ -1,7 +1,14 @@
 config BR2_PACKAGE_NVME
 	bool "nvme"
+	depends on !BR2_STATIC_LIBS # dlfcn.h
+	depends on BR2_USE_MMU # libnvme
+	select BR2_PACKAGE_LIBNVME
 	help
 	  NVME utility, a utility for interacting with standard NVM
 	  Express (optimized PCI Express SSD interface) devices.
 
 	  https://github.com/linux-nvme/nvme-cli
+
+comment "nvme needs a toolchain w/ dynamic library"
+	depends on BR2_STATIC_LIBS
+	depends on BR2_USE_MMU

@@ -8,7 +8,7 @@ class TestGrubi386BIOS(infra.basetest.BRTest):
         """
         BR2_x86_core2=y
         BR2_TOOLCHAIN_EXTERNAL=y
-        BR2_TOOLCHAIN_EXTERNAL_BOOTLIN_X86_CORE2_UCLIBC_STABLE=y
+        BR2_TOOLCHAIN_EXTERNAL_BOOTLIN_X86_CORE2_GLIBC_STABLE=y
         BR2_ROOTFS_POST_BUILD_SCRIPT="board/pc/post-build.sh {}"
         BR2_ROOTFS_POST_IMAGE_SCRIPT="support/scripts/genimage.sh"
         BR2_ROOTFS_POST_SCRIPT_ARGS="-c board/pc/genimage-bios.cfg"
@@ -37,7 +37,7 @@ class TestGrubi386EFI(infra.basetest.BRTest):
         """
         BR2_x86_core2=y
         BR2_TOOLCHAIN_EXTERNAL=y
-        BR2_TOOLCHAIN_EXTERNAL_BOOTLIN_X86_CORE2_UCLIBC_STABLE=y
+        BR2_TOOLCHAIN_EXTERNAL_BOOTLIN_X86_CORE2_GLIBC_STABLE=y
         BR2_ROOTFS_POST_BUILD_SCRIPT="board/pc/post-build.sh {}"
         BR2_ROOTFS_POST_IMAGE_SCRIPT="board/pc/post-image-efi.sh"
         BR2_LINUX_KERNEL=y
@@ -57,28 +57,6 @@ class TestGrubi386EFI(infra.basetest.BRTest):
         BR2_PACKAGE_HOST_MTOOLS=y
         BR2_PACKAGE_HOST_DOSFSTOOLS=y
         """.format(infra.filepath("tests/boot/test_grub/post-build.sh"))
-
-    def __init__(self, names):
-        """Setup common test variables."""
-        super(TestGrubi386EFI, self).__init__(names)
-        """All EDK2 releases <= edk2-stable202408 can't be fetched from git
-           anymore due to a missing git submodule as reported by [1].
-
-           Usually Buildroot fall-back using https://sources.buildroot.net
-           thanks to BR2_BACKUP_SITE where a backup of the generated archive
-           is available. But the BRConfigTest remove BR2_BACKUP_SITE default
-           value while generating the .config used by TestGrubi386EFI.
-
-           Replace the BR2_BACKUP_SITE override from BRConfigTest in order
-           to continue testing EDK2 package using the usual backup site.
-
-           To be removed with the next EDK2 version bump using this commit
-           [2].
-
-           [1] https://github.com/tianocore/edk2/issues/6398
-           [2] https://github.com/tianocore/edk2/commit/95d8a1c255cfb8e063d679930d08ca6426eb5701
-        """
-        self.config = self.config.replace('BR2_BACKUP_SITE=""\n', '')
 
     def test_run(self):
         hda = os.path.join(self.builddir, "images", "disk.img")
@@ -110,7 +88,7 @@ class TestGrubX8664EFI(infra.basetest.BRTest):
         BR2_x86_64=y
         BR2_x86_corei7=y
         BR2_TOOLCHAIN_EXTERNAL=y
-        BR2_TOOLCHAIN_EXTERNAL_BOOTLIN_X86_64_UCLIBC_STABLE=y
+        BR2_TOOLCHAIN_EXTERNAL_BOOTLIN_X86_64_GLIBC_STABLE=y
         BR2_ROOTFS_POST_BUILD_SCRIPT="board/pc/post-build.sh {}"
         BR2_ROOTFS_POST_IMAGE_SCRIPT="board/pc/post-image-efi.sh"
         BR2_LINUX_KERNEL=y
@@ -130,28 +108,6 @@ class TestGrubX8664EFI(infra.basetest.BRTest):
         BR2_PACKAGE_HOST_MTOOLS=y
         BR2_PACKAGE_HOST_DOSFSTOOLS=y
         """.format(infra.filepath("tests/boot/test_grub/post-build.sh"))
-
-    def __init__(self, names):
-        """Setup common test variables."""
-        super(TestGrubX8664EFI, self).__init__(names)
-        """All EDK2 releases <= edk2-stable202408 can't be fetched from git
-           anymore due to a missing git submodule as reported by [1].
-
-           Usually Buildroot fall-back using https://sources.buildroot.net
-           thanks to BR2_BACKUP_SITE where a backup of the generated archive
-           is available. But the BRConfigTest remove BR2_BACKUP_SITE default
-           value while generating the .config used by TestGrubX8664EFI.
-
-           Replace the BR2_BACKUP_SITE override from BRConfigTest in order
-           to continue testing EDK2 package using the usual backup site.
-
-           To be removed with the next EDK2 version bump using this commit
-           [2].
-
-           [1] https://github.com/tianocore/edk2/issues/6398
-           [2] https://github.com/tianocore/edk2/commit/95d8a1c255cfb8e063d679930d08ca6426eb5701
-        """
-        self.config = self.config.replace('BR2_BACKUP_SITE=""\n', '')
 
     def test_run(self):
         hda = os.path.join(self.builddir, "images", "disk.img")
@@ -202,28 +158,6 @@ class TestGrubAArch64EFI(infra.basetest.BRTest):
         """.format(post_image=infra.filepath("tests/boot/test_grub/post-image-aarch64-efi.sh"),
                    linux_fragment=infra.filepath("tests/boot/test_grub/linux-aarch64-efi.config"))
 
-    def __init__(self, names):
-        """Setup common test variables."""
-        super(TestGrubAArch64EFI, self).__init__(names)
-        """All EDK2 releases <= edk2-stable202408 can't be fetched from git
-           anymore due to a missing git submodule as reported by [1].
-
-           Usually Buildroot fall-back using https://sources.buildroot.net
-           thanks to BR2_BACKUP_SITE where a backup of the generated archive
-           is available. But the BRConfigTest remove BR2_BACKUP_SITE default
-           value while generating the .config used by TestGrubAArch64EFI.
-
-           Replace the BR2_BACKUP_SITE override from BRConfigTest in order
-           to continue testing EDK2 package using the usual backup site.
-
-           To be removed with the next EDK2 version bump using this commit
-           [2].
-
-           [1] https://github.com/tianocore/edk2/issues/6398
-           [2] https://github.com/tianocore/edk2/commit/95d8a1c255cfb8e063d679930d08ca6426eb5701
-        """
-        self.config = self.config.replace('BR2_BACKUP_SITE=""\n', '')
-
     def test_run(self):
         hda = os.path.join(self.builddir, "images", "disk.img")
         bios = os.path.join(self.builddir, "images", "QEMU_EFI.fd")
@@ -269,28 +203,6 @@ class TestGrubRiscV64EFI(infra.basetest.BRTest):
         BR2_PACKAGE_HOST_QEMU=y
         BR2_PACKAGE_HOST_QEMU_SYSTEM_MODE=y
         """
-
-    def __init__(self, names):
-        """Setup common test variables."""
-        super(TestGrubRiscV64EFI, self).__init__(names)
-        """All EDK2 releases <= edk2-stable202408 can't be fetched from git
-           anymore due to a missing git submodule as reported by [1].
-
-           Usually Buildroot fall-back using https://sources.buildroot.net
-           thanks to BR2_BACKUP_SITE where a backup of the generated archive
-           is available. But the BRConfigTest remove BR2_BACKUP_SITE default
-           value while generating the .config used by TestGrubAArch64EFI.
-
-           Replace the BR2_BACKUP_SITE override from BRConfigTest in order
-           to continue testing EDK2 package using the usual backup site.
-
-           To be removed with the next EDK2 version bump using this commit
-           [2].
-
-           [1] https://github.com/tianocore/edk2/issues/6398
-           [2] https://github.com/tianocore/edk2/commit/95d8a1c255cfb8e063d679930d08ca6426eb5701
-        """
-        self.config = self.config.replace('BR2_BACKUP_SITE=""\n', '')
 
     def test_run(self):
         disk = os.path.join(self.builddir, "images", "disk.img")

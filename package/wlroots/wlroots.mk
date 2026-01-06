@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-WLROOTS_VERSION = 0.16.2
+WLROOTS_VERSION = 0.19.0
 WLROOTS_SITE = https://gitlab.freedesktop.org/wlroots/wlroots/-/releases/$(WLROOTS_VERSION)/downloads
 WLROOTS_LICENSE = MIT
 WLROOTS_LICENSE_FILES = LICENSE
@@ -14,10 +14,12 @@ WLROOTS_DEPENDENCIES = \
 	host-pkgconf \
 	host-wayland \
 	hwdata \
+	libdisplay-info \
 	libinput \
 	libxkbcommon \
 	libegl \
 	libgles \
+	libgbm \
 	pixman \
 	seatd \
 	udev \

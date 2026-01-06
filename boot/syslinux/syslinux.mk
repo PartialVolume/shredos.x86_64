@@ -56,11 +56,19 @@ SYSLINUX_POST_PATCH_HOOKS += SYSLINUX_CLEANUP
 # syslinux build system has no convenient way to pass CFLAGS,
 # and the internal zlib should take precedence so -I shouldn't
 # be used.
+# gcc-15 defaults to -std=gnu23 which introduces build failures.
+# We force "-std=gnu17" for gcc version supporting it. Earlier gcc
+# versions will work, since they are using the older standard.
+# Install in a temporary location that eases final install into
+# images/ (see corresponding command, below).
+# Repeat the target, otherwise syslinux will try to build everything
+# Repeat LD (and CC) as it happens that some binaries are linked at
+# install-time.
 define SYSLINUX_BUILD_CMDS
 	$(TARGET_MAKE_ENV) $(MAKE1) \
 		ASCIIDOC_OK=-1 \
 		A2X_XML_OK=-1 \
-		CC="$(TARGET_CC)" \
+		CC="$(TARGET_CC) $(if $(BR2_TOOLCHAIN_GCC_AT_LEAST_8),-std=gnu17)" \
 		LD="$(TARGET_LD)" \
 		OBJCOPY="$(TARGET_OBJCOPY)" \
 		AS="$(TARGET_AS)" \
@@ -70,6 +78,10 @@ define SYSLINUX_BUILD_CMDS
 		LDFLAGS_FOR_BUILD="$(HOST_LDFLAGS)" \
 		PYTHON=$(HOST_DIR)/bin/python3 \
 		$(SYSLINUX_EFI_ARGS) -C $(@D) $(SYSLINUX_TARGET)
+	$(TARGET_MAKE_ENV) $(MAKE1) $(SYSLINUX_EFI_ARGS) INSTALLROOT=$(@D)/br-root.temp \
+		CC="$(TARGET_CC)" \
+		LD="$(TARGET_LD)" \
+		-C $(@D) $(SYSLINUX_TARGET) install
 endef
 
 # While the actual bootloader is compiled for the target, several
@@ -77,6 +89,8 @@ endef
 # Repeat the target, otherwise syslinux will try to build everything
 # Repeat LD (and CC) as it happens that some binaries are linked at
 # install-time.
+# Don't use the temporarily-installed br-root.temp: HOST_DIR may be setup
+# differently (merged usr, merged bin...)
 define SYSLINUX_INSTALL_TARGET_CMDS
 	$(TARGET_MAKE_ENV) $(MAKE1) $(SYSLINUX_EFI_ARGS) INSTALLROOT=$(HOST_DIR) \
 		CC="$(TARGET_CC)" \
@@ -94,20 +108,21 @@ SYSLINUX_POST_INSTALL_TARGET_HOOKS += SYSLINUX_POST_INSTALL_CLEANUP
 
 SYSLINUX_IMAGES-$(BR2_TARGET_SYSLINUX_ISOLINUX) += bios/core/isolinux.bin
 SYSLINUX_IMAGES-$(BR2_TARGET_SYSLINUX_PXELINUX) += bios/core/pxelinux.bin
+SYSLINUX_IMAGES-$(BR2_TARGET_SYSLINUX_LPXELINUX) += bios/core/lpxelinux.bin
 SYSLINUX_IMAGES-$(BR2_TARGET_SYSLINUX_MBR) += bios/mbr/mbr.bin
 SYSLINUX_IMAGES-$(BR2_TARGET_SYSLINUX_EFI) += $(SYSLINUX_EFI_BITS)/efi/syslinux.efi
 
 SYSLINUX_C32 = $(call qstrip,$(BR2_TARGET_SYSLINUX_C32))
 
-# We install the c32 modules from the host-installed tree, where they
-# are all neatly installed in a single location, while they are
+# We install the c32 modules from the temporarily installed tree, where
+# they are all neatly installed in a single location, while they are
 # scattered around everywhere in the build tree.
 define SYSLINUX_INSTALL_IMAGES_CMDS
 	for i in $(SYSLINUX_IMAGES-y); do \
 		$(INSTALL) -D -m 0755 $(@D)/$$i $(BINARIES_DIR)/syslinux/$${i##*/}; \
 	done
 	for i in $(SYSLINUX_C32); do \
-		$(INSTALL) -D -m 0755 $(HOST_DIR)/share/syslinux/$${i} \
+		$(INSTALL) -D -m 0755 $(@D)/br-root.temp/usr/share/syslinux/$${i} \
 			$(BINARIES_DIR)/syslinux/$${i}; \
 	done
 endef

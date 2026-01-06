@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-DNSMASQ_VERSION = 2.90
+DNSMASQ_VERSION = 2.91
 DNSMASQ_SOURCE = dnsmasq-$(DNSMASQ_VERSION).tar.xz
 DNSMASQ_SITE = https://thekelleys.org.uk/dnsmasq
 DNSMASQ_MAKE_ENV = $(TARGET_MAKE_ENV) CC="$(TARGET_CC)"
@@ -16,9 +16,6 @@ DNSMASQ_LICENSE = GPL-2.0 or GPL-3.0
 DNSMASQ_LICENSE_FILES = COPYING COPYING-v3
 DNSMASQ_CPE_ID_VENDOR = thekelleys
 DNSMASQ_SELINUX_MODULES = dnsmasq
-
-# 0001-set-default-maximum-dns-udp-package-size.patch
-DNSMASQ_IGNORE_CVES += CVE-2023-28450
 
 DNSMASQ_I18N = $(if $(BR2_SYSTEM_ENABLE_NLS),-i18n)
 
@@ -70,7 +67,7 @@ DNSMASQ_COPTS += -DHAVE_DBUS
 
 define DNSMASQ_INSTALL_DBUS
 	$(INSTALL) -m 0644 -D $(@D)/dbus/dnsmasq.conf \
-		$(TARGET_DIR)/etc/dbus-1/system.d/dnsmasq.conf
+		$(TARGET_DIR)/usr/share/dbus-1/system.d/dnsmasq.conf
 endef
 endif
 

@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-XAPP_XDM_VERSION = 1.1.14
+XAPP_XDM_VERSION = 1.1.17
 XAPP_XDM_SOURCE = xdm-$(XAPP_XDM_VERSION).tar.xz
 XAPP_XDM_SITE = https://xorg.freedesktop.org/archive/individual/app
 XAPP_XDM_LICENSE = MIT
@@ -28,6 +28,10 @@ XAPP_XDM_CONF_OPTS += --with-xinerama
 XAPP_XDM_DEPENDENCIES += xlib_libXinerama
 else
 XAPP_XDM_CONF_OPTS += --without-xinerama
+endif
+
+ifeq ($(BR2_PACKAGE_LIBXCRYPT),y)
+XAPP_XDM_DEPENDENCIES += libxcrypt
 endif
 
 define XAPP_XDM_INSTALL_INIT_SYSV

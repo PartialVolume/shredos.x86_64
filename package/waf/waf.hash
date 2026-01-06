@@ -1,7 +1,7 @@
 # Locally computed
-sha1  9ee587d802ffd15a2e7cae579560d00754db4fad  waf-2.1.1
-sha256  2e66e01fd564f09106419389119c78143327c89a35f26ee3ed376f0ee410a14d  waf-2.1.1
+sha1  d11579fb088200adc5e6bf6c96e31fcb7afd94cb  waf-2.1.6
+sha256  4bc4587a11925e19739da021e021a5764d39759fada85563bc6d4ded17515b14  waf-2.1.6
 
 # The waf script also contains its license, but is renamed `waf` in the extract
 # step, so this is a synonym for the above, to check WAF_LICENSE
-sha256  2e66e01fd564f09106419389119c78143327c89a35f26ee3ed376f0ee410a14d  waf
+sha256  4bc4587a11925e19739da021e021a5764d39759fada85563bc6d4ded17515b14  waf

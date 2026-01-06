@@ -115,10 +115,6 @@ comment "openrc needs a glibc or musl toolchain w/ dynamic library"
 	depends on BR2_USE_MMU
 	depends on BR2_STATIC_LIBS && BR2_TOOLCHAIN_USES_UCLIBC
 
-# In Buildroot, we decided not to support a split-usr when systemd is
-# used as an init system. This is a design decision, not a systemd
-# issue. Thus the select is with BR2_INIT_SYSTEMD (below) rather than
-# with BR2_PACKAGE_SYSTEMD.
 config BR2_INIT_SYSTEMD
 	bool "systemd"
 	depends on BR2_PACKAGE_SYSTEMD_ARCH_SUPPORTS
@@ -130,7 +126,6 @@ config BR2_INIT_SYSTEMD
 	depends on BR2_TOOLCHAIN_HEADERS_AT_LEAST_3_15
 	depends on BR2_TOOLCHAIN_GCC_AT_LEAST_8
 	depends on BR2_HOST_GCC_AT_LEAST_8
-	select BR2_ROOTFS_MERGED_USR
 	select BR2_PACKAGE_SYSTEMD
 	select BR2_PACKAGE_SKELETON_INIT_SYSTEMD if BR2_ROOTFS_SKELETON_DEFAULT
 
@@ -148,6 +143,17 @@ comment "systemd highly recommends Linux >= 4.15"
 	depends on !BR2_TOOLCHAIN_HEADERS_AT_LEAST_4_15
 
 comment "Special purpose (read help)"
+
+config BR2_INIT_CATATONIT
+	bool "catatonit"
+	depends on BR2_USE_MMU # catatonit
+	select BR2_PACKAGE_CATATONIT
+	select BR2_PACKAGE_SKELETON_INIT_NONE if BR2_ROOTFS_SKELETON_DEFAULT
+	help
+	  A container init that is so simple it's effectively
+	  brain-dead.
+
+	  https://github.com/openSUSE/catatonit
 
 config BR2_INIT_TINI
 	bool "tini"
@@ -326,7 +332,7 @@ config BR2_ROOTFS_DEVICE_TABLE_SUPPORTS_EXTENDED_ATTRIBUTES
 	  Support extended attributes handling in device tables
 
 config BR2_ROOTFS_MERGED_USR
-	bool "Use symlinks to /usr for /bin, /sbin and /lib"
+	bool "Merged /usr"
 	help
 	  If you say 'n' here, then /bin, /sbin and /lib and their
 	  counterparts in /usr will be separate directories. This
@@ -336,6 +342,16 @@ config BR2_ROOTFS_MERGED_USR
 	  If you say 'y' here, then /bin, /sbin and /lib will be
 	  symlinks to their counterparts in /usr. In this case, /usr can
 	  not be a separate filesystem.
+
+config BR2_ROOTFS_MERGED_BIN
+	bool "Merged /usr/bin"
+	depends on BR2_ROOTFS_MERGED_USR
+	help
+	  If you say 'n' here, then /usr/bin and /usr/sbin will be
+	  separate directories; this is the historical UNIX way.
+
+	  If you say 'y' here, then /usr/sbin will be a relative
+	  symlink to /usr/bin.
 
 if BR2_ROOTFS_SKELETON_DEFAULT
 
@@ -523,8 +539,9 @@ endif # BR2_ROOTFS_SKELETON_DEFAULT
 
 config BR2_SYSTEM_DEFAULT_PATH
 	string "Set the system's default PATH"
+	default "/usr/bin" if BR2_ROOTFS_MERGED_BIN
 	default "/usr/bin:/usr/sbin" if BR2_ROOTFS_MERGED_USR
-	default "/bin:/sbin:/usr/bin:/usr/sbin" if !BR2_ROOTFS_MERGED_USR
+	default "/bin:/sbin:/usr/bin:/usr/sbin"
 	help
 	  Sets the system's default PATH. It is being used in
 	  /etc/profile in the skeleton-init-common package and by some

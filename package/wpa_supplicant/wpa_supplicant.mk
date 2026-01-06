@@ -24,9 +24,6 @@ WPA_SUPPLICANT_CONFIG_ENABLE = \
 	CONFIG_INTERNAL_LIBTOMMATH \
 	CONFIG_MATCH_IFACE
 
-WPA_SUPPLICANT_CONFIG_DISABLE = \
-	CONFIG_SMARTCARD
-
 # libnl-3 needs -lm (for rint) and -lpthread if linking statically
 # And library order matters hence stick -lnl-3 first since it's appended
 # in the wpa_supplicant Makefiles as in LIBS+=-lnl-3 ... thus failing
@@ -191,10 +188,20 @@ WPA_SUPPLICANT_DEPENDENCIES += readline
 WPA_SUPPLICANT_CONFIG_ENABLE += CONFIG_READLINE
 endif
 
+ifeq ($(BR2_PACKAGE_WPA_SUPPLICANT_SMARTCARD),y)
+WPA_SUPPLICANT_CONFIG_ENABLE += CONFIG_SMARTCARD
+else
+WPA_SUPPLICANT_CONFIG_DISABLE += CONFIG_SMARTCARD
+endif
+
 ifeq ($(BR2_PACKAGE_WPA_SUPPLICANT_CTRL_IFACE),y)
 define WPA_SUPPLICANT_ENABLE_CTRL_IFACE
 	sed -i '/ctrl_interface/s/^#//g' $(TARGET_DIR)/etc/wpa_supplicant.conf
 endef
+endif
+
+ifeq ($(BR2_PACKAGE_WPA_SUPPLICANT_WEP),y)
+WPA_SUPPLICANT_CONFIG_ENABLE += CONFIG_WEP
 endif
 
 ifeq ($(BR2_PACKAGE_WPA_SUPPLICANT_WPA_CLIENT_SO),y)
@@ -254,7 +261,7 @@ ifeq ($(BR2_PACKAGE_DBUS),y)
 define WPA_SUPPLICANT_INSTALL_DBUS
 	$(INSTALL) -m 0644 -D \
 		$(@D)/wpa_supplicant/dbus/dbus-wpa_supplicant.conf \
-		$(TARGET_DIR)/etc/dbus-1/system.d/wpa_supplicant.conf
+		$(TARGET_DIR)/usr/share/dbus-1/system.d/wpa_supplicant.conf
 	$(WPA_SUPPLICANT_INSTALL_DBUS_NEW)
 endef
 endif

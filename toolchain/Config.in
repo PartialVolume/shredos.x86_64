@@ -89,7 +89,6 @@ config BR2_TOOLCHAIN_HAS_BINUTILS_BUG_30730
 config BR2_TOOLCHAIN_SUPPORTS_ALWAYS_LOCKFREE_ATOMIC_INTS
 	bool
 	default y
-	depends on !BR2_nios2
 	depends on !BR2_ARM_CPU_ARMV4
 	depends on !BR2_ARM_CPU_ARMV5
 	depends on !BR2_sparc_v8
@@ -180,23 +179,6 @@ config BR2_TOOLCHAIN_HAS_GCC_BUG_90620
 	depends on !BR2_TOOLCHAIN_GCC_AT_LEAST_10 \
 		|| BR2_TOOLCHAIN_GCC_AT_LEAST_11
 
-# https://gcc.gnu.org/bugzilla/show_bug.cgi?id=93847
-# ICE: compiler error: Segmentation fault on Nios II. This bug
-# no longer exists in gcc 9.x.
-config BR2_TOOLCHAIN_HAS_GCC_BUG_93847
-	bool
-	default y if BR2_nios2 && !BR2_TOOLCHAIN_GCC_AT_LEAST_9
-
-# https://gcc.gnu.org/bugzilla/show_bug.cgi?id=99410
-# Error: branch offset out of range on Nios II. This bug
-# no longer exists in gcc 8.x but reappeared on gcc 9.x and still exists
-# on gcc 12.x
-config BR2_TOOLCHAIN_HAS_GCC_BUG_99410
-	bool
-	default y if !BR2_TOOLCHAIN_GCC_AT_LEAST_8
-	default y if BR2_TOOLCHAIN_GCC_AT_LEAST_9
-	depends on BR2_nios2
-
 # https://gcc.gnu.org/bugzilla/show_bug.cgi?id=101737
 # ICE: SH4 -Os causes internal compiler error. This bug
 # still exists in gcc = 11.1.0
@@ -238,7 +220,6 @@ config BR2_TOOLCHAIN_HAS_GCC_BUG_107728
 	bool
 	default y if BR2_microblazebe || BR2_microblazeel \
 		|| BR2_mips || BR2_mipsel \
-		|| BR2_nios2 \
 		|| BR2_or1k \
 		|| BR2_sh
 	depends on BR2_TOOLCHAIN_USES_GLIBC
@@ -260,6 +241,16 @@ config BR2_TOOLCHAIN_HAS_GCC_BUG_111001
 	depends on BR2_TOOLCHAIN_GCC_AT_LEAST_13
 	depends on BR2_OPTIMIZE_1 || \
 		   BR2_OPTIMIZE_2 || \
+		   BR2_OPTIMIZE_3
+
+# https://gcc.gnu.org/bugzilla/show_bug.cgi?id=121567
+# error: unable to find a register to spill in class ‘R0_REGS’
+# The bug exists at least since gcc 6.x, so we are assuming it affects
+# all GCC versions.
+config BR2_TOOLCHAIN_HAS_GCC_BUG_121567
+	bool
+	default y if BR2_sh
+	depends on BR2_OPTIMIZE_2 || \
 		   BR2_OPTIMIZE_3
 
 config BR2_TOOLCHAIN_HAS_NATIVE_RPC
@@ -660,6 +651,34 @@ config BR2_TOOLCHAIN_HEADERS_AT_LEAST_6_10
 config BR2_TOOLCHAIN_HEADERS_AT_LEAST_6_11
 	bool
 	select BR2_TOOLCHAIN_HEADERS_AT_LEAST_6_10
+
+config BR2_TOOLCHAIN_HEADERS_AT_LEAST_6_12
+	bool
+	select BR2_TOOLCHAIN_HEADERS_AT_LEAST_6_11
+
+config BR2_TOOLCHAIN_HEADERS_AT_LEAST_6_13
+	bool
+	select BR2_TOOLCHAIN_HEADERS_AT_LEAST_6_12
+
+config BR2_TOOLCHAIN_HEADERS_AT_LEAST_6_14
+	bool
+	select BR2_TOOLCHAIN_HEADERS_AT_LEAST_6_13
+
+config BR2_TOOLCHAIN_HEADERS_AT_LEAST_6_15
+	bool
+	select BR2_TOOLCHAIN_HEADERS_AT_LEAST_6_14
+
+config BR2_TOOLCHAIN_HEADERS_AT_LEAST_6_16
+	bool
+	select BR2_TOOLCHAIN_HEADERS_AT_LEAST_6_15
+
+config BR2_TOOLCHAIN_HEADERS_AT_LEAST_6_17
+	bool
+	select BR2_TOOLCHAIN_HEADERS_AT_LEAST_6_16
+
+config BR2_TOOLCHAIN_HEADERS_AT_LEAST_6_18
+	bool
+	select BR2_TOOLCHAIN_HEADERS_AT_LEAST_6_17
 	select BR2_TOOLCHAIN_HEADERS_LATEST
 
 # This should be selected by the latest version, above, to indicate that
@@ -673,6 +692,13 @@ config BR2_TOOLCHAIN_HEADERS_LATEST
 # stops affecting a value on the first matching default.
 config BR2_TOOLCHAIN_HEADERS_AT_LEAST
 	string
+	default "6.18" if BR2_TOOLCHAIN_HEADERS_AT_LEAST_6_18
+	default "6.17" if BR2_TOOLCHAIN_HEADERS_AT_LEAST_6_17
+	default "6.16" if BR2_TOOLCHAIN_HEADERS_AT_LEAST_6_16
+	default "6.15" if BR2_TOOLCHAIN_HEADERS_AT_LEAST_6_15
+	default "6.14" if BR2_TOOLCHAIN_HEADERS_AT_LEAST_6_14
+	default "6.13" if BR2_TOOLCHAIN_HEADERS_AT_LEAST_6_13
+	default "6.12" if BR2_TOOLCHAIN_HEADERS_AT_LEAST_6_12
 	default "6.11" if BR2_TOOLCHAIN_HEADERS_AT_LEAST_6_11
 	default "6.10" if BR2_TOOLCHAIN_HEADERS_AT_LEAST_6_10
 	default "6.9"  if BR2_TOOLCHAIN_HEADERS_AT_LEAST_6_9
@@ -815,10 +841,15 @@ config BR2_TOOLCHAIN_GCC_AT_LEAST_14
 	bool
 	select BR2_TOOLCHAIN_GCC_AT_LEAST_13
 
+config BR2_TOOLCHAIN_GCC_AT_LEAST_15
+	bool
+	select BR2_TOOLCHAIN_GCC_AT_LEAST_14
+
 # This order guarantees that the highest version is set, as kconfig
 # stops affecting a value on the first matching default.
 config BR2_TOOLCHAIN_GCC_AT_LEAST
 	string
+	default "15"	if BR2_TOOLCHAIN_GCC_AT_LEAST_15
 	default "14"	if BR2_TOOLCHAIN_GCC_AT_LEAST_14
 	default "13"	if BR2_TOOLCHAIN_GCC_AT_LEAST_13
 	default "12"	if BR2_TOOLCHAIN_GCC_AT_LEAST_12
@@ -955,7 +986,7 @@ config BR2_TOOLCHAIN_HAS_LIBQUADMATH
 comment "Bare metal toolchain"
 
 config BR2_TOOLCHAIN_BARE_METAL_BUILDROOT
-	bool "Build a bare metal toolchain"
+	bool "Build bare metal toolchains"
 	select BR2_PACKAGE_NEWLIB_BARE_METAL
 	help
 	  Select if you need a bare-metal toolchain for building

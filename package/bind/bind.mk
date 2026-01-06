@@ -4,11 +4,9 @@
 #
 ################################################################################
 
-BIND_VERSION = 9.18.31
+BIND_VERSION = 9.18.41
 BIND_SOURCE= bind-$(BIND_VERSION).tar.xz
 BIND_SITE = https://ftp.isc.org/isc/bind9/$(BIND_VERSION)
-# bind does not support parallel builds.
-BIND_MAKE = $(MAKE1)
 BIND_INSTALL_STAGING = YES
 BIND_LICENSE = MPL-2.0
 BIND_LICENSE_FILES = COPYRIGHT
@@ -30,9 +28,7 @@ BIND_AUTORECONF = YES
 BIND_CONF_OPTS = \
 	--without-cmocka \
 	--without-lmdb \
-	--enable-epoll \
 	--disable-doh \
-	--disable-backtrace \
 	--disable-static \
 	--with-openssl=$(STAGING_DIR)/usr
 
@@ -51,6 +47,13 @@ BIND_CONF_OPTS += --with-zlib
 BIND_DEPENDENCIES += zlib
 else
 BIND_CONF_OPTS += --without-zlib
+endif
+
+ifeq ($(BR2_PACKAGE_JEMALLOC),y)
+BIND_CONF_OPTS += --with-jemalloc
+BIND_DEPENDENCIES += jemalloc
+else
+BIND_CONF_OPTS += --without-jemalloc
 endif
 
 ifeq ($(BR2_PACKAGE_JSON_C),y)
@@ -95,28 +98,10 @@ else
 BIND_CONF_OPTS += --with-libxml2=no
 endif
 
-# Used by dnssec-keymgr
-ifeq ($(BR2_PACKAGE_PYTHON_PLY),y)
-BIND_DEPENDENCIES += host-python-ply
-BIND_CONF_OPTS += --with-python=$(HOST_DIR)/bin/python
-else
-BIND_CONF_OPTS += --with-python=no
-endif
-
 ifeq ($(BR2_PACKAGE_READLINE),y)
 BIND_DEPENDENCIES += readline
 else
 BIND_CONF_OPTS += --with-readline=no
-endif
-
-ifeq ($(BR2_STATIC_LIBS),y)
-BIND_CONF_OPTS += \
-	--without-dlopen \
-	--without-libtool
-else
-BIND_CONF_OPTS += \
-	--with-dlopen \
-	--with-libtool
 endif
 
 define BIND_TARGET_REMOVE_SERVER

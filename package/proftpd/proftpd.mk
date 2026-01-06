@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-PROFTPD_VERSION = 1.3.8b
+PROFTPD_VERSION = 1.3.8d
 PROFTPD_SITE = https://github.com/proftpd/proftpd/archive/v$(PROFTPD_VERSION)
 PROFTPD_LICENSE = GPL-2.0+
 PROFTPD_LICENSE_FILES = COPYING
@@ -27,6 +27,14 @@ PROFTPD_CONF_OPTS = \
 	--with-gnu-ld \
 	--without-openssl-cmdline
 
+# source code contains a number of variables named 'bool', which
+# conflicts with the C23 keyword. Fixed upstream in 1.3.9 with
+# https://github.com/proftpd/proftpd/commit/61be7eb14f200b97804a3cfa85fed51661067c62
+# so can be dropped when bumping to that
+ifeq ($(BR2_TOOLCHAIN_GCC_AT_LEAST_15),y)
+PROFTPD_CONF_ENV += CFLAGS="$(TARGET_CFLAGS) -std=gnu18"
+endif
+
 ifeq ($(BR2_PACKAGE_LIBIDN2),y)
 PROFTPD_DEPENDENCIES += libidn2
 endif
@@ -47,6 +55,13 @@ PROFTPD_CONF_OPTS += --enable-cap
 PROFTPD_DEPENDENCIES += libcap
 else
 PROFTPD_CONF_OPTS += --disable-cap
+endif
+
+ifeq ($(BR2_PACKAGE_PROFTPD_MOD_LANG),y)
+PROFTPD_CONF_OPTS += --enable-nls
+ifneq ($(BR2_ENABLE_LOCALE),y)
+PROFTPD_DEPENDENCIES += libiconv
+endif
 endif
 
 ifeq ($(BR2_PACKAGE_PROFTPD_MOD_REWRITE),y)

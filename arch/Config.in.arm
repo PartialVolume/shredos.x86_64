@@ -95,6 +95,14 @@ config BR2_ARM_CPU_ARMV8A
 	bool
 	select BR2_USE_MMU
 
+# Armv9.0-A base specification is a super-set of Armv8.5-A. It is
+# fully compatible with Armv8. This symbol is defined to allow checks
+# for doing Armv9 optimization. Armv8 is also selected for
+# compatibility.
+config BR2_ARM_CPU_ARMV9A
+	bool
+	select BR2_ARM_CPU_ARMV8A
+
 choice
 	prompt "Target Architecture Variant"
 	default BR2_cortex_a53 if BR2_ARCH_IS_64
@@ -466,6 +474,14 @@ config BR2_cortex_a76_a55
 	select BR2_ARM_CPU_HAS_FP_ARMV8
 	select BR2_ARM_CPU_ARMV8A
 	select BR2_ARCH_NEEDS_GCC_AT_LEAST_9
+config BR2_cortex_a78
+	bool "cortex-A78"
+	select BR2_ARM_CPU_HAS_ARM if !BR2_ARCH_IS_64
+	select BR2_ARM_CPU_HAS_NEON if !BR2_ARCH_IS_64
+	select BR2_ARM_CPU_HAS_THUMB2 if !BR2_ARCH_IS_64
+	select BR2_ARM_CPU_HAS_FP_ARMV8
+	select BR2_ARM_CPU_ARMV8A
+	select BR2_ARCH_NEEDS_GCC_AT_LEAST_11
 config BR2_neoverse_n1
 	bool "neoverse-N1 (aka ares)"
 	select BR2_ARM_CPU_HAS_ARM if !BR2_ARCH_IS_64
@@ -488,6 +504,28 @@ config BR2_saphira
 	select BR2_ARM_CPU_HAS_FP_ARMV8
 	select BR2_ARM_CPU_ARMV8A
 	select BR2_ARCH_NEEDS_GCC_AT_LEAST_8
+
+comment "armv9.0a cores"
+config BR2_cortex_a710
+	bool "Cortex-A710 (aka matterhorn)"
+	depends on BR2_ARCH_IS_64
+	select BR2_ARM_CPU_HAS_FP_ARMV8
+	select BR2_ARM_CPU_ARMV9A
+	select BR2_ARCH_NEEDS_GCC_AT_LEAST_12
+config BR2_neoverse_n2
+	bool "neoverse-N2 (aka perseus)"
+	depends on BR2_ARCH_IS_64
+	select BR2_ARM_CPU_HAS_FP_ARMV8
+	select BR2_ARM_CPU_ARMV9A
+	select BR2_ARCH_NEEDS_GCC_AT_LEAST_11
+
+comment "armv9.2a cores"
+config BR2_cortex_a720
+	bool "Cortex-A720 (aka hunter)"
+	depends on BR2_ARCH_IS_64
+	select BR2_ARM_CPU_HAS_FP_ARMV8
+	select BR2_ARM_CPU_ARMV9A
+	select BR2_ARCH_NEEDS_GCC_AT_LEAST_14
 endchoice
 
 config BR2_ARM_ENABLE_NEON
@@ -747,7 +785,7 @@ config BR2_ARM_INSTRUCTIONS_THUMB
 	# Thumb-1 and VFP are not compatible
 	depends on BR2_ARM_SOFT_FLOAT
 	help
-	  This option instructions the compiler to generate Thumb
+	  This option instructs the compiler to generate Thumb
 	  instructions, which allows to mix 16 bits instructions and
 	  32 bits instructions. This generally provides a much smaller
 	  compiled binary size.
@@ -760,7 +798,7 @@ config BR2_ARM_INSTRUCTIONS_THUMB2
 	bool "Thumb2"
 	depends on BR2_ARM_CPU_HAS_THUMB2
 	help
-	  This option instructions the compiler to generate Thumb2
+	  This option instructs the compiler to generate Thumb2
 	  instructions, which allows to mix 16 bits instructions and
 	  32 bits instructions. This generally provides a much smaller
 	  compiled binary size.
@@ -876,10 +914,16 @@ config BR2_GCC_TARGET_CPU
 	default "cortex-a75.cortex-a55"	if BR2_cortex_a75_a55
 	default "cortex-a76"	if BR2_cortex_a76
 	default "cortex-a76.cortex-a55"	if BR2_cortex_a76_a55
+	default "cortex-a78"	if BR2_cortex_a78
 	default "neoverse-n1"	if BR2_neoverse_n1
 	default "tsv110"	if BR2_tsv110
 	# armv8.4a
 	default "saphira"	if BR2_saphira
+	# armv9.0a
+	default "cortex-a710"	if BR2_cortex_a710
+	default "neoverse-n2"	if BR2_neoverse_n2
+	# armv9.2a
+	default "cortex-a720"	if BR2_cortex_a720
 
 config BR2_GCC_TARGET_ABI
 	default "aapcs-linux"	if BR2_arm || BR2_armeb

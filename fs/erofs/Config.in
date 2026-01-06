@@ -6,10 +6,120 @@ config BR2_TARGET_ROOTFS_EROFS
 
 if BR2_TARGET_ROOTFS_EROFS
 
-config BR2_TARGET_ROOTFS_EROFS_LZ4HC
-	bool "lz4hc compression"
+choice
+	prompt "Compression algorithm"
+	default BR2_TARGET_ROOTFS_EROFS_LZ4HC
 	help
-	  Use lz4 high-compression to compress data in the filesystem.
+	  Select the EROFS compression algorithm to use.
+
+	  LZ4HC (LZ4 High Compression) is the default algorithm and
+	  provides a good balance between compression ratio and speed,
+	  with increasing levels the compression ratio increases at the
+	  penalty of higher compression times, without significant
+	  decompression penalty.
+
+	  LZMA provides the best compression ratio but is significantly
+	  slower both in compression and decompression, and higher
+	  compression levels can have noticeable memory requirements.
+
+	  Custom compression allows for advanced configuration of the
+	  compression algorithms, and adds the possibility of
+	  finegrained per-file compression using compression hints.
+
+config BR2_TARGET_ROOTFS_EROFS_NONE
+	bool "no compression"
+
+config BR2_TARGET_ROOTFS_EROFS_LZ4HC
+	bool "lz4hc"
+
+config BR2_TARGET_ROOTFS_EROFS_LZMA
+	bool "lzma"
+
+config BR2_TARGET_ROOTFS_EROFS_CUSTOM_COMPRESSION
+	bool "custom"
+
+endchoice
+
+if BR2_TARGET_ROOTFS_EROFS_LZ4HC
+
+config BR2_TARGET_ROOTFS_EROFS_LZ4HC_LEVEL
+	int "lz4hc compression level"
+	default 9
+	range 1 12
+	help
+	  Specify the compression level for LZ4HC compression.
+
+endif # BR2_TARGET_ROOTFS_EROFS_LZ4HC
+
+if BR2_TARGET_ROOTFS_EROFS_LZMA
+
+config BR2_TARGET_ROOTFS_EROFS_LZMA_LEVEL
+	int "lzma compression level"
+	default 6
+	range 0 109
+	help
+	  Specify the compression level for LZMA compression.
+
+	  Values from 0 to 9 are used for the standard compression,
+	  values from 100 to 109 are used for the extreme compression.
+
+endif # BR2_TARGET_ROOTFS_EROFS_LZMA
+
+if BR2_TARGET_ROOTFS_EROFS_CUSTOM_COMPRESSION
+
+config BR2_TARGET_ROOTFS_EROFS_COMPRESSION_ALGORITHMS
+	string "compression algorithms"
+	default "lz4hc,12"
+	help
+	  Specify arbitrary compression option, useful in combination
+	  with compression hints. Individual algorithms are separated
+	  by colon with optional level, e.g. "lz4hc,12:lzma".
+	  See erofs-utils documentaion for detailed information.
+
+config BR2_TARGET_ROOTFS_EROFS_COMPRESSION_HINTS
+	string "path to compression hints file"
+	default ""
+	help
+	  Path to file containing compression hints. Each line in the
+	  file is defined by tokens separated by spaces in the
+	  following form. Optionally, instead of the given primary
+	  algorithm, algorithms can be specified with zero-based
+	  algorithm-index explicitly:
+
+	  <pcluster-size-in-bytes> [algorithm-index] <match-pattern>
+
+	  match-patterns are extended regular expressions, matched
+	  against absolute paths within the output filesystem, with no
+	  leading /.
+
+endif # BR2_TARGET_ROOTFS_EROFS_LZMA
+
+config BR2_TARGET_ROOTFS_EROFS_DEDUPE
+	bool "enable data deduplication"
+	depends on !BR2_TARGET_ROOTFS_EROFS_NONE
+	help
+	  Enable global compressed data deduplication to reduce FS image
+	  size. Introduced in Linux 6.1.
+
+config BR2_TARGET_ROOTFS_EROFS_FRAGMENTS
+	bool "enable fragments packing"
+	help
+	  Pack the tail part (pcluster) of compressed files, or entire
+	  files, into a special inode for smaller image size.
+	  Introduced in Linux 6.1.
+
+config BR2_TARGET_ROOTFS_EROFS_ALL_FRAGMENTS
+	bool "enable all-fragments packing"
+	help
+	  Forcely record the whole files into a special inode for better
+	  compression. Introduced in Linux 6.1.
+
+config BR2_TARGET_ROOTFS_EROFS_ZTAILPACKING
+	bool "enable ztailpacking"
+	help
+	  Pack the tail part (pcluster) of compressed files into its
+	  metadata to save more space and the tail part I/O. Introduced
+	  in Linux 5.17.
 
 config BR2_TARGET_ROOTFS_EROFS_PCLUSTERSIZE
 	int "pcluster size"

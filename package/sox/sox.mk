@@ -12,15 +12,82 @@ SOX_LICENSE = GPL-2.0+ (sox binary), LGPL-2.1+ (libraries)
 SOX_LICENSE_FILES = LICENSE.GPL LICENSE.LGPL
 SOX_CPE_ID_VENDOR = sound_exchange_project
 SOX_CPE_ID_PRODUCT = sound_exchange
+# The Git commit in SOX_VERSION is 14.4.2 + a large number of commits
+SOX_CPE_ID_VERSION = 14.4.2
 # From git and we're patching configure.ac
 SOX_AUTORECONF = YES
 SOX_AUTORECONF_OPTS = --include=$(HOST_DIR)/share/autoconf-archive
 SOX_INSTALL_STAGING = YES
 
-SOX_IGNORE_CVES += CVE-2017-11332 CVE-2017-11358 CVE-2017-11359 \
-	CVE-2017-15370 CVE-2017-15371 CVE-2017-15372 CVE-2017-15642 \
-	CVE-2017-18189 CVE-2019-8354 CVE-2019-8355 CVE-2019-8356 \
-	CVE-2019-8357 CVE-2019-13590
+# sox-14.4.2-6-g6e177c45
+SOX_IGNORE_CVES += CVE-2017-11332
+
+# sox-14.4.2-7-ge410d00c
+SOX_IGNORE_CVES += CVE-2017-11358
+
+# sox-14.4.2-8-g7b3f30e1
+SOX_IGNORE_CVES += CVE-2017-11359
+
+# sox-14.4.2-9-ge076a7ad
+SOX_IGNORE_CVES += CVE-2017-15370
+
+# sox-14.4.2-10-g968c689a
+SOX_IGNORE_CVES += CVE-2017-15371
+
+# sox-14.4.2-11-g515b9861
+SOX_IGNORE_CVES += CVE-2017-15372
+
+# sox-14.4.2-12-gf56c0dbc
+SOX_IGNORE_CVES += CVE-2017-15642
+
+# sox-14.4.2-13-g09d7388c
+# CVE-2019-1010004 is a duplicate of CVE-2017-18189
+SOX_IGNORE_CVES += CVE-2017-18189 CVE-2019-1010004
+
+# sox-14.4.2-38-gf7091126
+SOX_IGNORE_CVES += CVE-2019-8354
+
+# sox-14.4.2-39-gf8587e2d
+SOX_IGNORE_CVES += CVE-2019-8355
+
+# sox-14.4.2-40-gb7883ae1
+SOX_IGNORE_CVES += CVE-2019-8356
+
+# sox-14.4.2-41-g2ce02fea
+SOX_IGNORE_CVES += CVE-2019-8357
+
+# sox-14.4.2-44-g7b6a8892
+SOX_IGNORE_CVES += CVE-2019-13590
+
+# 0006-voc-word-width-should-never-be-0-to-avoid-division-b.patch
+# This entry is NOT stale, those CVEs are not reported by pkg-stats
+# due to the change of CPE ID to sox_project:sox in the NVD database
+SOX_IGNORE_CVES += CVE-2021-3643 CVE-2021-23210
+
+# 0007-hcom-validate-dictsize.patch
+# This entry is NOT stale, those CVEs are not reported by pkg-stats
+# due to the change of CPE ID to sox_project:sox in the NVD database
+SOX_IGNORE_CVES += CVE-2021-23159 CVE-2021-23172 CVE-2023-34318 CVE-2023-34432
+
+# 0008-phere-avoid-integer-underflow.patch
+# This entry is NOT stale, those CVEs are not reported by pkg-stats
+# due to the change of CPE ID to libsox_project:libsox in the NVD database
+SOX_IGNORE_CVES += CVE-2021-40426
+
+# 0009-formats-aiff-reject-implausibly-large-number-of-chan.patch
+# This entry is NOT stale, those CVEs are not reported by pkg-stats
+# due to the change of CPE ID to sox_project:sox in the NVD database
+SOX_IGNORE_CVES += CVE-2022-31650 CVE-2023-26590
+
+# 0010-formats-reject-implausible-rate.patch
+# This entry is NOT stale, those CVEs are not reported by pkg-stats
+# due to the change of CPE ID to sox_project:sox in the NVD database
+SOX_IGNORE_CVES += CVE-2022-31651
+
+# 0011-CVE-2023-32627-Filter-null-sampling-rate-in-VOC-code.patch
+# This entry is NOT stale, those CVEs are not reported by pkg-stats
+# due to the change of CPE ID to sox_project:sox in the NVD database
+SOX_IGNORE_CVES += CVE-2023-32627
 
 SOX_CONF_OPTS = \
 	--with-distro="Buildroot" \

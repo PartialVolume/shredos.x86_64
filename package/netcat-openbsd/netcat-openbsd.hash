@@ -1,6 +1,6 @@
-# From http://snapshot.debian.org/archive/debian/20211206T030211Z/pool/main/n/netcat-openbsd/netcat-openbsd_1.218-3.dsc
-sha256  a28a5d39abaf481747b1e78b4b50e96d0cdab0ffef289cba156dc11941c64857  netcat-openbsd_1.218.orig.tar.gz
-sha256  19229ebc825d12cd805843228c498cc881dcef127a9d680fcfbd8cb2da966161  netcat-openbsd_1.218-3.debian.tar.xz
+# From https://snapshot.debian.org/archive/debian/20251023T202923Z/pool/main/n/netcat-openbsd/netcat-openbsd_1.234-1.dsc
+sha256  121c18d9441ec42b92a9b566468a596bbcf673894db8b12d892947552a8e3bbe  netcat-openbsd_1.234.orig.tar.gz
+sha256  008892553774e23a62f4088cdcbd4428f7b764a6cdadfcb35d1793224a697996  netcat-openbsd_1.234-1.debian.tar.xz
 
 # Hash for license file
-sha256  acfd1d822ee2e8e0b196c7a369383d0cb9bc131b56c3c95976a32498728fe1e3  netcat.c
+sha256  01754270c331f18613f3d0ee960d4f900ee20a82fad1b0b39f0ed34a3863a78d  netcat.c

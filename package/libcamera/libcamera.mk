@@ -5,7 +5,7 @@
 ################################################################################
 
 LIBCAMERA_SITE = https://git.linuxtv.org/libcamera.git
-LIBCAMERA_VERSION = v0.3.2
+LIBCAMERA_VERSION = v0.5.1
 LIBCAMERA_SITE_METHOD = git
 LIBCAMERA_DEPENDENCIES = \
 	host-openssl \
@@ -16,6 +16,7 @@ LIBCAMERA_DEPENDENCIES = \
 	libyaml \
 	gnutls
 LIBCAMERA_CONF_OPTS = \
+	-Dauto_features=disabled \
 	-Dandroid=disabled \
 	-Ddocumentation=disabled \
 	-Dtest=false \
@@ -47,23 +48,17 @@ endif
 ifeq ($(BR2_PACKAGE_LIBCAMERA_PYTHON),y)
 LIBCAMERA_DEPENDENCIES += python3 python-pybind
 LIBCAMERA_CONF_OPTS += -Dpycamera=enabled
-else
-LIBCAMERA_CONF_OPTS += -Dpycamera=disabled
 endif
 
 ifeq ($(BR2_PACKAGE_LIBCAMERA_V4L2),y)
-LIBCAMERA_CONF_OPTS += -Dv4l2=true
-else
-LIBCAMERA_CONF_OPTS += -Dv4l2=false
+LIBCAMERA_CONF_OPTS += -Dv4l2=enabled
 endif
 
 LIBCAMERA_PIPELINES-$(BR2_PACKAGE_LIBCAMERA_PIPELINE_IMX8_ISI) += imx8-isi
 LIBCAMERA_PIPELINES-$(BR2_PACKAGE_LIBCAMERA_PIPELINE_IPU3) += ipu3
+LIBCAMERA_PIPELINES-$(BR2_PACKAGE_LIBCAMERA_PIPELINE_MALI_C55) += mali-c55
 LIBCAMERA_PIPELINES-$(BR2_PACKAGE_LIBCAMERA_PIPELINE_RKISP1) += rkisp1
-ifeq ($(BR2_PACKAGE_LIBCAMERA_PIPELINE_RPI_VC4),y)
-LIBCAMERA_PIPELINES-y += rpi/vc4
-LIBCAMERA_DEPENDENCIES += boost
-endif
+LIBCAMERA_PIPELINES-$(BR2_PACKAGE_LIBCAMERA_PIPELINE_RPI_VC4) += rpi/vc4
 LIBCAMERA_PIPELINES-$(BR2_PACKAGE_LIBCAMERA_PIPELINE_SIMPLE) += simple
 LIBCAMERA_PIPELINES-$(BR2_PACKAGE_LIBCAMERA_PIPELINE_UVCVIDEO) += uvcvideo
 LIBCAMERA_PIPELINES-$(BR2_PACKAGE_LIBCAMERA_PIPELINE_VIMC) += vimc
@@ -73,8 +68,6 @@ LIBCAMERA_CONF_OPTS += -Dpipelines=$(subst $(space),$(comma),$(LIBCAMERA_PIPELIN
 ifeq ($(BR2_PACKAGE_LIBCAMERA_COMPLIANCE),y)
 LIBCAMERA_DEPENDENCIES += gtest libevent
 LIBCAMERA_CONF_OPTS += -Dlc-compliance=enabled
-else
-LIBCAMERA_CONF_OPTS += -Dlc-compliance=disabled
 endif
 
 # gstreamer-video-1.0, gstreamer-allocators-1.0
@@ -83,21 +76,30 @@ LIBCAMERA_CONF_OPTS += -Dgstreamer=enabled
 LIBCAMERA_DEPENDENCIES += gstreamer1 gst1-plugins-base
 endif
 
-ifeq ($(BR2_PACKAGE_QT5BASE_WIDGETS),y)
-LIBCAMERA_CONF_OPTS += -Dqcam=enabled
-LIBCAMERA_DEPENDENCIES += qt5base
-ifeq ($(BR2_PACKAGE_QT5TOOLS_LINGUIST_TOOLS),y)
-LIBCAMERA_DEPENDENCIES += qt5tools
-endif
-else
-LIBCAMERA_CONF_OPTS += -Dqcam=disabled
-endif
-
 ifeq ($(BR2_PACKAGE_LIBEVENT),y)
 LIBCAMERA_CONF_OPTS += -Dcam=enabled
 LIBCAMERA_DEPENDENCIES += libevent
-else
-LIBCAMERA_CONF_OPTS += -Dcam=disabled
+endif
+
+ifeq ($(BR2_PACKAGE_ELFUTILS),y)
+# Optional dependency on libdw
+LIBCAMERA_DEPENDENCIES += elfutils
+endif
+
+ifeq ($(BR2_PACKAGE_JPEG),y)
+LIBCAMERA_DEPENDENCIES += jpeg
+endif
+
+ifeq ($(BR2_PACKAGE_LIBDRM),y)
+LIBCAMERA_DEPENDENCIES += libdrm
+endif
+
+ifeq ($(BR2_PACKAGE_LIBUNWIND),y)
+LIBCAMERA_DEPENDENCIES += libunwind
+endif
+
+ifeq ($(BR2_PACKAGE_SDL2),y)
+LIBCAMERA_DEPENDENCIES += sdl2
 endif
 
 ifeq ($(BR2_PACKAGE_TIFF),y)
@@ -107,15 +109,11 @@ endif
 ifeq ($(BR2_PACKAGE_HAS_UDEV),y)
 LIBCAMERA_CONF_OPTS += -Dudev=enabled
 LIBCAMERA_DEPENDENCIES += udev
-else
-LIBCAMERA_CONF_OPTS += -Dudev=disabled
 endif
 
 ifeq ($(BR2_PACKAGE_LTTNG_LIBUST),y)
 LIBCAMERA_CONF_OPTS += -Dtracing=enabled
 LIBCAMERA_DEPENDENCIES += lttng-libust
-else
-LIBCAMERA_CONF_OPTS += -Dtracing=disabled
 endif
 
 ifeq ($(BR2_PACKAGE_LIBEXECINFO),y)
@@ -132,7 +130,7 @@ endif
 # otherwise the signature won't match the shlib on the rootfs. Since meson
 # install target is signing the shlibs, we need to strip them before.
 LIBCAMERA_STRIP_FIND_CMD = \
-	find $(@D)/build/src/ipa \
+	find $(@D)/buildroot-build/src/ipa \
 	$(if $(call qstrip,$(BR2_STRIP_EXCLUDE_FILES)), \
 		-not \( $(call findfileclauses,$(call qstrip,$(BR2_STRIP_EXCLUDE_FILES))) \) ) \
 	-type f -name 'ipa_*.so' -print0

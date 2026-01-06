@@ -4,14 +4,15 @@
 #
 ################################################################################
 
-LIBCDIO_VERSION = 2.1.0
+LIBCDIO_VERSION = 2.2.0
 LIBCDIO_SOURCE = libcdio-$(LIBCDIO_VERSION).tar.bz2
-LIBCDIO_SITE = $(BR2_GNU_MIRROR)/libcdio
+LIBCDIO_SITE = https://github.com/libcdio/libcdio/releases/download/$(LIBCDIO_VERSION)
 LIBCDIO_INSTALL_STAGING = YES
 LIBCDIO_LICENSE = GPL-3.0+
 LIBCDIO_LICENSE_FILES = COPYING
 LIBCDIO_CPE_ID_VENDOR = gnu
 LIBCDIO_CONF_OPTS = --disable-example-progs --disable-cddb
+LIBCDIO_DEPENDENCIES = host-pkgconf
 
 ifeq ($(BR2_ENABLE_LOCALE),)
 LIBCDIO_DEPENDENCIES += libiconv

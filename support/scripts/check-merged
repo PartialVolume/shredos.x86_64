@@ -1,0 +1,135 @@
+#!/usr/bin/env bash
+#
+# Check if a given custom skeleton or overlay complies to the merged
+# requirements:
+#
+# - for unmerged:
+#   /bin            missing*, or an existing directory; not a symlink
+#   /lib            missing*, or an existing directory; not a symlink
+#   /sbin           missing*, or an existing directory; not a symlink
+#   /usr/bin/       missing*, or an existing directory; not a symlink
+#   /usr/lib/       missing*, or an existing directory; not a symlink
+#   /usr/sbin/      missing*, or an existing directory; not a symlink
+#
+# *: must be present for skeletons, can be missing for overlays
+#
+# - for merged-usr: all of the above, except:
+#   /bin            missing, or a relative symlink to usr/bin
+#   /lib            missing, or a relative symlink to usr/lib
+#   /sbin           missing, or a relative symlink to usr/sbin
+#
+# - for merged-bin: all of the above, except:
+#   /usr/sbin       missing, or a relative symlink to bin (thus points
+#                   to /usr/bin)
+#
+# Input:
+#   -t TYPE         the type of root to check: 'skeleton' or 'overlay'
+#   -u              check for merged /usr
+#   -b              check for merged /usr/bin
+#   $*:             the root directories (skeleton, overlays) to check
+# Output:
+#   stdout:         the list of non-compliant paths (empty if compliant).
+# Exit code:
+#   0:              in case of success (stdout will be empty)
+#   !0:             if any directory to check is improperly merged
+#
+
+type=
+merged_usr=false
+merged_bin=false
+while getopts "t:ub" OPT; do
+	case "${OPT}" in
+	(t)	type="${OPTARG}";;
+	(u)	merged_usr=true;;
+	(b)	merged_bin=true;;
+	(:)	printf "option %s expects a mandatory argument\n" "${OPTARG}"; exit 1;;
+	(\?)	printf "unknown option %s\n" "${OPTARG}"; exit 1;;
+	esac
+done
+
+# Remove the options processed by getopts from $@,
+# so that $@ now contains only the root directories to check.
+shift $((OPTIND -1))
+
+if [ "${type}" = "skeleton" ]; then
+	strict=true
+else
+	strict=false
+fi
+
+report_error() {
+	local type="${1}"
+	local root="${2}"
+	local fmt="${3}"
+	shift 3
+
+	if ${first}; then
+		printf "The %s in %s is not properly setup:\n" \
+			"${type}" "${root}"
+	fi
+	first=false
+	# shellcheck disable=SC2059  # fmt *is* a format string
+	printf "  - ${fmt}" "${@}"
+	is_success=false
+}
+
+test_merged() {
+	local type="${1}"
+	local root="${2}"
+	local base="${3}"
+	local dir1="${4}"
+	local dir2="${5}"
+
+	if ! test -e "${root}${base}${dir1}"; then
+		return 0
+	elif [ "$(readlink "${root}${base}${dir1}")" = "${dir2}" ]; then
+		return 0
+	fi
+
+	# Otherwise, this directory is not merged
+	report_error "${type}" "${root}" \
+		'%s%s should be missing, or be a relative symlink to %s\n' \
+		"${base}" "${dir1}" "${dir2}"
+}
+
+test_dir() {
+	local type="${1}"
+	local root="${2}"
+	local base="${3}"
+	local dir="${4}"
+
+	if ! test -e "${root}${base}${dir}" && ! ${strict}; then
+		return 0
+	elif test -d "${root}${base}${dir}" && ! test -L "${root}${base}${dir}"; then
+		return 0
+	fi
+
+	# Otherwise, this entry is not a proper directory
+	report_error "${type}" "${root}" \
+		"%s%s should exist, be a directory, and not be a symlink\n" \
+		"${base}" "${dir}"
+}
+
+is_success=true
+for root; do
+	first=true
+	test_dir "${type}" "${root}" "/" "usr/bin"
+	test_dir "${type}" "${root}" "/" "usr/lib"
+	if ${merged_usr}; then
+		test_merged "${type}" "${root}" "/" "bin" "usr/bin"
+		test_merged "${type}" "${root}" "/" "lib" "usr/lib"
+		test_merged "${type}" "${root}" "/" "sbin" "usr/sbin"
+		if ${merged_bin}; then
+			test_merged "${type}" "${root}" "/usr/" "sbin" "bin"
+		else
+			test_dir "${type}" "${root}" "/" "usr/sbin"
+		fi
+	else
+		test_dir "${type}" "${root}" "/" "bin"
+		test_dir "${type}" "${root}" "/" "lib"
+		test_dir "${type}" "${root}" "/" "sbin"
+		test_dir "${type}" "${root}" "/" "usr/sbin"
+	fi
+done
+
+${is_success}

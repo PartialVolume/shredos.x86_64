@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-POLKIT_VERSION = 125
+POLKIT_VERSION = 126
 POLKIT_SITE = $(call github,polkit-org,polkit,$(POLKIT_VERSION))
 POLKIT_LICENSE = GPL-2.0
 POLKIT_LICENSE_FILES = COPYING
@@ -20,8 +20,7 @@ POLKIT_LDFLAGS = $(TARGET_NLS_LIBS)
 POLKIT_CONF_OPTS = \
 	-Dman=false \
 	-Dexamples=false \
-	-Dsession_tracking=ConsoleKit \
-	-Djs_engine=duktape
+	-Dsession_tracking=ConsoleKit
 
 ifeq ($(BR2_PACKAGE_GOBJECT_INTROSPECTION),y)
 POLKIT_CONF_OPTS += -Dintrospection=true
@@ -56,8 +55,8 @@ define POLKIT_USERS
 endef
 
 define POLKIT_PERMISSIONS
-	/etc/polkit-1/rules.d d 700 polkitd root - - - - -
-	/usr/share/polkit-1/rules.d d 700 polkitd root - - - - -
+	/etc/polkit-1/rules.d d 750 root polkitd - - - - -
+	/usr/share/polkit-1/rules.d d 750 root polkitd - - - - -
 	/usr/bin/pkexec f 4755 root root - - - - -
 	/usr/lib/polkit-1/polkit-agent-helper-1 f 4755 root root - - - - -
 endef

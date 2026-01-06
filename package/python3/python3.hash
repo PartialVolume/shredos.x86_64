@@ -1,5 +1,5 @@
-# From https://www.python.org/downloads/release/python-3127/
-md5  c6c933c1a0db52597cb45a7910490f93  Python-3.12.7.tar.xz
+# From https://www.python.org/downloads/release/python-31311/
+md5  4c3517dd8b1fd76377dcb3e5e8f71ad6  Python-3.13.11.tar.xz
 # Locally computed
-sha256  24887b92e2afd4a2ac602419ad4b596372f67ac9b077190f459aba390faf5550  Python-3.12.7.tar.xz
-sha256  3b2f81fe21d181c499c59a256c8e1968455d6689d269aa85373bfb6af41da3bf  LICENSE
+sha256  16ede7bb7cdbfa895d11b0642fa0e523f291e6487194d53cf6d3b338c3a17ea2  Python-3.13.11.tar.xz
+sha256  78b12c3a81360b357002334f0e70ea0e92eebf7a9b358805c03c48484945f3bb  LICENSE

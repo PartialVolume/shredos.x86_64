@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-DEPOT_TOOLS_VERSION = 1b58dc68659445b1d97d8341f8158be25eab4957
+DEPOT_TOOLS_VERSION = 097e20723774957f21ac6d1808fcd0a91e8c7630
 DEPOT_TOOLS_SITE = https://chromium.googlesource.com/chromium/tools/depot_tools
 DEPOT_TOOLS_SITE_METHOD = git
 DEPOT_TOOLS_LICENSE = BSD-3-Clause
@@ -14,6 +14,7 @@ HOST_DEPOT_TOOLS_DEPENDENCIES = \
 	host-python3 \
 	host-python-httplib2 \
 	host-python-pyparsing \
+	host-python-pysocks \
 	host-python-six
 
 define HOST_DEPOT_TOOLS_INSTALL_CMDS

@@ -4,9 +4,10 @@
 #
 ################################################################################
 
-LIVE555_VERSION = 2021.05.03
+LIVE555_VERSION = 2025.10.13
 LIVE555_SOURCE = live.$(LIVE555_VERSION).tar.gz
-LIVE555_SITE = http://www.live555.com/liveMedia/public
+# upstream site removes older versions, use videolan.org instead
+LIVE555_SITE = https://download.videolan.org/contrib/live555
 # There is a COPYING file with the GPL-3.0 license text, but none of
 # the source files appear to be released under GPL-3.0, and the
 # project web site says it's licensed under the LGPL:
@@ -26,6 +27,13 @@ else
 LIVE555_CONFIG_TARGET = linux-with-shared-libraries
 LIVE555_LIBRARY_LINK = $(TARGET_CC) -o
 LIVE555_CFLAGS += -fPIC
+endif
+
+# "struct std::atomic_flag" has no member named "test"
+ifeq ($(BR2_TOOLCHAIN_GCC_AT_LEAST_11),y)
+LIVE555_CFLAGS += -std=c++20
+else
+LIVE555_CFLAGS += -DNO_STD_LIB=1
 endif
 
 ifeq ($(BR2_PACKAGE_OPENSSL),y)
