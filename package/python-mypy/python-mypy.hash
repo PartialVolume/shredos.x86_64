@@ -1,0 +1,5 @@
+# md5, sha256 from https://pypi.org/pypi/mypy/json
+md5  9ea329f0a99bb98554683680b988c5ea  mypy-1.18.2.tar.gz
+sha256  06a398102a5f203d7477b2923dda3634c36727fa5c237d8f859ef90c42a9924b  mypy-1.18.2.tar.gz
+# Locally computed sha256 checksums
+sha256  de341f6e031d021aab9eb27bdf713cc6fb844dee832ef3bcd4688bff5517220b  LICENSE

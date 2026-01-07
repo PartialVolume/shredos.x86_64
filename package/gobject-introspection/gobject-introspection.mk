@@ -4,27 +4,32 @@
 #
 ################################################################################
 
-GOBJECT_INTROSPECTION_VERSION_MAJOR = 1.76
-GOBJECT_INTROSPECTION_VERSION = $(GOBJECT_INTROSPECTION_VERSION_MAJOR).1
+GOBJECT_INTROSPECTION_VERSION_MAJOR = 1.84
+GOBJECT_INTROSPECTION_VERSION = $(GOBJECT_INTROSPECTION_VERSION_MAJOR).0
 GOBJECT_INTROSPECTION_SITE = https://download.gnome.org/sources/gobject-introspection/$(GOBJECT_INTROSPECTION_VERSION_MAJOR)
 GOBJECT_INTROSPECTION_SOURCE = gobject-introspection-$(GOBJECT_INTROSPECTION_VERSION).tar.xz
 GOBJECT_INTROSPECTION_INSTALL_STAGING = YES
 GOBJECT_INTROSPECTION_LICENSE = LGPL-2.0+, GPL-2.0+, BSD-2-Clause
 GOBJECT_INTROSPECTION_LICENSE_FILES = COPYING.LGPL COPYING.GPL giscanner/scannerlexer.l
 
+# gobject-introspection depends on the bootstrap version of libglib2
+# during the build because the full version depends on
+# gobject-introspection (applies to target and host packages
+# alike). "select BR2_PACKAGE_LIBGLIB2" in Config.in ensures the full
+# libglib2 gets installed together with gobject-introspection.
 GOBJECT_INTROSPECTION_DEPENDENCIES = \
 	host-autoconf-archive \
 	host-gobject-introspection \
 	host-qemu \
 	libffi \
-	libglib2 \
+	libglib2-bootstrap \
 	python3 \
 	zlib
 
 HOST_GOBJECT_INTROSPECTION_DEPENDENCIES = \
 	host-bison \
 	host-flex \
-	host-libglib2 \
+	host-libglib2-bootstrap \
 	host-python3
 
 # g-ir-scanner will default to /usr/bin/ld for linking if this is not set.
@@ -35,7 +40,9 @@ GOBJECT_INTROSPECTION_NINJA_ENV += \
 # .gir and .typelib files. g-ir-scanner does not use LDFLAGS, and by default,
 # links to the system-installed libglib2 path. To remedy this issue, defining
 # LD_LIBRARY_PATH forces g-ir-scanner to use our host installed libglib2 files.
-HOST_GOBJECT_INTROSPECTION_NINJA_ENV += \
+# As of gobject-introspection version 1.84.0, Meson records the
+# LD_LIBRARY_PATH set during config and passes it to g-ir-scanner.
+HOST_GOBJECT_INTROSPECTION_CONF_ENV = \
 	LD_LIBRARY_PATH="$(if $(LD_LIBRARY_PATH),$(LD_LIBRARY_PATH):)$(HOST_DIR)/lib"
 
 # Use the host gi-scanner to prevent the scanner from generating incorrect
@@ -46,13 +53,16 @@ GOBJECT_INTROSPECTION_CONF_OPTS = \
 	-Dgi_cross_ldd_wrapper="$(STAGING_DIR)/usr/bin/g-ir-scanner-lddwrapper" \
 	-Dbuild_introspection_data=true \
 	-Ddoctool=disabled \
-	-Dcairo=disabled
+	-Dcairo=disabled \
+	-Dtests=false
+
+HOST_GOBJECT_INTROSPECTION_CONF_OPTS = -Dtests=false
 
 # GI_SCANNER_DISABLE_CACHE=1 prevents g-ir-scanner from writing cache data to ${HOME}
 GOBJECT_INTROSPECTION_CONF_ENV = \
 	GI_SCANNER_DISABLE_CACHE=1
 
-HOST_GOBJECT_INTROSPECTION_CONF_ENV = \
+HOST_GOBJECT_INTROSPECTION_CONF_ENV += \
 	GI_SCANNER_DISABLE_CACHE=1
 
 # Make sure g-ir-tool-template uses the host python.
@@ -117,7 +127,9 @@ define GOBJECT_INTROSPECTION_INSTALL_WRAPPERS
 	# causes the host /usr/share being used instead of $(STAGING_DIR)/usr/share.
 	# Change datadir to $(libdir)/../share which will prefix $(STAGING_DIR)
 	# to the correct location.
-	$(SED) "s%^datadir=.*%datadir=\$${libdir}/../share%g" \
+	# Since we use libdir to define datadir, we must define datadir after
+	# libdir is defined.
+	$(SED) "\%^datadir=%d; s%^\(libdir=.*\)$$%\1\ndatadir=\$${libdir}/../share%" \
 		$(STAGING_DIR)/usr/lib/pkgconfig/gobject-introspection-1.0.pc
 
 	# By default, girdir and typelibdir use datadir and libdir as their prefix,

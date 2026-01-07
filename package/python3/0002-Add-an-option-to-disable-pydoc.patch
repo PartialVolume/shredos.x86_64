@@ -1,0 +1,88 @@
+From 8ba9dc9a12687d37454dd949409599f108f1ce44 Mon Sep 17 00:00:00 2001
+From: Thomas Petazzoni <thomas.petazzoni@free-electrons.com>
+Date: Wed, 22 Feb 2017 17:07:56 -0800
+Subject: [PATCH] Add an option to disable pydoc
+
+It removes 0.5 MB of data from the target plus the pydoc script
+itself.
+
+Upstream: N/A
+
+Signed-off-by: Thomas Petazzoni <thomas.petazzoni@free-electrons.com>
+Signed-off-by: Samuel Martin <s.martin49@gmail.com>
+[ Andrey Smirnov: ported to Python 3.6 ]
+Signed-off-by: Andrey Smirnov <andrew.smirnov@gmail.com>
+[ Adam Duskett: ported to Python 3.10.0 ]
+Signed-off-by: Adam Duskett <aduskett@gmail.com>
+[ Adam Duskett: ported to Python 3.12.1 ]
+Signed-off-by: Adam Duskett <adam.duskett@amarulasolutions.com>
+[ Vincent Fazio: ported to Python 3.13.2 ]
+Signed-off-by: Vincent Fazio <vfazio@gmail.com>
+---
+ Makefile.pre.in | 9 ++++++++-
+ configure.ac    | 6 ++++++
+ 2 files changed, 14 insertions(+), 1 deletion(-)
+
+diff --git a/Makefile.pre.in b/Makefile.pre.in
+index a1d460b36f4..81f3fd54ee4 100644
+--- a/Makefile.pre.in
++++ b/Makefile.pre.in
+@@ -2281,7 +2281,9 @@ bininstall: commoninstall altbininstall
+ 	-rm -f $(DESTDIR)$(BINDIR)/idle3
+ 	(cd $(DESTDIR)$(BINDIR); $(LN) -s idle$(VERSION) idle3)
+ 	-rm -f $(DESTDIR)$(BINDIR)/pydoc3
++ifeq (@PYDOC@,yes)
+ 	(cd $(DESTDIR)$(BINDIR); $(LN) -s pydoc$(VERSION) pydoc3)
++endif
+ 	if test "x$(LIPO_32BIT_FLAGS)" != "x" ; then \
+ 		rm -f $(DESTDIR)$(BINDIR)/python3-32$(EXE); \
+ 		(cd $(DESTDIR)$(BINDIR); $(LN) -s python$(VERSION)-32$(EXE) python3-32$(EXE)) \
+@@ -2331,7 +2333,6 @@ LIBSUBDIRS=	asyncio \
+ 		logging \
+ 		multiprocessing multiprocessing/dummy \
+ 		pathlib \
+-		pydoc_data \
+ 		re \
+ 		site-packages \
+ 		sqlite3 \
+@@ -2490,6 +2491,10 @@ TESTSUBDIRS=	idlelib/idle_test \
+ 
+ COMPILEALL_OPTS=-j0
+ 
++ifeq (@PYDOC@,yes)
++LIBSUBDIRS += pydoc_data
++endif
++
+ TEST_MODULES=@TEST_MODULES@
+ 
+ .PHONY: libinstall
+@@ -2717,7 +2722,9 @@ libainstall: all scripts
+ 	$(INSTALL_SCRIPT) python-config.py $(DESTDIR)$(LIBPL)/python-config.py
+ 	$(INSTALL_SCRIPT) python-config $(DESTDIR)$(BINDIR)/python$(LDVERSION)-config
+ 	$(INSTALL_SCRIPT) $(SCRIPT_IDLE) $(DESTDIR)$(BINDIR)/idle$(VERSION)
++ifeq (@PYDOC@,yes)
+ 	$(INSTALL_SCRIPT) $(SCRIPT_PYDOC) $(DESTDIR)$(BINDIR)/pydoc$(VERSION)
++endif
+ 	@if [ -s Modules/python.exp -a \
+ 		"`echo $(MACHDEP) | sed 's/^\(...\).*/\1/'`" = "aix" ]; then \
+ 		echo; echo "Installing support files for building shared extension modules on AIX:"; \
+diff --git a/configure.ac b/configure.ac
+index edac73ec5d3..7ed4fa578f3 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -4749,6 +4749,12 @@ AS_VAR_IF([posix_threads], [stub], [
+   AC_DEFINE([HAVE_PTHREAD_STUBS], [1], [Define if platform requires stubbed pthreads support])
+ ])
+ 
++AC_SUBST(PYDOC)
++
++AC_ARG_ENABLE(pydoc,
++	AS_HELP_STRING([--disable-pydoc], [disable pydoc]),
++	[ PYDOC="${enableval}" ], [ PYDOC=yes ])
++
+ # Check for enable-ipv6
+ AH_TEMPLATE([ENABLE_IPV6], [Define if --enable-ipv6 is specified])
+ AC_MSG_CHECKING([if --enable-ipv6 is specified])
+-- 
+2.50.1
+

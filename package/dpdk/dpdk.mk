@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-DPDK_VERSION = 24.07
+DPDK_VERSION = 24.11.3
 DPDK_SOURCE = dpdk-$(DPDK_VERSION).tar.xz
 DPDK_SITE = https://fast.dpdk.org/rel
 DPDK_LICENSE = \
@@ -34,6 +34,8 @@ DPDK_LICENSE_FILES = \
 	license/bsd-3-clause.txt \
 	license/exceptions.txt \
 	license/mit.txt
+
+DPDK_INSTALL_STAGING = YES
 
 DPDK_DEPENDENCIES = \
 	host-pkgconf \

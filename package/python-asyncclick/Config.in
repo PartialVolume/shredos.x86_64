@@ -1,0 +1,6 @@
+config BR2_PACKAGE_PYTHON_ASYNCCLICK
+	bool "python-asyncclick"
+	help
+	  Composable command line interface toolkit, async version.
+
+	  https://palletsprojects.com/p/click/

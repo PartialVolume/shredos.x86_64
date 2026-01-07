@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-NUT_VERSION = 2.8.2
+NUT_VERSION = 2.8.4
 NUT_SITE = https://github.com/networkupstools/nut/releases/download/v$(NUT_VERSION)
 NUT_LICENSE = GPL-2.0+, GPL-3.0+ (python scripts), GPL/Artistic (perl client)
 NUT_LICENSE_FILES = COPYING LICENSE-GPL2 LICENSE-GPL3
@@ -24,6 +24,7 @@ NUT_CONF_OPTS = \
 	--with-group=nut
 
 NUT_CONF_ENV = \
+	PKG_CONFIG_LIBDIR=$(STAGING_DIR)/usr/lib/pkgconfig:$(STAGING_DIR)/usr/share/pkgconfig \
 	ax_cv_check_cflags__Werror__Wno_unknown_warning_option=no \
 	ax_cv_check_cxxflags__Werror__Wno_unknown_warning_option=no \
 	ac_cv_func_strcasecmp=yes \

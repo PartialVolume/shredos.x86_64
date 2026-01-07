@@ -4,29 +4,29 @@
 #
 ################################################################################
 
-FONTCONFIG_VERSION = 2.14.2
-FONTCONFIG_SITE = https://www.freedesktop.org/software/fontconfig/release
+FONTCONFIG_VERSION = 2.17.1
+FONTCONFIG_SITE = https://gitlab.freedesktop.org/api/v4/projects/890/packages/generic/fontconfig/$(FONTCONFIG_VERSION)
 FONTCONFIG_SOURCE = fontconfig-$(FONTCONFIG_VERSION).tar.xz
-# 0001-add-pthread-as-a-dependency-of-a-static-lib.patch
-FONTCONFIG_AUTORECONF = YES
 FONTCONFIG_INSTALL_STAGING = YES
 FONTCONFIG_DEPENDENCIES = freetype expat host-pkgconf host-gperf \
-	$(if $(BR2_PACKAGE_UTIL_LINUX_LIBS),util-linux-libs,util-linux) \
 	$(TARGET_NLS_DEPENDENCIES)
-HOST_FONTCONFIG_DEPENDENCIES = \
-	host-freetype host-expat host-pkgconf host-gperf host-util-linux \
-	host-gettext
+HOST_FONTCONFIG_DEPENDENCIES = host-freetype host-expat host-pkgconf \
+	host-gperf host-gettext
 FONTCONFIG_LICENSE = fontconfig license
 FONTCONFIG_LICENSE_FILES = COPYING
 FONTCONFIG_CPE_ID_VALID = YES
 
 FONTCONFIG_CONF_OPTS = \
-	--with-arch=$(GNU_TARGET_NAME) \
-	--with-cache-dir=/var/cache/fontconfig \
-	--disable-docs
+	-Dcache-dir=/var/cache/fontconfig \
+	-Dtests=disabled \
+	-Ddoc=disabled
 
-HOST_FONTCONFIG_CONF_OPTS = \
-	--disable-static
+FONTCONFIG_CFLAGS = $(TARGET_CFLAGS)
 
-$(eval $(autotools-package))
-$(eval $(host-autotools-package))
+# See: https://gitlab.freedesktop.org/fontconfig/fontconfig/-/issues/436
+ifeq ($(BR2_DEBUG_3),y)
+FONTCONFIG_CFLAGS += -g2
+endif
+
+$(eval $(meson-package))
+$(eval $(host-meson-package))

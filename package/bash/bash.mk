@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-BASH_VERSION = 5.2.21
+BASH_VERSION = 5.2.37
 BASH_SITE = $(BR2_GNU_MIRROR)/bash
 BASH_DEPENDENCIES = ncurses readline host-bison
 BASH_LICENSE = GPL-3.0+
@@ -17,7 +17,7 @@ BASH_CONF_OPTS = \
 	--with-installed-readline \
 	--without-bash-malloc
 
-BASH_CONF_ENV += \
+BASH_CONF_ENV = \
 	ac_cv_rl_prefix="$(STAGING_DIR)" \
 	ac_cv_rl_version="$(READLINE_VERSION)" \
 	bash_cv_getcwd_malloc=yes \
@@ -25,6 +25,15 @@ BASH_CONF_ENV += \
 	bash_cv_sys_named_pipes=present \
 	bash_cv_func_sigsetjmp=present \
 	bash_cv_printf_a_format=yes
+
+# Can be dropped when bash is bumped to 5.3 or newer.
+ifeq ($(BR2_TOOLCHAIN_GCC_AT_LEAST_15),y)
+BASH_CONF_ENV += CFLAGS="$(TARGET_CFLAGS) -std=gnu17"
+endif
+
+ifeq ($(BR2_HOST_GCC_AT_LEAST_15),y)
+BASH_CONF_ENV += CFLAGS_FOR_BUILD="$(HOST_CFLAGS) -std=gnu17"
+endif
 
 # The static build needs some trickery
 ifeq ($(BR2_STATIC_LIBS),y)

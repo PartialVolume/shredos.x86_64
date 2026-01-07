@@ -71,13 +71,13 @@ QT5WEBENGINE_DEPENDENCIES += \
 	host-webp \
 	host-zlib \
 	freetype \
-	jpeg \
 	lcms2 \
 	libevent \
 	libnss \
 	libvpx \
 	libxml2 \
 	libxslt \
+	opus \
 	snappy \
 	webp
 
@@ -88,13 +88,13 @@ QT5WEBENGINE_CONF_OPTS += \
 	-webengine-webp \
 	-feature-build-qtwebengine-core \
 	-feature-webengine-core-support \
+	-feature-webengine-noexecstack \
 	-feature-webengine-system-dbus \
 	-feature-webengine-system-fontconfig \
 	-feature-webengine-system-freetype \
 	-feature-webengine-system-glib \
 	-feature-webengine-system-glibc \
 	-feature-webengine-system-harfbuzz \
-	-feature-webengine-system-jpeg \
 	-feature-webengine-system-khr \
 	-feature-webengine-system-lcms2 \
 	-feature-webengine-system-libevent \
@@ -117,7 +117,7 @@ QT5WEBENGINE_CONF_OPTS += \
 	-no-feature-webengine-developer-build \
 	-no-feature-webengine-full-debug-info \
 	-no-feature-webengine-native-spellchecker \
-	-no-feature-webengine-noexecstack \
+	-no-feature-webengine-system-jpeg \
 	-no-feature-webengine-system-minizip \
 	-no-feature-webengine-system-gn
 

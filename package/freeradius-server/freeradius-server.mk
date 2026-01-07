@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-FREERADIUS_SERVER_VERSION = 3.2.6
+FREERADIUS_SERVER_VERSION = 3.2.8
 FREERADIUS_SERVER_SOURCE = \
 	freeradius-server-$(FREERADIUS_SERVER_VERSION).tar.bz2
 FREERADIUS_SERVER_SITE = https://freeradius.org/ftp/pub/freeradius
@@ -14,6 +14,13 @@ FREERADIUS_SERVER_CPE_ID_VENDOR = freeradius
 FREERADIUS_SERVER_CPE_ID_PRODUCT = freeradius
 FREERADIUS_SERVER_DEPENDENCIES = libtalloc
 FREERADIUS_SERVER_AUTORECONF = YES
+
+# Mitigated upstream since version 0.5.0, NVD database entry not
+# up-to-date
+FREERADIUS_SERVER_IGNORE_CVES += CVE-2002-0318
+
+# Fixed in 2.2.0, NVD database entry not up-to-date
+FREERADIUS_SERVER_IGNORE_CVES += CVE-2011-4966
 
 # We're patching src/modules/rlm_krb5/configure.ac
 define FREERADIUS_SERVER_RUN_KRB5_AUTORECONF

@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-GHOSTSCRIPT_VERSION = 10.04.0
+GHOSTSCRIPT_VERSION = 10.06.0
 GHOSTSCRIPT_SOURCE = ghostscript-$(GHOSTSCRIPT_VERSION).tar.xz
 GHOSTSCRIPT_SITE = https://github.com/ArtifexSoftware/ghostpdl-downloads/releases/download/gs$(subst .,,$(GHOSTSCRIPT_VERSION))
 GHOSTSCRIPT_LICENSE = AGPL-3.0
@@ -85,8 +85,8 @@ else
 GHOSTSCRIPT_CONF_OPTS += --disable-cups
 endif
 
-ifeq ($(BR2_PACKAGE_XLIB_LIBX11),y)
-GHOSTSCRIPT_DEPENDENCIES += xlib_libX11
+ifeq ($(BR2_PACKAGE_XLIB_LIBXT)$(BR2_PACKAGE_XLIB_LIBXEXT),yy)
+GHOSTSCRIPT_DEPENDENCIES += xlib_libXt xlib_libXext
 GHOSTSCRIPT_CONF_OPTS += --with-x
 else
 GHOSTSCRIPT_CONF_OPTS += --without-x

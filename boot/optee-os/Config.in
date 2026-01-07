@@ -1,4 +1,4 @@
-config BR2_TARGET_OPTEE_OS
+menuconfig BR2_TARGET_OPTEE_OS
 	bool "optee_os"
 	depends on BR2_ARM_CPU_ARMV8A || BR2_ARM_CPU_ARMV7A || BR2_RISCV_64
 	help
@@ -18,12 +18,17 @@ choice
 	  Select the version of OP-TEE OS you want to use
 
 config BR2_TARGET_OPTEE_OS_LATEST
-	bool "4.3.0"
+	bool "4.6.0"
 	depends on BR2_PACKAGE_HOST_RUSTC_ARCH_SUPPORTS
 	select BR2_TARGET_OPTEE_OS_NEEDS_PYTHON_CRYPTOGRAPHY
 	help
 	  Use the latest release tag from the OP-TEE OS official Git
 	  repository.
+
+config BR2_TARGET_OPTEE_OS_CUSTOM_VERSION
+	bool "Custom version"
+	help
+	  This option allows to use a specific official version
 
 config BR2_TARGET_OPTEE_OS_CUSTOM_TARBALL
 	bool "Custom tarball"
@@ -42,6 +47,10 @@ config BR2_TARGET_OPTEE_OS_CUSTOM_GIT
 	  Use a custom version fetched from a Git repository.
 
 endchoice
+
+config BR2_TARGET_OPTEE_OS_CUSTOM_VERSION_VALUE
+	string "OP-TEE version"
+	depends on BR2_TARGET_OPTEE_OS_CUSTOM_VERSION
 
 if BR2_TARGET_OPTEE_OS_CUSTOM_TARBALL
 
@@ -70,7 +79,9 @@ endif
 
 config BR2_TARGET_OPTEE_OS_VERSION
 	string
-	default "4.3.0"		if BR2_TARGET_OPTEE_OS_LATEST
+	default "4.6.0"		if BR2_TARGET_OPTEE_OS_LATEST
+	default BR2_TARGET_OPTEE_OS_CUSTOM_VERSION_VALUE \
+		if BR2_TARGET_OPTEE_OS_CUSTOM_VERSION
 	default "custom"	if BR2_TARGET_OPTEE_OS_CUSTOM_TARBALL
 	default BR2_TARGET_OPTEE_OS_CUSTOM_REPO_VERSION \
 				if BR2_TARGET_OPTEE_OS_CUSTOM_GIT
@@ -156,7 +167,7 @@ config BR2_TARGET_OPTEE_OS_ADDITIONAL_VARIABLES
 
 config BR2_TARGET_OPTEE_OS_CORE_IMAGES
 	string "Binary boot images"
-	default "tee.bin tee-*_v2.bin"
+	default "tee.bin tee-raw.bin tee-*_v2.bin"
 	help
 	  Names of generated image files that are installed in the
 	  output images/ directory.

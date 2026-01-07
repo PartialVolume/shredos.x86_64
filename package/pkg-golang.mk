@@ -40,6 +40,12 @@ GO_BIN = $(HOST_DIR)/bin/go
 
 define inner-golang-package
 
+# Legacy
+ifneq ($$($(2)_INSTALL_BINS),)
+$$(error Package $(1) sets $(2)_INSTALL_BINS, which is no longer supported; \
+see the manual: https://buildroot.org/manual.html#migrating-golang-package )
+endif
+
 $(2)_BUILD_OPTS += \
 	-ldflags "$$($(2)_LDFLAGS)" \
 	-modcacherw \
@@ -61,9 +67,16 @@ $(2)_BUILD_TARGETS ?= .
 # after each build target building them (below in <pkg>_BUILD_CMDS).
 ifeq ($$($(2)_BUILD_TARGETS),.)
 $(2)_BIN_NAME ?= $$($(2)_RAWNAME)
+$(2)_INSTALL_BINS ?= $$($(2)_BIN_NAME)
+else ifeq ($$(words $$($(2)_BUILD_TARGETS)),1)
+$(2)_BIN_NAME ?= $$(notdir $$($(2)_BUILD_TARGETS))
+$(2)_INSTALL_BINS ?= $$($(2)_BIN_NAME)
+else
+ifneq ($$($(2)_BIN_NAME),)
+$$(error $(1) sets $(2)_BIN_NAME while there are multiple targets in $(2)_BUILD_TARGETS)
 endif
-
-$(2)_INSTALL_BINS ?= $$($(2)_RAWNAME)
+$(2)_INSTALL_BINS ?= $$(notdir $$($(2)_BUILD_TARGETS))
+endif
 
 # Source files in Go usually use an import path resolved around
 # domain/vendor/software. We infer domain/vendor/software from the upstream URL
@@ -79,8 +92,8 @@ $(2)_GOMOD ?= $$($(2)_SRC_DOMAIN)/$$($(2)_SRC_VENDOR)/$$($(2)_SRC_SOFTWARE)
 # Generate a go.mod file if it doesn't exist. Note: Go is configured
 # to use the "vendor" dir and not make network calls.
 define $(2)_GEN_GOMOD
-	if [ ! -f $$(@D)/go.mod ]; then \
-		printf "module $$($(2)_GOMOD)\n" > $$(@D)/go.mod; \
+	if [ ! -f $$(@D)/$$($(2)_SUBDIR)/go.mod ]; then \
+		printf "module $$($(2)_GOMOD)\n" > $$(@D)/$$($(2)_SUBDIR)/go.mod; \
 	fi
 endef
 $(2)_POST_PATCH_HOOKS += $(2)_GEN_GOMOD
@@ -90,6 +103,11 @@ $(2)_DL_ENV += \
 	$$(HOST_GO_COMMON_ENV) \
 	GOPROXY=direct \
 	$$($(2)_GO_ENV)
+
+# If building in a sub directory, do the vendoring in there
+ifneq ($$($(2)_SUBDIR),)
+$(2)_DOWNLOAD_POST_PROCESS_OPTS += -s$$($(2)_SUBDIR)
+endif
 
 # Because we append vendored info, we can't rely on the values being empty
 # once we eventually get into the generic-package infra. So, we duplicate
@@ -102,7 +120,7 @@ endif
 
 # Due to vendoring, it is pretty likely that not all licenses are
 # listed in <pkg>_LICENSE. If the license is unset, it is "unknown"
-# so adding unknowns to some unknown is still some other unkown,
+# so adding unknowns to some unknown is still some other unknown,
 # so don't append the blurb in that case.
 ifneq ($$($(2)_LICENSE),)
 $(2)_LICENSE += , vendored dependencies licenses probably not listed
@@ -114,14 +132,28 @@ ifndef $(2)_BUILD_CMDS
 ifeq ($(4),target)
 
 ifeq ($(BR2_STATIC_LIBS),y)
-$(2)_LDFLAGS += -extldflags '-static'
+$(2)_EXTLDFLAGS += -static
 $(2)_TAGS += osusergo netgo
+endif
+
+ifeq ($(BR2_aarch64),y)
+# Go forces use of the Gold linker on aarch64 due to a bug in BFD that
+# is fixed in Binutils >= 2.41 (that includes all versions provided by
+# Buildroot). Forcing Gold will break with toolchains that don't
+# provide it (like the Buildroot toolchains), so override the flag and
+# use BFD.
+# See: https://github.com/golang/go/issues/22040
+$(2)_EXTLDFLAGS += -fuse-ld=bfd
+endif
+
+ifneq ($$($(2)_EXTLDFLAGS),)
+$(2)_LDFLAGS += -extldflags '$$($(2)_EXTLDFLAGS)'
 endif
 
 # Build package for target
 define $(2)_BUILD_CMDS
 	$$(foreach d,$$($(2)_BUILD_TARGETS),\
-		cd $$(@D); \
+		cd $$(@D)/$$($(2)_SUBDIR); \
 		$$(HOST_GO_TARGET_ENV) \
 			$$($(2)_GO_ENV) \
 			$$(GO_BIN) build -v $$($(2)_BUILD_OPTS) \
@@ -133,7 +165,7 @@ else
 # Build package for host
 define $(2)_BUILD_CMDS
 	$$(foreach d,$$($(2)_BUILD_TARGETS),\
-		cd $$(@D); \
+		cd $$(@D)/$$($(2)_SUBDIR); \
 		$$(HOST_GO_HOST_ENV) \
 			$$($(2)_GO_ENV) \
 			$$(GO_BIN) build -v $$($(2)_BUILD_OPTS) \

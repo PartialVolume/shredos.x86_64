@@ -1,0 +1,30 @@
+From ffff12fd321c7a056e796e74cc508726b0626ae0 Mon Sep 17 00:00:00 2001
+From: Romain Naour <romain.naour@openwide.fr>
+Date: Wed, 22 Jul 2015 22:43:25 +0200
+Subject: [PATCH] fix static linking with icu-uc
+
+During static linking with a C application and libicuuc.a,
+-lstdc++ is required.
+
+Add -lstdc++ in Libs.private of icu-uc.pc.
+
+Fixes:
+http://autobuild.buildroot.net/results/210/2107f9dfb39eeb6559fb4271c7af8b39aef521ca/
+
+Signed-off-by: Romain Naour <romain.naour@openwide.fr>
+---
+ source/Makefile.in | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff -git icu.orig/source/Makefile.in icu/source/Makefile.in
+--- icu.orig/source/Makefile.in	2025-03-13 19:31:23.000000000 +0100
++++ icu/source/Makefile.in	2025-09-22 08:56:36.791792784 +0200
+@@ -279,7 +279,7 @@
+ 	@echo "Libs:" '-L$${libdir}' "${ICULIBS_UC}" "${ICULIBS_DT}" '$${baselibs}' >> $@
+ else
+ 	@echo "Libs:" '-L$${libdir}' "${ICULIBS_UC}" >> $@
+-	@echo "Libs.private:" "${ICULIBS_DT}" '$${baselibs}' >> $@
++	@echo "Libs.private:" "${ICULIBS_DT}" '$${baselibs}' -lstdc++ >> $@
+ endif
+ 	@echo $@ updated.
+ 

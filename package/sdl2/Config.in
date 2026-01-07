@@ -11,13 +11,6 @@ config BR2_PACKAGE_SDL2
 
 if BR2_PACKAGE_SDL2
 
-config BR2_PACKAGE_SDL2_DIRECTFB
-	bool "DirectFB video driver"
-	depends on BR2_PACKAGE_DIRECTFB
-
-comment "DirectFB video driver needs directfb"
-	depends on !BR2_PACKAGE_DIRECTFB
-
 config BR2_PACKAGE_SDL2_X11
 	bool "X11 video driver"
 	depends on BR2_PACKAGE_XORG7
@@ -44,6 +37,23 @@ comment "KMS/DRM video driver needs a GBM provider, and OpenGL or OpenGLES+EGL"
 	depends on !BR2_PACKAGE_HAS_LIBGBM || \
 		!BR2_PACKAGE_HAS_LIBEGL || \
 		!(BR2_PACKAGE_SDL2_OPENGL || BR2_PACKAGE_SDL2_OPENGLES)
+
+config BR2_PACKAGE_SDL2_WAYLAND
+	bool "Wayland video driver"
+	depends on BR2_TOOLCHAIN_HAS_THREADS # wayland
+	depends on BR2_PACKAGE_WAYLAND
+	depends on BR2_PACKAGE_HAS_LIBEGL
+	depends on BR2_PACKAGE_SDL2_OPENGLES
+	select BR2_PACKAGE_LIBXKBCOMMON
+	select BR2_PACKAGE_WAYLAND_PROTOCOLS
+
+comment "Wayland video driver needs a toolchain w/ threads"
+	depends on !BR2_TOOLCHAIN_HAS_THREADS
+
+comment "Wayland video driver needs wayland with an OpenGLES+EGL backend"
+	depends on !BR2_PACKAGE_WAYLAND || \
+		!BR2_PACKAGE_HAS_LIBEGL || \
+		!BR2_PACKAGE_SDL2_OPENGLES
 
 config BR2_PACKAGE_SDL2_OPENGL
 	bool "OpenGL (GLX)"

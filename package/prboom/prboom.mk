@@ -18,6 +18,10 @@ ifeq ($(BR2_TOOLCHAIN_HAS_GCC_BUG_85180),y)
 PRBOOM_CFLAGS += -O0
 endif
 
+ifeq ($(BR2_TOOLCHAIN_GCC_AT_LEAST_15),y)
+PRBOOM_CFLAGS += -std=gnu18
+endif
+
 PRBOOM_CONF_ENV += CFLAGS="$(PRBOOM_CFLAGS)"
 
 ifeq ($(BR2_PACKAGE_LIBPNG),y)
@@ -40,7 +44,7 @@ PRBOOM_CONF_OPTS = \
 
 # endianness detection isn't used when cross compiling
 define PRBOOM_BIG_ENDIAN_FIXUP
-	$(SED) 's,.*#undef WORDS_BIGENDIAN.*,#define WORDS_BIGENDIAN 1,g' \
+	$(SED) 's,.*#.*undef WORDS_BIGENDIAN.*,#define WORDS_BIGENDIAN 1,g' \
 		$(PRBOOM_DIR)/config.h
 endef
 
