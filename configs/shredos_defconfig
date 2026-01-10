@@ -18,7 +18,7 @@ BR2_ROOTFS_OVERLAY="board/shredos/fsoverlay"
 BR2_ROOTFS_POST_IMAGE_SCRIPT="board/shredos/make_iso_file.sh board/shredos/make_img_file.sh"
 BR2_LINUX_KERNEL=y
 BR2_LINUX_KERNEL_USE_CUSTOM_CONFIG=y
-BR2_LINUX_KERNEL_CUSTOM_CONFIG_FILE="board/shredos/kernel-6.6.22-defconfig.config"
+BR2_LINUX_KERNEL_CUSTOM_CONFIG_FILE="board/shredos/kernel-defconfig"
 BR2_PACKAGE_LINUX_TOOLS_CPUPOWER=y
 BR2_PACKAGE_LINUX_TOOLS_PERF=y
 # BR2_PACKAGE_BUSYBOX_SELINUX is not set
