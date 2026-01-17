@@ -23,6 +23,31 @@ cp "board/shredos/shredos.ico"             "${BINARIES_DIR}/shredos.ico"        
 # version.txt is used to help identify the (boot) USB disk
 cp "board/shredos/fsoverlay/etc/shredos/version.txt" "${BINARIES_DIR}/version.txt"        || exit 1
 
+# Determine size of FAT partition based on size of bzImage plus an arbitary 20MB to hold PDF's etc.
+BZIMAGE="${BINARIES_DIR}/bzImage"
+CFG="board/shredos/${MKIMAGE_CFG}"
+OFFSET=20000000
+
+# Get bzImage size in bytes
+if [[ ! -f "$BZIMAGE" ]]; then
+    echo "Error: $BZIMAGE not found"
+    exit 1
+fi
+
+SIZE=$(stat -c %s "$BZIMAGE")
+NEW_SIZE=$((SIZE + OFFSET))
+
+# Update size line in genimage.cfg
+if [[ ! -f "$CFG" ]]; then
+    echo "Error: $CFG not found"
+    exit 1
+fi
+
+sed -i -E "0,/^[[:space:]]*size[[:space:]]*=/{s/^[[:space:]]*size[[:space:]]*=.*/size = ${NEW_SIZE}/}" "$CFG"
+
+echo "Updated size to $NEW_SIZE bytes in $CFG"
+
+# Create the .img
 rm -rf "${BUILD_DIR}/genimage.tmp"                                                        || exit 1
 genimage --rootpath="${TARGET_DIR}" \
     --inputpath="${BINARIES_DIR}" \
