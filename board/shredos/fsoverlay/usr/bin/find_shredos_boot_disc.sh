@@ -46,14 +46,18 @@ fi
 #
 while read drive ;
 do
-	if [[ "$first_drive" == "" ]]
-	then
-		first_drive=$drive
-	fi
-
 	if [[ "$drive" != "" ]]
 	then
 		mount $drive $drive_dir 2>&1 | tee -a transfer.log
+		if [ $? == 0 ]
+		then
+			# Note the first mountable drive, we will use this for storage of PDFs
+			# if we can't identify a ShredOS USB stick
+			if [[ "$first_drive" == "" ]]
+			then
+				first_drive=$drive
+			fi
+		fi
 
 		# Check the partion for the file /etc/shredos/shredos_exclude_disc,
 		# If the file is found it indicates that the user considers that
@@ -120,7 +124,7 @@ do
 
 		umount $drive_dir 2>&1 | tee -a transfer.log
 	fi
-done <<< $(fdisk -l | grep -i "exfat\|fat16\|fat32" | awk '{print $1}')
+done <<< $(fdisk -l | grep -i "exfat\|fat16\|fat32\|Microsoft basic data" | awk '{print $1}')
 
 # If no boot disc has been found that contains the version of ShredOS
 # that is running, then output the first FAT formatted drive we came across.
