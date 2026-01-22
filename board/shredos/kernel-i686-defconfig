@@ -2,7 +2,7 @@
 # Automatically generated file; DO NOT EDIT.
 # Linux/i386 6.18.0 Kernel Configuration
 #
-CONFIG_CC_VERSION_TEXT="i686-buildroot-linux-gnu-gcc.br_real (Buildroot -g8b7c69305e-dirty) 14.3.0"
+CONFIG_CC_VERSION_TEXT="i686-buildroot-linux-gnu-gcc.br_real (Buildroot -g4fe795cab5-dirty) 14.3.0"
 CONFIG_CC_IS_GCC=y
 CONFIG_GCC_VERSION=140300
 CONFIG_CLANG_VERSION=0
@@ -6720,7 +6720,7 @@ CONFIG_UDF_FS=y
 # DOS/FAT/EXFAT/NT Filesystems
 #
 CONFIG_FAT_FS=y
-# CONFIG_MSDOS_FS is not set
+CONFIG_MSDOS_FS=y
 CONFIG_VFAT_FS=y
 CONFIG_FAT_DEFAULT_CODEPAGE=437
 CONFIG_FAT_DEFAULT_IOCHARSET="iso8859-1"
