@@ -6,7 +6,7 @@ set -euo pipefail
 #
 # Arguments:
 #  x64   - Build only x86-64 configurations
-#  x32   - Build only i586 (32-bit) configurations
+#  x32   - Build only i686 (32-bit) configurations
 #  all   - Build all configurations (64-bit first, then 32-bit)
 #
 # Environment Variables:
@@ -29,19 +29,15 @@ VERSION_FILE="board/shredos/fsoverlay/etc/shredos/version.txt"
 # 64-bit configurations to build:
 X64_CONFIGS=(
 	"shredos_defconfig"
-	"shredos_img_defconfig"
-	"shredos_iso_defconfig"
 	"shredos_iso_legacy_defconfig"
 	"shredos_iso_extra_defconfig" # experimental
 )
 
 # 32-bit configurations to build:
 X32_CONFIGS=(
-	"shredos_i586_defconfig"
-	"shredos_img_i586_defconfig"
-	"shredos_iso_i586_defconfig"
-	"shredos_iso_legacy_i586_defconfig"
-	"shredos_iso_extra_i586_defconfig" # experimental
+	"shredos_i686_lite_defconfig"
+	"shredos_iso_legacy_i686_defconfig"
+	"shredos_iso_extra_i686_defconfig" # experimental
 )
 
 # Packages always needing rebuild between runs, even for the same architecture.
@@ -76,7 +72,7 @@ print_usage() {
 	echo ""
 	echo "Arguments:"
 	echo "  x64   - Build only x86-64 configurations"
-	echo "  x32   - Build only i586 (32-bit) configurations"
+	echo "  x32   - Build only i686 (32-bit) configurations"
 	echo "  all   - Build all configurations (64-bit first, then 32-bit)"
 	echo ""
 	echo "Environment Variables:"
@@ -141,7 +137,7 @@ prompt_version() {
 
 	if [ -z "$NEW_VERSION" ]; then
 		echo
-		echo "x86-64 and i586 will be replaced/switched around during builds (depending on architecture)"
+		echo "x86-64 and i686 will be replaced/switched around during builds (depending on architecture)"
 		read -rp "Enter new version or press ENTER to keep existing [${current_version}]: " NEW_VERSION
 		[ -z "$NEW_VERSION" ] && NEW_VERSION="$current_version"
 	fi
@@ -542,7 +538,7 @@ if [ ${#X64_CONFIGS[@]} -gt 0 ]; then
 	echo "Starting 64-bit builds..."
 	echo "==============================================="
 	echo
-	replace_version "i586" "x86-64"
+	replace_version "i686" "x86-64"
 
 	CFG_INDEX=0
 	for config in "${X64_CONFIGS[@]}"; do
@@ -562,7 +558,7 @@ if [ ${#X32_CONFIGS[@]} -gt 0 ]; then
 	echo "Starting 32-bit builds..."
 	echo "==============================================="
 	echo
-	replace_version "x86-64" "i586"
+	replace_version "x86-64" "i686"
 
 	CFG_INDEX=0
 	for config in "${X32_CONFIGS[@]}"; do
