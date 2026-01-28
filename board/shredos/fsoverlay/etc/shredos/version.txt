@@ -1,1 +1,1 @@
-2025.11_28_x86-64_26ece7a-commit-dev
+2025.11_28_i686_26ece7a-commit-dev
