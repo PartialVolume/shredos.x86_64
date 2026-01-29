@@ -141,12 +141,25 @@ ROOTFS_ISO9660_GRUB2_CONFIG_PATH = $(ROOTFS_ISO9660_TMP_TARGET_DIR)/boot/grub/gr
 ROOTFS_ISO9660_GRUB2_EFI_CONFIG_PATH = $(ROOTFS_ISO9660_TMP_TARGET_DIR)/$(ROOTFS_ISO9660_GRUB2_EFI_PREFIX)/grub.cfg
 
 define ROOTFS_ISO9660_INSTALL_GRUB2_EFI
+	# If 32bit build also copy the bootx64.efi from board/shredos/ so 32bit shredos will boot on a 64 EFI system
+	if [ "$(BR2_i386)" = "y" ]; then \
+		$(INSTALL) -D -m 0644 $(TOPDIR)/board/shredos/bootx64.efi $(BINARIES_DIR)/efi-part/EFI/BOOT/bootx64.efi; \
+	fi
 	# Create file to better find ISO9660 filesystem
 	$(INSTALL) -D -m 0644 /dev/null \
 		$(ROOTFS_ISO9660_TMP_TARGET_DIR)/$(ROOTFS_ISO9660_GRUB2_EFI_IDENT_FILE)
 	# Copy EFI bootloader also to ISO9660 filesystem
 	$(INSTALL) -D -m 0644 $(ROOTFS_ISO9660_EFI_PARTITION_CONTENT)/$(ROOTFS_ISO9660_GRUB2_EFI_PREFIX)/$(ROOTFS_ISO9660_EFI_NAME) \
 		$(ROOTFS_ISO9660_TMP_TARGET_DIR)/$(ROOTFS_ISO9660_GRUB2_EFI_PREFIX)/$(ROOTFS_ISO9660_EFI_NAME)
+	# If 32 bit build we also want the 64 bit EFI installed
+	if [ "$(BR2_i386)" = "y" ]; then \
+		$(INSTALL) -D -m 0644 $(ROOTFS_ISO9660_EFI_PARTITION_CONTENT)/$(ROOTFS_ISO9660_GRUB2_EFI_PREFIX)/$(ROOTFS_ISO9660_EFI_NOTNAME) \
+		$(ROOTFS_ISO9660_TMP_TARGET_DIR)/$(ROOTFS_ISO9660_GRUB2_EFI_PREFIX)/$(ROOTFS_ISO9660_EFI_NOTNAME)
+	fi
+	# If 64bit build copy the bootx64.efi to board/shredos/ as this will be used when building 32bit build
+	if [ "$(BR2_x86_64)" = "y" ]; then \
+		$(INSTALL) -D -m 0644 $(BINARIES_DIR)/efi-part/EFI/BOOT/bootx64.efi $(TOPDIR)/board/shredos/bootx64.efi; \
+	fi
 	# Create EFI FAT partition
 	$(RM) -rf $(ROOTFS_ISO9660_EFI_PARTITION_PATH)
 	mkdir -p $(dir $(ROOTFS_ISO9660_EFI_PARTITION_PATH))
@@ -156,9 +169,6 @@ define ROOTFS_ISO9660_INSTALL_GRUB2_EFI
 	$(ROOTFS_ISO9660_FIX_TIME) $(ROOTFS_ISO9660_EFI_PARTITION_CONTENT)/*
 	$(HOST_DIR)/bin/mcopy -p -m -i $(ROOTFS_ISO9660_EFI_PARTITION_PATH) -s \
 		$(ROOTFS_ISO9660_EFI_PARTITION_CONTENT)/* ::/
-	# Delete the EFI bootloader that is NOT for the platform we're building for
-	$(HOST_DIR)/bin/mdel -i $(ROOTFS_ISO9660_EFI_PARTITION_PATH) \
-		::$(ROOTFS_ISO9660_GRUB2_EFI_PREFIX)/$(ROOTFS_ISO9660_EFI_NOTNAME) || true
 	# Overwrite generic EFI configuration with our EFI configuration
 	$(HOST_DIR)/bin/mcopy -n -o -p -m -i $(ROOTFS_ISO9660_EFI_PARTITION_PATH) \
 		$(ROOTFS_ISO9660_GRUB2_EFI_CONFIG_PATH) ::$(ROOTFS_ISO9660_GRUB2_EFI_PREFIX)/grub.cfg
@@ -248,12 +258,25 @@ define ROOTFS_ISO9660_INSTALL_ISOLINUX_CONFIG
 endef
 
 define ROOTFS_ISO9660_INSTALL_GRUB2_EFI
+	# If 32bit build also copy the bootx64.efi from board/shredos/ so 32bit shredos will boot on a 64 EFI system
+	if [ "$(BR2_i386)" = "y" ]; then \
+		$(INSTALL) -D -m 0644 $(TOPDIR)/board/shredos/bootx64.efi $(BINARIES_DIR)/efi-part/EFI/BOOT/bootx64.efi; \
+	fi
 	# Create file to better find ISO9660 filesystem
 	$(INSTALL) -D -m 0644 /dev/null \
 		$(ROOTFS_ISO9660_TMP_TARGET_DIR)/$(ROOTFS_ISO9660_GRUB2_EFI_IDENT_FILE)
 	# Copy EFI bootloader also to ISO9660 filesystem
 	$(INSTALL) -D -m 0644 $(ROOTFS_ISO9660_EFI_PARTITION_CONTENT)/$(ROOTFS_ISO9660_GRUB2_EFI_PREFIX)/$(ROOTFS_ISO9660_EFI_NAME) \
 		$(ROOTFS_ISO9660_TMP_TARGET_DIR)/$(ROOTFS_ISO9660_GRUB2_EFI_PREFIX)/$(ROOTFS_ISO9660_EFI_NAME)
+	# If 32 bit build we also want the 64 bit EFI installed
+	if [ "$(BR2_i386)" = "y" ]; then \
+		$(INSTALL) -D -m 0644 $(ROOTFS_ISO9660_EFI_PARTITION_CONTENT)/$(ROOTFS_ISO9660_GRUB2_EFI_PREFIX)/$(ROOTFS_ISO9660_EFI_NOTNAME) \
+		$(ROOTFS_ISO9660_TMP_TARGET_DIR)/$(ROOTFS_ISO9660_GRUB2_EFI_PREFIX)/$(ROOTFS_ISO9660_EFI_NOTNAME)
+	fi
+	# If 64bit build copy the bootx64.efi to board/shredos/ as this will be used when building 32bit build
+	if [ "$(BR2_x86_64)" = "y" ]; then \
+		$(INSTALL) -D -m 0644 $(BINARIES_DIR)/efi-part/EFI/BOOT/bootx64.efi $(TOPDIR)/board/shredos/bootx64.efi; \
+	fi
 	# Create EFI FAT partition
 	$(RM) -rf $(ROOTFS_ISO9660_EFI_PARTITION_PATH)
 	mkdir -p $(dir $(ROOTFS_ISO9660_EFI_PARTITION_PATH))
@@ -263,9 +286,6 @@ define ROOTFS_ISO9660_INSTALL_GRUB2_EFI
 	$(ROOTFS_ISO9660_FIX_TIME) $(ROOTFS_ISO9660_EFI_PARTITION_CONTENT)/*
 	$(HOST_DIR)/bin/mcopy -p -m -i $(ROOTFS_ISO9660_EFI_PARTITION_PATH) -s \
 		$(ROOTFS_ISO9660_EFI_PARTITION_CONTENT)/* ::/
-	# Delete the EFI bootloader that is NOT for the platform we're building for
-	$(HOST_DIR)/bin/mdel -i $(ROOTFS_ISO9660_EFI_PARTITION_PATH) \
-		::$(ROOTFS_ISO9660_GRUB2_EFI_PREFIX)/$(ROOTFS_ISO9660_EFI_NOTNAME) || true
 	# Overwrite generic EFI configuration with our EFI configuration
 	$(HOST_DIR)/bin/mcopy -n -o -p -m -i $(ROOTFS_ISO9660_EFI_PARTITION_PATH) \
 		$(ROOTFS_ISO9660_GRUB2_EFI_CONFIG_PATH) ::$(ROOTFS_ISO9660_GRUB2_EFI_PREFIX)/grub.cfg
