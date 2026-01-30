@@ -15,6 +15,7 @@ version=$(cat board/shredos/fsoverlay/etc/shredos/version.txt)
 cp "board/shredos/grub.cfg"                            "${BINARIES_DIR}/grub.cfg"         || exit 1
 cp "output/target/lib/grub/i386-pc/boot.img"           "${BINARIES_DIR}/boot.img"         || exit 1
 cp "${BINARIES_DIR}/efi-part/EFI/BOOT/${MKIMAGE_EFI}"  "${BINARIES_DIR}/${MKIMAGE_EFI}"   || exit 1
+cp "${BINARIES_DIR}/efi-part/EFI/BOOT/bootx64.efi"     "${BINARIES_DIR}/bootx64.efi"      || exit 1
 
 cp "board/shredos/autorun.inf"             "${BINARIES_DIR}/autorun.inf"                  || exit 1
 cp "board/shredos/README.txt"              "${BINARIES_DIR}/README.txt"                   || exit 1
