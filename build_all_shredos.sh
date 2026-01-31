@@ -409,9 +409,12 @@ build_config_success() {
 		run_cmd mv "$log_file" "dist/${config}-SUCCESS.log"
 	fi
 
+	rename_and_checksum_images "$config"
+
 	run_cmd mkdir -p "dist/$config"
 	run_cmd mv output/images/shredos*.iso "dist/$config/" 2>/dev/null || true
 	run_cmd mv output/images/shredos*.img "dist/$config/" 2>/dev/null || true
+	run_cmd mv output/images/shredos*.sha1 "dist/$config/" 2>/dev/null || true
 
 	printf "%b" "$GREEN"
 	echo
@@ -461,6 +464,79 @@ build_config_failed() {
 		printf "%b" "$RESET"
 		exit 1
 	fi
+}
+
+# Function to handle suffix insertion before the extension
+insert_suffix() {
+    local fname="$1"
+    local suffix="$2"
+    local base="${fname%.*}"
+    local ext="${fname##*.}"
+    echo "${base}${suffix}.${ext}"
+}
+
+rename_and_checksum_images() {
+    local config="$1"
+    target_dir="output/images"
+
+    # If the defconfig contains the string `lite`, i.e a reduced size
+    # so it will boot on systems with only 512MB of RAM then insert
+    # into the .iso or .img filename the string _lite prior to the extension.
+
+    if [[ "$config" == *"lite"* ]]; then
+        shopt -s nullglob
+        for file in "$target_dir"/shredos*.{iso,img}; do
+            filename=$(basename "$file")
+            if [[ "$filename" != *"_lite"* ]]; then
+                new_name=$(insert_suffix "$filename" "_lite")
+                mv -v "$file" "$target_dir/$new_name"
+            fi
+        done
+        shopt -u nullglob
+    else
+        echo "Condition not met: 'lite' not in $config, rename not necessary."
+    fi
+
+    # If the defconfig contains the string `extra`, i.e an extra partition
+    # then insert into the .iso or .img filename the string _plus-partition
+
+    if [[ "$config" == *"extra"* ]]; then
+        shopt -s nullglob
+        for file in "$target_dir"/shredos*.{iso,img}; do
+            filename=$(basename "$file")
+            if [[ "$filename" != *"_plus-partition"* ]]; then
+                new_name=$(insert_suffix "$filename" "_plus-partition")
+                mv -v "$file" "$target_dir/$new_name"
+            fi
+        done
+        shopt -u nullglob
+    else
+        echo "Condition not met: 'extra' not in $config, rename not necessary."
+    fi
+
+    # Clean up orphaned .sha1 files (that don't match any existing image)
+    echo "Cleaning up orphaned .sha1 files..."
+    shopt -s nullglob
+    for sha_file in "$target_dir"/shredos*.sha1; do
+        # Strip .sha1 to find the base image name
+        corresponding_image="${sha_file%.sha1}"
+        if [[ ! -f "$corresponding_image" ]]; then
+            rm -v "$sha_file"
+        fi
+    done
+    shopt -u nullglob
+
+    # Calculate SHA1 for all final files
+    echo "Calculating SHA1 checksums..."
+    current_dir=$(pwd)
+    cd "$target_dir" || exit
+    shopt -s nullglob
+    for file in shredos*.{iso,img}; do
+        sha1sum "$file" > "$file.sha1"
+    done
+    shopt -u nullglob
+    cd $current_dir || exit
+    echo "[DONE]"
 }
 
 ################################################################################
