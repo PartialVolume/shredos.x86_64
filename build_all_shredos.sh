@@ -29,13 +29,14 @@ VERSION_FILE="board/shredos/fsoverlay/etc/shredos/version.txt"
 # 64-bit configurations to build:
 X64_CONFIGS=(
 	"shredos_defconfig"
-	"shredos_iso_extra_defconfig" # experimental
+	"shredos_lite_defconfig"
+	"shredos_iso_extra_defconfig"
 )
 
 # 32-bit configurations to build:
 X32_CONFIGS=(
 	"shredos_i686_lite_defconfig"
-	"shredos_iso_extra_i686_lite_defconfig" # experimental
+	"shredos_iso_extra_i686_lite_defconfig"
 )
 
 # Packages always needing rebuild between runs, even for the same architecture.
