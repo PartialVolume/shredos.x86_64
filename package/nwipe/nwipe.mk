@@ -8,7 +8,7 @@
 # if BR2_PACKAGE_NWIPE_VERSION_STABLE is y else the git commit version will
 # be installed as defined in Target Packages>libaries>other>nwipe
 
-NWIPE_TAG = v0.39
+NWIPE_TAG = v0.40
 
 # Select the Git reference based on the Kconfig choice.
 ifeq ($(BR2_PACKAGE_NWIPE_VERSION_STABLE),y)

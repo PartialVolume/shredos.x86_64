@@ -26,9 +26,9 @@ choice
 	  Select which nwipe version (Git ref) should be built.
 
 config BR2_PACKAGE_NWIPE_VERSION_STABLE
-	bool "Stable tag (v0.39)"
+	bool "Stable tag (v0.40)"
 	help
-	  Use the previously hard-coded tag (v0.39) as a stable baseline.
+	  Use the previously hard-coded tag (v0.40) as a stable baseline.
 
 config BR2_PACKAGE_NWIPE_VERSION_GIT_REVISION
 	bool "Git revision"
@@ -44,7 +44,7 @@ config BR2_PACKAGE_NWIPE_GIT_REVISION
 	  When 'Git revision' is selected above, this string is passed as the
 	  Git ref to check out. Examples:
 	    - 051e1aa0c9572b26301a33d40689adb544927d11 (full commit SHA-1)
-	    - v0.39 (tag)
+	    - v0.40 (tag)
 
 endif
 
