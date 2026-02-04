@@ -538,7 +538,7 @@ rename_and_checksum_images() {
         sha1sum "$file" > "$file.sha1"
     done
     shopt -u nullglob
-    cd $current_dir || exit
+    cd "$current_dir" || exit
     echo "[DONE]"
 }
 
