@@ -273,11 +273,13 @@ build_config() {
 
 	# Build  | QuickBuild=1, PreClean=1  | QuickBuild=0, PreClean=1  | QuickBuild=1, PreClean=0  | QuickBuild=0, PreClean=0
 	# -------|---------------------------|---------------------------|---------------------------|---------------------------
-	# x64 #0 | config -> make            | config -> make            | config -> rebuild -> make | config -> rebuild -> make
+	# x64 #0 | clean* -> config -> make  | clean* -> config -> make  | config -> rebuild -> make | config -> rebuild -> make
 	# x64 #1 | config -> rebuild -> make | clean -> config -> make   | config -> rebuild -> make | clean -> config -> make
 	# x64 #2+| config -> rebuild -> make | clean -> config -> make   | config -> rebuild -> make | clean -> config -> make
 	# x32 #0 | clean -> config -> make   | clean -> config -> make   | clean -> config -> make   | clean -> config -> make
 	# x32 #1+| config -> rebuild -> make | clean -> config -> make   | config -> rebuild -> make | clean -> config -> make
+	# -------|---------------------------|---------------------------|---------------------------|---------------------------
+	# *: This clean is ensured in another part of the script before reaching this point.
 
 	if [ "$index" -ne 0 ] && [ "$QUICK_BUILD" -eq 1 ] && [ "$FORCE_CLEAN" -ne 1 ]; then
 		# If it's not the first configuration, and quick-build is enabled,
