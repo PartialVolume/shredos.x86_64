@@ -4,21 +4,7 @@
 #
 ################################################################################
 
-# 'NWIPE_TAG' version that will be compiled, nwipe tags are of the form v0.40
-# if BR2_PACKAGE_NWIPE_VERSION_STABLE is y else the git commit version will
-# be installed as defined in Target Packages>libaries>other>nwipe
-
-NWIPE_TAG = v0.40
-
-# Select the Git reference based on the Kconfig choice.
-ifeq ($(BR2_PACKAGE_NWIPE_VERSION_STABLE),y)
-NWIPE_VERSION = $(NWIPE_TAG)
-else ifeq ($(BR2_PACKAGE_NWIPE_VERSION_GIT_REVISION),y)
 NWIPE_VERSION = $(call qstrip,$(BR2_PACKAGE_NWIPE_GIT_REVISION))
-else
-# Fallback – should not happen because the choice enforces exactly one option
-NWIPE_VERSION = $(NWIPE_TAG)
-endif
 
 # Default Git repository URL (never empty).
 NWIPE_SITE = https://github.com/martijnvanbrummelen/nwipe.git
