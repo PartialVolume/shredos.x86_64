@@ -19,27 +19,8 @@ config BR2_PACKAGE_NWIPE_SITE
 	    - https://github.com/youruser/nwipe.git
 	    - git@github.com:youruser/nwipe.git
 
-choice
-	prompt "nwipe version"
-	default BR2_PACKAGE_NWIPE_VERSION_STABLE
-	help
-	  Select which nwipe version (Git ref) should be built.
-
-config BR2_PACKAGE_NWIPE_VERSION_STABLE
-	bool "Stable tag (v0.40)"
-	help
-	  Use the previously hard-coded tag (v0.40) as a stable baseline.
-
-config BR2_PACKAGE_NWIPE_VERSION_GIT_REVISION
-	bool "Git revision"
-	help
-	  Use a user-specified Git revision (full commit SHA-1 or tag).
-
-endchoice
-
 config BR2_PACKAGE_NWIPE_GIT_REVISION
-	string "Git revision (full commit SHA-1 or tag)"
-	depends on BR2_PACKAGE_NWIPE_VERSION_GIT_REVISION
+	string "Git revision (full commit SHA-1 or tag v0.25-v0.40 ..)"
 	help
 	  When 'Git revision' is selected above, this string is passed as the
 	  Git ref to check out. Examples:
