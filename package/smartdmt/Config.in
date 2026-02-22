@@ -10,7 +10,7 @@ config BR2_PACKAGE_SMARTDMT
 config BR2_PACKAGE_SMARTDMT_GIT_REVISION
 	string "Git revision (full commit SHA-1 or tag v0.25-v0.40 ..)"
 	depends on BR2_PACKAGE_SMARTDMT
-	default "v0.1.5"
+	default "v0.1.6"
 	help
 	  When 'Git revision' is selected above, this string is passed as the
 	  Git ref to check out. Examples:
