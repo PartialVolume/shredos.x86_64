@@ -6,11 +6,15 @@ id:3:initdefault:
 
 si0::sysinit:/bin/mount -t proc proc /proc
 #si1::sysinit:/bin/mount -o remount,rw /
-si2::sysinit:/bin/mkdir -p /dev/pts
-si3::sysinit:/bin/mkdir -p /dev/shm
-si4::sysinit:/bin/mount -a
-si5::sysinit:/bin/hostname -F /etc/hostname
-si6::sysinit:/usr/bin/nwipe_process_disable
+si2::sysinit:/bin/mkdir -p /dev/pts /dev/shm
+si3::sysinit:/bin/mount -a
+si4::sysinit:/bin/mkdir -p /run/lock/subsys
+si5::sysinit:/bin/ln -sf /proc/self/fd /dev/fd 2>/dev/null
+si6::sysinit:/bin/ln -sf /proc/self/fd/0 /dev/stdin 2>/dev/null
+si7::sysinit:/bin/ln -sf /proc/self/fd/1 /dev/stdout 2>/dev/null
+si8::sysinit:/bin/ln -sf /proc/self/fd/2 /dev/stderr 2>/dev/null
+si9::sysinit:/bin/hostname -F /etc/hostname
+si10::sysinit:/usr/bin/nwipe_process_disable
 rcS:12345:wait:/etc/init.d/rcS
 
 sole::respawn:/sbin/getty -L  console 0 vt100 # GENERIC_SERIAL
