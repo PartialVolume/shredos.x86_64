@@ -19,7 +19,7 @@
 #### For those that just want to get on with using ShredOS, you can download the pre-built .img or .iso images and burn them straight to USB flash drive or CD/DVD. Boot from the USB flash drive or CD/DVD and nwipe will appear ready for you to select your preferred wipe options.
 [![GitHub all releases](https://img.shields.io/github/downloads/PartialVolume/shredos.x86_64/total?label=Total%20downloads%20x86_64%20all%20releases,%2064%20and%2032bit%20code,%20.iso%20and%20.img%20&style=plastic)](https://github.com/PartialVolume/shredos.x86_64/releases)
 
-### ShredOS version v2025.11_28_x86-64_0.40 [(Latest release - Release notes and downloads)](https://github.com/PartialVolume/shredos.x86_64/releases/tag/v2025.11_28_x86-64_0.40)
+### ShredOS version v2025.11_29_x86-64_0.40 [(Latest release - Release notes and downloads)](https://github.com/PartialVolume/shredos.x86_64/releases)
 
 ## Download the Latest ShredOS .img and .iso files for burning to USB flash drives and CD-R/DVD-R.
 
