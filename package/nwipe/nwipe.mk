@@ -6,7 +6,8 @@
 
 NWIPE_BUILD_ARCH = $(call qstrip,$(BR2_ARCH))
 NWIPE_VERSION = $(call qstrip,$(BR2_PACKAGE_NWIPE_GIT_REVISION))
-NWIPE_DEPENDENCIES = ncurses parted dmidecode coreutils libconfig
+NWIPE_DEPENDENCIES = ncurses parted dmidecode coreutils libconfig libnvme
+NWIPE_CONF_OPTS = --with-libnvme
 NWIPE_SITE_METHOD = git
 
 ifneq ($(call qstrip,$(BR2_PACKAGE_NWIPE_SITE)),)
