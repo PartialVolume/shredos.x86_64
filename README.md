@@ -974,6 +974,6 @@ Certain SAS disks (especially disks that are used in storage systems such as HP 
 4. Run `sg_format -v --fmtpinfo=0 --format --size=<512 / 4096> <device> --quick`
 5. Wait till the process terminated and check by executing `sg_format <device>` again.
 
-A full guide to also remove integrity protection from multiple disks [can be found here](https://github.com/gms-electronics/formatingguide/blob/main/README.md) can be found here.
+A full guide to also remove integrity protection from multiple disks [can be found here](https://github.com/gms-electronics/formatingguide/blob/main/README.md)
 
 #### END OF README.md
