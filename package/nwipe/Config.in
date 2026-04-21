@@ -5,6 +5,7 @@ config BR2_PACKAGE_NWIPE
 	select BR2_PACKAGE_COREUTILS
 	select BR2_PACKAGE_DMIDECODE
 	select BR2_PACKAGE_LIBCONFIG
+	select BR2_PACKAGE_LIBNVME
 	help
 	  NWipe – secure disk wiping tool (fork of Darik's Boot and Nuke).
 
