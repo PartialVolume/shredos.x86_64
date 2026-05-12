@@ -757,14 +757,17 @@ do
 	fi
 		printf "______________________________________________________________________________\n" 2>&1  | tee -a transfer.log
 
-	# read the kernel command line for a callback URL to download and execute after
-	# the wipe and all transfers have completed.
-	# example: shredos_nwipe_callback="http://192.168.0.2/scripts/post_wipe.sh"
+	# read the kernel command line for a callback URL (and optional arguments) to download
+	# and execute after the wipe and all transfers have completed.
+	# example: shredos_nwipe_callback="http://192.168.0.2/scripts/post_wipe.sh --arg1 val1 --arg2"
 	#
-	nwipe_callback_url=$(kernel_cmdline_extractor shredos_nwipe_callback)
+	nwipe_callback_string=$(kernel_cmdline_extractor shredos_nwipe_callback)
 	if [ $? == 0 ]
 	then
+		read nwipe_callback_url nwipe_callback_options <<< "$nwipe_callback_string"
 		printf "[`date "$date_format"`] Found shredos_nwipe_callback on kernel command line\n" 2>&1 | tee -a transfer.log
+		printf "[`date "$date_format"`] Callback URL = $nwipe_callback_url\n" 2>&1 | tee -a transfer.log
+		printf "[`date "$date_format"`] Callback options = $nwipe_callback_options\n" 2>&1 | tee -a transfer.log
 		printf "[`date "$date_format"`] Downloading callback script from $nwipe_callback_url\n" 2>&1 | tee -a wget.log
 		wget --no-check-certificate -O /tmp/nwipe_callback.sh "$nwipe_callback_url" -nv >> wget.log 2>&1
 		if [ $? == 0 ]
@@ -772,7 +775,7 @@ do
 			printf "[`date "$date_format"`] Callback script downloaded successfully\n" 2>&1 | tee -a transfer.log
 			chmod +x /tmp/nwipe_callback.sh
 			printf "[`date "$date_format"`] Executing callback script\n" 2>&1 | tee -a transfer.log
-			/tmp/nwipe_callback.sh
+			/tmp/nwipe_callback.sh $nwipe_callback_options
 			if [ $? == 0 ]
 			then
 				printf "[`date "$date_format"`] Callback script completed successfully\n" 2>&1 | tee -a transfer.log
