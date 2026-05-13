@@ -120,7 +120,7 @@ fi
 
 # Has shredos_exclude_boot_disc="yes" been placed on the kernel command line?
 exclude_boot_disc_cmd=""
-exclude_boot_disc_status=$(kernel_cmdline_extractor shredos_exclude_boot_disc)
+exclude_boot_disc_status=$( shredos_exclude_boot_disc)
 if [ $? == 0 ]
 then
 	if [[ "${exclude_boot_disc_status,,}" == "yes" ]]
@@ -441,11 +441,80 @@ sleep 2
 #
 while true
 do
-	if [ $nwipe_options_flag == 0 ]
+	# Download pre-wipe and callback scripts before nwipe starts.
+	# If either configured script cannot be downloaded, nwipe will not start.
+	# example: shredos_nwipe_pre_wipe="http://192.168.0.2/scripts/pre_wipe.sh --arg1 val1 --arg2"
+	# example: shredos_nwipe_callback="http://192.168.0.2/scripts/post_wipe.sh --arg1 val1 --arg2"
+	#
+	scripts_ok=1
+	nwipe_pre_wipe_url=""
+	nwipe_pre_wipe_options=""
+	nwipe_callback_url=""
+	nwipe_callback_options=""
+
+	nwipe_pre_wipe_string=$(kernel_cmdline_extractor shredos_nwipe_pre_wipe)
+	if [ $? == 0 ]
 	then
-		/usr/bin/nwipe --logfile=$logfile $launcher_options $exclude_boot_disc_cmd
-	else
-		/usr/bin/nwipe --logfile=$logfile $launcher_options $nwipe_options_string $exclude_boot_disc_cmd
+		read nwipe_pre_wipe_url nwipe_pre_wipe_options <<< "$nwipe_pre_wipe_string"
+		printf "[`date "$date_format"`] Found shredos_nwipe_pre_wipe on kernel command line\n" 2>&1 | tee -a transfer.log
+		printf "[`date "$date_format"`] Pre-wipe URL = $nwipe_pre_wipe_url\n" 2>&1 | tee -a transfer.log
+		printf "[`date "$date_format"`] Pre-wipe options = $nwipe_pre_wipe_options\n" 2>&1 | tee -a transfer.log
+		printf "[`date "$date_format"`] Downloading pre-wipe script from $nwipe_pre_wipe_url\n" 2>&1 | tee -a wget.log
+		wget --no-check-certificate -O /tmp/nwipe_pre_wipe.sh "$nwipe_pre_wipe_url" -nv >> wget.log 2>&1
+		if [ $? == 0 ]
+		then
+			printf "[`date "$date_format"`] Pre-wipe script downloaded successfully\n" 2>&1 | tee -a transfer.log
+			chmod +x /tmp/nwipe_pre_wipe.sh
+		else
+			printf "[`date "$date_format"`] [FAILED] Could not download pre-wipe script from $nwipe_pre_wipe_url\n" 2>&1 | tee -a transfer.log
+			scripts_ok=0
+		fi
+	fi
+
+	nwipe_callback_string=$(kernel_cmdline_extractor shredos_nwipe_callback)
+	if [ $? == 0 ]
+	then
+		read nwipe_callback_url nwipe_callback_options <<< "$nwipe_callback_string"
+		printf "[`date "$date_format"`] Found shredos_nwipe_callback on kernel command line\n" 2>&1 | tee -a transfer.log
+		printf "[`date "$date_format"`] Callback URL = $nwipe_callback_url\n" 2>&1 | tee -a transfer.log
+		printf "[`date "$date_format"`] Callback options = $nwipe_callback_options\n" 2>&1 | tee -a transfer.log
+		printf "[`date "$date_format"`] Downloading callback script from $nwipe_callback_url\n" 2>&1 | tee -a wget.log
+		wget --no-check-certificate -O /tmp/nwipe_callback.sh "$nwipe_callback_url" -nv >> wget.log 2>&1
+		if [ $? == 0 ]
+		then
+			printf "[`date "$date_format"`] Callback script downloaded successfully\n" 2>&1 | tee -a transfer.log
+			chmod +x /tmp/nwipe_callback.sh
+		else
+			printf "[`date "$date_format"`] [FAILED] Could not download callback script from $nwipe_callback_url\n" 2>&1 | tee -a transfer.log
+			scripts_ok=0
+		fi
+	fi
+
+	if [ $scripts_ok == 0 ]
+	then
+		printf "[`date "$date_format"`] [ABORTED] One or more scripts failed to download. nwipe will not start.\n" 2>&1 | tee -a transfer.log
+	fi
+
+	if [ $scripts_ok == 1 ]
+	then
+		if [ "$nwipe_pre_wipe_url" != "" ]
+		then
+			printf "[`date "$date_format"`] Executing pre-wipe script\n" 2>&1 | tee -a transfer.log
+			/tmp/nwipe_pre_wipe.sh $nwipe_pre_wipe_options
+			if [ $? == 0 ]
+			then
+				printf "[`date "$date_format"`] Pre-wipe script completed successfully\n" 2>&1 | tee -a transfer.log
+			else
+				printf "[`date "$date_format"`] Pre-wipe script exited with an error\n" 2>&1 | tee -a transfer.log
+			fi
+		fi
+
+		if [ $nwipe_options_flag == 0 ]
+		then
+			/usr/bin/nwipe --logfile=$logfile $launcher_options $exclude_boot_disc_cmd
+		else
+			/usr/bin/nwipe --logfile=$logfile $launcher_options $nwipe_options_string $exclude_boot_disc_cmd
+		fi
 	fi
 
 	# ----
@@ -757,33 +826,17 @@ do
 	fi
 		printf "______________________________________________________________________________\n" 2>&1  | tee -a transfer.log
 
-	# read the kernel command line for a callback URL (and optional arguments) to download
-	# and execute after the wipe and all transfers have completed.
-	# example: shredos_nwipe_callback="http://192.168.0.2/scripts/post_wipe.sh --arg1 val1 --arg2"
+	# Execute the callback script downloaded before nwipe started.
 	#
-	nwipe_callback_string=$(kernel_cmdline_extractor shredos_nwipe_callback)
-	if [ $? == 0 ]
+	if [ "$nwipe_callback_url" != "" ]
 	then
-		read nwipe_callback_url nwipe_callback_options <<< "$nwipe_callback_string"
-		printf "[`date "$date_format"`] Found shredos_nwipe_callback on kernel command line\n" 2>&1 | tee -a transfer.log
-		printf "[`date "$date_format"`] Callback URL = $nwipe_callback_url\n" 2>&1 | tee -a transfer.log
-		printf "[`date "$date_format"`] Callback options = $nwipe_callback_options\n" 2>&1 | tee -a transfer.log
-		printf "[`date "$date_format"`] Downloading callback script from $nwipe_callback_url\n" 2>&1 | tee -a wget.log
-		wget --no-check-certificate -O /tmp/nwipe_callback.sh "$nwipe_callback_url" -nv >> wget.log 2>&1
+		printf "[`date "$date_format"`] Executing callback script\n" 2>&1 | tee -a transfer.log
+		/tmp/nwipe_callback.sh $nwipe_callback_options
 		if [ $? == 0 ]
 		then
-			printf "[`date "$date_format"`] Callback script downloaded successfully\n" 2>&1 | tee -a transfer.log
-			chmod +x /tmp/nwipe_callback.sh
-			printf "[`date "$date_format"`] Executing callback script\n" 2>&1 | tee -a transfer.log
-			/tmp/nwipe_callback.sh $nwipe_callback_options
-			if [ $? == 0 ]
-			then
-				printf "[`date "$date_format"`] Callback script completed successfully\n" 2>&1 | tee -a transfer.log
-			else
-				printf "[`date "$date_format"`] Callback script exited with an error\n" 2>&1 | tee -a transfer.log
-			fi
+			printf "[`date "$date_format"`] Callback script completed successfully\n" 2>&1 | tee -a transfer.log
 		else
-			printf "[`date "$date_format"`] [FAILED] Could not download callback script from $nwipe_callback_url\n" 2>&1 | tee -a transfer.log
+			printf "[`date "$date_format"`] Callback script exited with an error\n" 2>&1 | tee -a transfer.log
 		fi
 	fi
 
