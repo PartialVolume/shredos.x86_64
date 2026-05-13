@@ -120,7 +120,7 @@ fi
 
 # Has shredos_exclude_boot_disc="yes" been placed on the kernel command line?
 exclude_boot_disc_cmd=""
-exclude_boot_disc_status=$( shredos_exclude_boot_disc)
+exclude_boot_disc_status=$(kernel_cmdline_extractor shredos_exclude_boot_disc)
 if [ $? == 0 ]
 then
 	if [[ "${exclude_boot_disc_status,,}" == "yes" ]]
