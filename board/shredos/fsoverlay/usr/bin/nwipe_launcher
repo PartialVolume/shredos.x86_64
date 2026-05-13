@@ -443,49 +443,49 @@ while true
 do
 	# Download pre-wipe and callback scripts before nwipe starts.
 	# If either configured script cannot be downloaded, nwipe will not start.
-	# example: shredos_nwipe_pre_wipe="http://192.168.0.2/scripts/pre_wipe.sh --arg1 val1 --arg2"
-	# example: shredos_nwipe_callback="http://192.168.0.2/scripts/post_wipe.sh --arg1 val1 --arg2"
+	# example: shredos_pre_wipe="http://192.168.0.2/scripts/pre_wipe.sh --arg1 val1 --arg2"
+	# example: shredos_post_wipe="http://192.168.0.2/scripts/post_wipe.sh --arg1 val1 --arg2"
 	#
 	scripts_ok=1
-	nwipe_pre_wipe_url=""
-	nwipe_pre_wipe_options=""
-	nwipe_callback_url=""
-	nwipe_callback_options=""
+	pre_wipe_url=""
+	pre_wipe_options=""
+	post_wipe_url=""
+	post_wipe_options=""
 
-	nwipe_pre_wipe_string=$(kernel_cmdline_extractor shredos_nwipe_pre_wipe)
+	pre_wipe_string=$(kernel_cmdline_extractor shredos_pre_wipe)
 	if [ $? == 0 ]
 	then
-		read nwipe_pre_wipe_url nwipe_pre_wipe_options <<< "$nwipe_pre_wipe_string"
-		printf "[`date "$date_format"`] Found shredos_nwipe_pre_wipe on kernel command line\n" 2>&1 | tee -a transfer.log
-		printf "[`date "$date_format"`] Pre-wipe URL = $nwipe_pre_wipe_url\n" 2>&1 | tee -a transfer.log
-		printf "[`date "$date_format"`] Pre-wipe options = $nwipe_pre_wipe_options\n" 2>&1 | tee -a transfer.log
-		printf "[`date "$date_format"`] Downloading pre-wipe script from $nwipe_pre_wipe_url\n" 2>&1 | tee -a wget.log
-		wget --no-check-certificate -O /tmp/nwipe_pre_wipe.sh "$nwipe_pre_wipe_url" -nv >> wget.log 2>&1
+		read pre_wipe_url pre_wipe_options <<< "$pre_wipe_string"
+		printf "[`date "$date_format"`] Found shredos_pre_wipe on kernel command line\n" 2>&1 | tee -a transfer.log
+		printf "[`date "$date_format"`] Pre-wipe URL = $pre_wipe_url\n" 2>&1 | tee -a transfer.log
+		printf "[`date "$date_format"`] Pre-wipe options = $pre_wipe_options\n" 2>&1 | tee -a transfer.log
+		printf "[`date "$date_format"`] Downloading pre-wipe script from $pre_wipe_url\n" 2>&1 | tee -a wget.log
+		wget --no-check-certificate -O /tmp/pre_wipe.sh "$pre_wipe_url" -nv >> wget.log 2>&1
 		if [ $? == 0 ]
 		then
 			printf "[`date "$date_format"`] Pre-wipe script downloaded successfully\n" 2>&1 | tee -a transfer.log
-			chmod +x /tmp/nwipe_pre_wipe.sh
+			chmod +x /tmp/pre_wipe.sh
 		else
-			printf "[`date "$date_format"`] [FAILED] Could not download pre-wipe script from $nwipe_pre_wipe_url\n" 2>&1 | tee -a transfer.log
+			printf "[`date "$date_format"`] [FAILED] Could not download pre-wipe script from $pre_wipe_url\n" 2>&1 | tee -a transfer.log
 			scripts_ok=0
 		fi
 	fi
 
-	nwipe_callback_string=$(kernel_cmdline_extractor shredos_nwipe_callback)
+	post_wipe_string=$(kernel_cmdline_extractor shredos_post_wipe)
 	if [ $? == 0 ]
 	then
-		read nwipe_callback_url nwipe_callback_options <<< "$nwipe_callback_string"
-		printf "[`date "$date_format"`] Found shredos_nwipe_callback on kernel command line\n" 2>&1 | tee -a transfer.log
-		printf "[`date "$date_format"`] Callback URL = $nwipe_callback_url\n" 2>&1 | tee -a transfer.log
-		printf "[`date "$date_format"`] Callback options = $nwipe_callback_options\n" 2>&1 | tee -a transfer.log
-		printf "[`date "$date_format"`] Downloading callback script from $nwipe_callback_url\n" 2>&1 | tee -a wget.log
-		wget --no-check-certificate -O /tmp/nwipe_callback.sh "$nwipe_callback_url" -nv >> wget.log 2>&1
+		read post_wipe_url post_wipe_options <<< "$post_wipe_string"
+		printf "[`date "$date_format"`] Found shredos_post_wipe on kernel command line\n" 2>&1 | tee -a transfer.log
+		printf "[`date "$date_format"`] Post-wipe URL = $post_wipe_url\n" 2>&1 | tee -a transfer.log
+		printf "[`date "$date_format"`] Post-wipe options = $post_wipe_options\n" 2>&1 | tee -a transfer.log
+		printf "[`date "$date_format"`] Downloading post-wipe script from $post_wipe_url\n" 2>&1 | tee -a wget.log
+		wget --no-check-certificate -O /tmp/post_wipe.sh "$post_wipe_url" -nv >> wget.log 2>&1
 		if [ $? == 0 ]
 		then
-			printf "[`date "$date_format"`] Callback script downloaded successfully\n" 2>&1 | tee -a transfer.log
-			chmod +x /tmp/nwipe_callback.sh
+			printf "[`date "$date_format"`] Post-wipe script downloaded successfully\n" 2>&1 | tee -a transfer.log
+			chmod +x /tmp/post_wipe.sh
 		else
-			printf "[`date "$date_format"`] [FAILED] Could not download callback script from $nwipe_callback_url\n" 2>&1 | tee -a transfer.log
+			printf "[`date "$date_format"`] [FAILED] Could not download post-wipe script from $post_wipe_url\n" 2>&1 | tee -a transfer.log
 			scripts_ok=0
 		fi
 	fi
@@ -497,10 +497,10 @@ do
 
 	if [ $scripts_ok == 1 ]
 	then
-		if [ "$nwipe_pre_wipe_url" != "" ]
+		if [ "$pre_wipe_url" != "" ]
 		then
 			printf "[`date "$date_format"`] Executing pre-wipe script\n" 2>&1 | tee -a transfer.log
-			/tmp/nwipe_pre_wipe.sh $nwipe_pre_wipe_options
+			/tmp/pre_wipe.sh $pre_wipe_options
 			if [ $? == 0 ]
 			then
 				printf "[`date "$date_format"`] Pre-wipe script completed successfully\n" 2>&1 | tee -a transfer.log
@@ -826,17 +826,17 @@ do
 	fi
 		printf "______________________________________________________________________________\n" 2>&1  | tee -a transfer.log
 
-	# Execute the callback script downloaded before nwipe started.
+	# Execute the post-wipe script downloaded before nwipe started.
 	#
-	if [ "$nwipe_callback_url" != "" ]
+	if [ "$post_wipe_url" != "" ]
 	then
-		printf "[`date "$date_format"`] Executing callback script\n" 2>&1 | tee -a transfer.log
-		/tmp/nwipe_callback.sh $nwipe_callback_options
+		printf "[`date "$date_format"`] Executing post-wipe script\n" 2>&1 | tee -a transfer.log
+		/tmp/post_wipe.sh $post_wipe_options
 		if [ $? == 0 ]
 		then
-			printf "[`date "$date_format"`] Callback script completed successfully\n" 2>&1 | tee -a transfer.log
+			printf "[`date "$date_format"`] Post-wipe script completed successfully\n" 2>&1 | tee -a transfer.log
 		else
-			printf "[`date "$date_format"`] Callback script exited with an error\n" 2>&1 | tee -a transfer.log
+			printf "[`date "$date_format"`] Post-wipe script exited with an error\n" 2>&1 | tee -a transfer.log
 		fi
 	fi
 
