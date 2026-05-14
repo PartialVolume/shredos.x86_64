@@ -60,6 +60,7 @@ A certificate can optionally be created for each drive erased, the default is to
 1. [Saving nwipes PDF certificates and log files to USB ftp or tftp servers](#saving-nwipes-pdf-certificates-and-log-files-to-USB-ftp-or-tftp-servers)
    1. [Transferring nwipe log files to a USB storage device](#transferring-nwipe-log-files-to-a-usb-storage-device)
    1. [Transferring nwipe log files to a ftp server using lftp](#transferring-nwipe-log-files-to-a-ftp-server-using-lftp)
+1. [Fetch and run custom scripts before and after wiping](#fetch-and-run-custom-scripts-before-and-after-wiping)
 1. [How to wipe drives on headless systems or systems with faulty display hardware. (For use on secure LANs only)](#how-to-wipe-drives-on-headless-systems-or-systems-with-faulty-display-hardware-for-use-on-secure-lans-only)
 1. [Nwipe's font size is too small, How to double the size of the text](#nwipes-font-size-is-too-small-how-to-double-the-size-of-the-text)
 1. [Included Packages](#Included-Packages)
@@ -509,6 +510,34 @@ chroot_list_enable=NO
 secure_chroot_dir=/home/yournewftpuser/ftpdata
 ```
 Disclaimer: The above settings should get you going but may or may not be ideal for your local situation. Refer to the vsftp website and forums if things aren't working as they should. The lftp application that ShredOS uses, should also work with any Microsoft Windows based ftp server, as well as Linux and MAC based systems.
+
+## Fetch and run custom scripts before and after wiping
+
+ShredOS can automatically download and execute custom shell scripts immediately before and after each wipe cycle — without rebuilding the image. This is useful for workflows that need to register or decommission an asset on an external system, perform pre-wipe checks, or send a notification once wiping is complete. Both scripts are fetched over HTTP at boot time, so no changes to the ShredOS USB drive are required.
+
+Add either or both of the following options to the kernel command line in `/boot/grub/grub.cfg` and `/EFI/BOOT/grub.cfg`. The value is a URL, optionally followed by arguments that will be passed to the script when it runs.
+
+**`shredos_pre_wipe="<url> [arguments]"`**
+
+The script at `<url>` is downloaded and executed *before* nwipe starts. If the download fails, nwipe will not start and the failure will be logged to `transfer.log`. A non-zero exit code from the script is logged but does not prevent the wipe from proceeding.
+
+**`shredos_post_wipe="<url> [arguments]"`**
+
+The script at `<url>` is downloaded and executed *after* nwipe exits and after log files and PDF certificates have been transferred to the USB drive or network server. If the download fails, nwipe will not start and the failure will be logged to `transfer.log`. A non-zero exit code from the script is logged but does not prevent shutdown or reboot.
+
+**IMPORTANT**
+- Both scripts are downloaded fresh at the start of each wipe cycle, so you can update them on your server at any time without touching the ShredOS USB drive.
+- If a script URL is configured but cannot be downloaded, nwipe will be aborted.
+
+Example `grub.cfg` with both scripts configured:
+```
+set default="0"
+set timeout="0"
+
+menuentry "shredos" {
+	linux /boot/shredos console=tty3 loglevel=3 shredos_pre_wipe="http://192.168.0.2/scripts/pre_wipe.sh --site WAREHOUSE1" shredos_post_wipe="http://192.168.0.2/scripts/post_wipe.sh --notify slack"
+}
+```
 
 ## How to wipe drives on headless systems or systems with faulty display hardware. (For use on secure LANs only)
 ShredOS includes a user enabled telnet server. The downloadable .img images are supplied with telnet disabled as default.

@@ -441,11 +441,80 @@ sleep 2
 #
 while true
 do
-	if [ $nwipe_options_flag == 0 ]
+	# Download pre-wipe and callback scripts before nwipe starts.
+	# If either configured script cannot be downloaded, nwipe will not start.
+	# example: shredos_pre_wipe="http://192.168.0.2/scripts/pre_wipe.sh --arg1 val1 --arg2"
+	# example: shredos_post_wipe="http://192.168.0.2/scripts/post_wipe.sh --arg1 val1 --arg2"
+	#
+	scripts_ok=1
+	pre_wipe_url=""
+	pre_wipe_options=""
+	post_wipe_url=""
+	post_wipe_options=""
+
+	pre_wipe_string=$(kernel_cmdline_extractor shredos_pre_wipe)
+	if [ $? == 0 ]
 	then
-		/usr/bin/nwipe --logfile=$logfile $launcher_options $exclude_boot_disc_cmd
-	else
-		/usr/bin/nwipe --logfile=$logfile $launcher_options $nwipe_options_string $exclude_boot_disc_cmd
+		read pre_wipe_url pre_wipe_options <<< "$pre_wipe_string"
+		printf "[`date "$date_format"`] Found shredos_pre_wipe on kernel command line\n" 2>&1 | tee -a transfer.log
+		printf "[`date "$date_format"`] Pre-wipe URL = $pre_wipe_url\n" 2>&1 | tee -a transfer.log
+		printf "[`date "$date_format"`] Pre-wipe options = $pre_wipe_options\n" 2>&1 | tee -a transfer.log
+		printf "[`date "$date_format"`] Downloading pre-wipe script from $pre_wipe_url\n" 2>&1 | tee -a wget.log
+		wget --no-check-certificate -O /tmp/pre_wipe.sh "$pre_wipe_url" -nv >> wget.log 2>&1
+		if [ $? == 0 ]
+		then
+			printf "[`date "$date_format"`] Pre-wipe script downloaded successfully\n" 2>&1 | tee -a transfer.log
+			chmod +x /tmp/pre_wipe.sh
+		else
+			printf "[`date "$date_format"`] [FAILED] Could not download pre-wipe script from $pre_wipe_url\n" 2>&1 | tee -a transfer.log
+			scripts_ok=0
+		fi
+	fi
+
+	post_wipe_string=$(kernel_cmdline_extractor shredos_post_wipe)
+	if [ $? == 0 ]
+	then
+		read post_wipe_url post_wipe_options <<< "$post_wipe_string"
+		printf "[`date "$date_format"`] Found shredos_post_wipe on kernel command line\n" 2>&1 | tee -a transfer.log
+		printf "[`date "$date_format"`] Post-wipe URL = $post_wipe_url\n" 2>&1 | tee -a transfer.log
+		printf "[`date "$date_format"`] Post-wipe options = $post_wipe_options\n" 2>&1 | tee -a transfer.log
+		printf "[`date "$date_format"`] Downloading post-wipe script from $post_wipe_url\n" 2>&1 | tee -a wget.log
+		wget --no-check-certificate -O /tmp/post_wipe.sh "$post_wipe_url" -nv >> wget.log 2>&1
+		if [ $? == 0 ]
+		then
+			printf "[`date "$date_format"`] Post-wipe script downloaded successfully\n" 2>&1 | tee -a transfer.log
+			chmod +x /tmp/post_wipe.sh
+		else
+			printf "[`date "$date_format"`] [FAILED] Could not download post-wipe script from $post_wipe_url\n" 2>&1 | tee -a transfer.log
+			scripts_ok=0
+		fi
+	fi
+
+	if [ $scripts_ok == 0 ]
+	then
+		printf "[`date "$date_format"`] [ABORTED] One or more scripts failed to download. nwipe will not start.\n" 2>&1 | tee -a transfer.log
+	fi
+
+	if [ $scripts_ok == 1 ]
+	then
+		if [ "$pre_wipe_url" != "" ]
+		then
+			printf "[`date "$date_format"`] Executing pre-wipe script\n" 2>&1 | tee -a transfer.log
+			/tmp/pre_wipe.sh $pre_wipe_options
+			if [ $? == 0 ]
+			then
+				printf "[`date "$date_format"`] Pre-wipe script completed successfully\n" 2>&1 | tee -a transfer.log
+			else
+				printf "[`date "$date_format"`] Pre-wipe script exited with an error\n" 2>&1 | tee -a transfer.log
+			fi
+		fi
+
+		if [ $nwipe_options_flag == 0 ]
+		then
+			/usr/bin/nwipe --logfile=$logfile $launcher_options $exclude_boot_disc_cmd
+		else
+			/usr/bin/nwipe --logfile=$logfile $launcher_options $nwipe_options_string $exclude_boot_disc_cmd
+		fi
 	fi
 
 	# ----
@@ -756,6 +825,20 @@ do
 		fi
 	fi
 		printf "______________________________________________________________________________\n" 2>&1  | tee -a transfer.log
+
+	# Execute the post-wipe script downloaded before nwipe started.
+	#
+	if [ "$post_wipe_url" != "" ]
+	then
+		printf "[`date "$date_format"`] Executing post-wipe script\n" 2>&1 | tee -a transfer.log
+		/tmp/post_wipe.sh $post_wipe_options
+		if [ $? == 0 ]
+		then
+			printf "[`date "$date_format"`] Post-wipe script completed successfully\n" 2>&1 | tee -a transfer.log
+		else
+			printf "[`date "$date_format"`] Post-wipe script exited with an error\n" 2>&1 | tee -a transfer.log
+		fi
+	fi
 
 	# If the user has specified `shredos_autoreboot=enable` on the kernel command line
 	#
