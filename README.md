@@ -512,6 +512,8 @@ secure_chroot_dir=/home/yournewftpuser/ftpdata
 Disclaimer: The above settings should get you going but may or may not be ideal for your local situation. Refer to the vsftp website and forums if things aren't working as they should. The lftp application that ShredOS uses, should also work with any Microsoft Windows based ftp server, as well as Linux and MAC based systems.
 
 ## Fetch and run custom scripts before and after wiping
+⚠️ Security Warning
+Fetching and executing scripts as root poses significant security risks. To prevent Man-in-the-Middle (MitM) attacks, this feature should only be used over a secure, private network—never over the public internet. If you do not fully understand these security implications, we strongly advise against using this feature. Note: Depending on user feedback, we may update this feature in the future to allow user scripts to be loaded directly from the USB boot device. If this is something you are interested in, please let us know at #493 
 
 ShredOS can automatically download and execute custom shell scripts immediately before and after each wipe cycle — without rebuilding the image. This is useful for workflows that need to register or decommission an asset on an external system, perform pre-wipe checks, or send a notification once wiping is complete. Both scripts are fetched over HTTP at boot time, so no changes to the ShredOS USB drive are required.
 
