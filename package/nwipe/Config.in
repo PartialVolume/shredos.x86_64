@@ -20,11 +20,11 @@ config BR2_PACKAGE_NWIPE_SITE
 	    - git@github.com:youruser/nwipe.git
 
 config BR2_PACKAGE_NWIPE_GIT_REVISION
-	string "Git revision (full commit SHA-1 or tag v0.25-v0.40 ..)"
+	string "Git revision (full commit SHA-1 or tag v0.25-v0.41 ..)"
 	depends on BR2_PACKAGE_NWIPE
-	default "v0.40"
+	default "v0.41"
 	help
 	  When 'Git revision' is selected above, this string is passed as the
 	  Git ref to check out. Examples:
 	    - 051e1aa0c9572b26301a33d40689adb544927d11 (full commit SHA-1)
-	    - v0.40 (tag)
+	    - v0.41 (tag)
