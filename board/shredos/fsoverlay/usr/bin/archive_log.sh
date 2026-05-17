@@ -139,16 +139,13 @@ else
 	printf "[`date "$date_format"`] archive_log.sh: Copied $dmesg_file to $drive_partition:/\n" 2>&1 | tee -a transfer.log
     fi
 
-    # Copy the PDF certificates over to the exFAT/FAT32 partition
-#    cp /nwipe_report_*pdf "$archive_drive_directory/"
-#    if [ $? != 0 ]; then
     # Copy the PDF certificates over to the exFAT/FAT32 partition.
     # If a custom PDF report path was specified via nwipe_options (-P / --PDFreportpath),
     # mirror that subdirectory on the USB drive.
     if [ -n "$pdf_dst_subpath" ]; then
         mkdir -p "$archive_drive_directory$pdf_dst_subpath"
     fi
-    cp "$pdf_src_dir"/nwipe_report_*pdf "$archive_drive_directory$pdf_dst_subpath/"
+    cp "$pdf_src_dir"/*pdf "$archive_drive_directory$pdf_dst_subpath/"
 
     if [ $? != 0 ]; then
 	printf "[`date "$date_format"`] archive_log.sh: Unable to copy the nwipe_report...pdf file to the root of $drive_partition:/\n" 2>&1 | tee -a transfer.log
@@ -182,7 +179,7 @@ else
                             printf "[`date "$date_format"`] archive_log.sh: Moved the nwipe logs into the $sent_directory\n" 2>&1 | tee -a transfer.log
                 fi
                 # Move the nwipe PDF certificates into the RAM disc sent directory
-                mv "$pdf_src_dir"/nwipe_report*pdf "$sent_directory/"
+                mv "$pdf_src_dir"/*pdf "$sent_directory/"
                 if [ $? != 0 ]; then
                             printf "[`date "$date_format"`] archive_log.sh: Unable to move the PDF certificates into the $sent_directory on the RAM disc\n" 2>&1 | tee -a transfer.log
                 else
