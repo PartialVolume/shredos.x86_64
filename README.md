@@ -803,7 +803,7 @@ $ dd if=/dev/nvmeX bs=8192 status=progress | hexdump
 The ShredOS system is based on the buildroot tool whos main application is to create operating systems for embedded systems.
 The image (.img) file is approximately 260 MiB and can be written to a USB memory stick with a tool such as dd or Etcher.
 
-### You can build shredos using the following commands. This example build was compiled on KDE Neon (Ubuntu 24.04 LTSl).
+### You can build shredos using the following commands. This example build was compiled on KDE Neon (Ubuntu 24.04 LTS).
 
 #### Install the following prerequisite software first. Without this software, the make command will fail
 ```
