@@ -41,7 +41,7 @@ You can then select one or more drives to be erased, wipe method or pattern to b
 By default, ShredOS is configured to automatically generate an erasure certificate. Depending on your auditing requirements, you can choose between individual drive certificates or the new system-focused PDF certificate.
 
 **Certificate Types**
-- Per-Drive Certificates: Generates an individual multipage PDF report for every single drive erased showing full erasure details and the drives smart data. No host information is normally provided on this certificate, just data reltaed to the drive.
+- Per-Drive Certificates: Generates an individual multipage PDF report for every single drive erased showing full erasure details and the drives smart data. No host information is normally provided on this certificate, just data related to the drive.
 - System-Focused Certificate: Consolidates the erasure data for the entire machine into a single, multi-page PDF. The first section provides erasure details of every selected drive, the next section provides host details such as host UUID and serial numbers, tags, SMBIOS data, while subsequent pages detail full SMART data logs for every HDD, SSD, or NVMe drive processed.
 
 #### Below: Example of ShredOS's (Nwipe) multi page PDF certificate.
