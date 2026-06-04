@@ -37,8 +37,15 @@ You can then select one or more drives to be erased, wipe method or pattern to b
 
 ![Example wipe](/images/example_wipe.gif)
 
+#### ShredOS Certificate Generation & Configuration
+By default, ShredOS is configured to automatically generate an erasure certificate. Depending on your auditing requirements, you can choose between individual drive certificates or the new system-focused PDF certificate.
+
+**Certificate Types**
+- Per-Drive Certificates: Generates an individual multipage PDF report for every single drive erased showing full erasure details and the drives smart data. No host information is normally provided on this certificate, just data reltaed to the drive.
+- System-Focused Certificate: Consolidates the erasure data for the entire machine into a single, multi-page PDF. The first sesction provides erasure details of every selected drive, the next section provides host details such as host UUID and serial numbers, tags, SMBIOS data, while subsequent pages detail full SMART data logs for every HDD, SSD, or NVMe drive processed.
+
 #### Below: Example of ShredOS's (Nwipe) multi page PDF certificate.
-A certificate can optionally be created for each drive erased, the default is to create the certificate, but can be disabled by either an nwipe option applied in grub.cfg or via the nwipe configuration menu. The status of which is saved to the USB stick you booted from, so next time you boot from the USB stick the configuration settings are remembered. The first page of the PDF certificate contains details of the erasure and whether it was succesfully erased, failed due to drive errors, or partially erased due to HPA/DCO hidden sectors. Pages two and three contain the drives smart data.
+The first page of the disk focused PDF certificate contains details of the erasure and whether it was succesfully erased, failed due to drive errors, or partially erased due to HPA/DCO hidden sectors. Pages two and three contain the drives smart data.
 ![Example Certificate](/images/PDF_certificate_example.gif)
 
 1. [What is ShredOS?](#what-is-shredos)
