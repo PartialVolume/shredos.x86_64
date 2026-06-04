@@ -824,7 +824,11 @@ sudo apt install \
   mtools \
   pkg-config \
   smartmontools \
-  unzip
+  unzip \
+  gcc-multilib \
+  g++-multilib
+
+* note gcc-multilib and g++-multilib are specially required for 32 bit builds so can be skipped if you are only building 64 bit.
 ```
 
 #### Download the ShredOS source using the git clone command, build ShredOS and write to a USB memory device.
