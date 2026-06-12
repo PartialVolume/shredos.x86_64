@@ -150,6 +150,7 @@ config_password=""
 config_debug=""
 config_file="nwipe.conf"
 customers_file="nwipe_customers.csv"
+logo_file="logo.jpg"
 dmesg_file="dmesg.txt"
 transfer_log_file="transfer.log"
 shredos_config_cmd_exists=""
@@ -214,7 +215,7 @@ then
 	if [[ "$config_server_status" == "online" ]]
 	then
 		# ***** FTP TRANSFER *****
-		# If the protocol in shredos_config=".." is ftp then read the remote nwipe.conf and customers.csv files
+		# If the protocol in shredos_config=".." is ftp then read the remote nwipe.conf, customers.csv and logo.jpg files if present.
 		if [[ "$config_protocol" == "ftp" ]]
 		then
 			printf "[`date "$date_format"`][FTP:] Using ftp protocol\n" 2>&1 | tee -a transfer.log
@@ -247,6 +248,21 @@ then
 				fi
 			else
 				printf "[`date "$date_format"`][FTP:][FAILED] Could not retrieve nwipe_customers.csv from ftp server $config_ip:$config_path\n" 2>&1  | tee -a transfer.log
+			fi
+
+			lftp $config_debug -c "set xfer:clobber yes; open $config_ip; user $config_user $config_password; cd $config_path; get -O /imported -c $logo_file; close" 2>&1 | tee -a transfer.log
+			test -f "/imported/logo.jpg"
+			if [ $? == 0 ]
+			then
+				cp "/imported/logo.jpg" "/etc/nwipe/logo.jpg" 2>&1  | tee -a transfer.log
+				if test ${PIPESTATUS[0]} -eq 0
+				then
+					printf "[`date "$date_format"`][FTP:] Retrieved logo.jpg from ftp server $config_ip:$config_path\n" 2>&1  | tee -a transfer.log
+				else
+					printf "[`date "$date_format"`][FTP:] [FAILED] to copy logo.jpg from /imported/ to /etc/nwipe/\n" 2>&1  | tee -a transfer.log
+				fi
+			else
+				printf "[`date "$date_format"`][FTP:][FAILED] Could not retrieve logo.jpg from ftp server $config_ip:$config_path using default logo\n" 2>&1  | tee -a transfer.log
 			fi
 
 			# Send a copy of dmesg
@@ -298,6 +314,21 @@ then
 					fi
 				else
 					printf "[`date "$date_format"`][TFTP:][FAILED] Could not retrieve nwipe_customers.csv from tftp server $config_ip:$config_path\n" 2>&1  | tee -a transfer.log
+				fi
+
+				tftp $config_ip -v -m binary -c get $config_path/$logo_file /imported/$logo_file 2>&1 | tee -a transfer.log
+				test -f "/imported/logo.jpg"
+				if [ $? == 0 ]
+				then
+					cp "/imported/logo.jpg" "/etc/nwipe/logo.jpg" 2>&1  | tee -a transfer.log
+					if test ${PIPESTATUS[0]} -eq 0
+					then
+						printf "[`date "$date_format"`][TFTP:] Retrieved logo.jpg from tftp server $config_ip:$config_path\n" 2>&1  | tee -a transfer.log
+					else
+						printf "[`date "$date_format"`][TFTP:] [FAILED] to copy logo.jpg from /imported/ to /etc/nwipe/\n" 2>&1  | tee -a transfer.log
+					fi
+				else
+					printf "[`date "$date_format"`][TFTP:][FAILED] Could not retrieve logo.jpg from tftp server $config_ip:$config_path\n" 2>&1  | tee -a transfer.log
 				fi
 
 				# Send a copy of dmesg

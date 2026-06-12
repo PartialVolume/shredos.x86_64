@@ -187,9 +187,8 @@ else
                 fi
         fi
     fi
-    # If mode 0 (read USB flash drive), read the /etc/nwipe/nwipe.conf and /etc/nwipe/customers.csv files from
-    # the USB flash drive into the ShredOS RAM disc
-    #
+    # If mode 0 (read USB flash drive), read the /etc/nwipe/nwipe.conf, /etc/nwipe/customers.csv
+    # and /etc/nwipe/logo.jpg files from the USB flash drive into the ShredOS RAM disc.
     #
     # Check that the /etc/nwipe directory exists on the ShredOS ram drive, if not create it.
     test -d "/etc/nwipe"
@@ -226,6 +225,19 @@ else
                 printf "[`date "$date_format"`] archive_log.sh: FAILED to copy $drive_partition:/etc/nwipe/nwipe_customers.csv to /etc/nwipe/nwipe_customers.csv\n" 2>&1 | tee -a transfer.log
             else
                 printf "[`date "$date_format"`] archive_log.sh: Copied $drive_partition:/etc/nwipe/nwipe_customers.csv to /etc/nwipe/nwipe_customers.csv\n" 2>&1 | tee -a transfer.log
+            fi
+        fi
+
+        # Copy /etc/nwipe/logo.jpg from USB to ShredOS's ram disc
+        test -f "$archive_drive_directory/etc/nwipe/logo.jpg"
+        if [ $? == 0 ]
+        then
+            # Copy nwipe.conf from USB flash to ShredOS ram disc
+            cp "$archive_drive_directory/etc/nwipe/logo.jpg" /etc/nwipe/logo.jpg
+            if [ $? != 0 ]; then
+                printf "[`date "$date_format"`] archive_log.sh: FAILED to copy $drive_partition:/etc/nwipe/logo.jpg to /etc/nwipe/logo.jpg\n" 2>&1 | tee -a transfer.log
+            else
+                printf "[`date "$date_format"`] archive_log.sh: Copied $drive_partition:/etc/nwipe/logo.jpg to /etc/nwipe/logo.jpg\n" 2>&1 | tee -a transfer.log
             fi
         fi
     fi
