@@ -44,6 +44,11 @@ By default, ShredOS is configured to automatically generate an erasure certifica
 - Per-Drive Certificates: Generates an individual multipage PDF report for every single drive erased showing full erasure details and the drives smart data. No host information is normally provided on this certificate, just data related to the drive.
 - System-Focused Certificate: Consolidates the erasure data for the entire machine into a single, multi-page PDF. The first section provides erasure details of every selected drive, the next section provides host details such as host UUID and serial numbers, tags, SMBIOS data, while subsequent pages detail full SMART data logs for every HDD, SSD, or NVMe drive processed.
 
+**How to replace the default logo on the PDF certificates of erasure**
+If you want to replace the ShredOS/nwipe logo located on the top left of every PDF page with your own logo, create a JPEG image called logo.jpg. It should be between 256x256 and 1024x1024 resolution with a 1:1 aspect ratio. A 256x256 image has sufficient resolution to look reasonably sharp while keeping the logo file size as small as possible. The file should be about 30–50 KiB.
+
+If it doesn't already exist, create a directory on the USB stick named /etc/nwipe/ and copy your logo.jpg file into it. If you have set up ShredOS to boot via PXE, or to obtain nwipe.conf and nwipe_customers.csv files from a TFTP/FTP server, you can also place your logo.jpg in the same directory on your remote server as nwipe.conf and nwipe_customers.csv.
+
 #### Below: Example of ShredOS's (Nwipe) multi page PDF certificate.
 The first page of the disk focused PDF certificate contains details of the erasure and whether it was successfully erased, failed due to drive errors, or partially erased due to HPA/DCO hidden sectors. Pages two and three contain the drives smart data.
 ![Example Certificate](/images/PDF_certificate_example.gif)
