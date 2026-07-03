@@ -1,109 +1,150 @@
-<!-- ShredOS LOGO -->
-<br />
-<p align="left">
-  <a href="https://github.com/PartialVolume/shredos.x86_64/">
-    <img src="images/shred_db.png" alt="Logo" width="160" height="160">
+<p align="center">
+  <a href="https://github.com/PartialVolume/shredos.x86_64">
+    <img src="images/shred_db.png" alt="ShredOS logo" width="136">
   </a>
 </p>
-	<p align="left">
-	<a href="https://www.buymeacoffee.com/Shredos" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" "height="60" width="217"></a>
-		</p>
+
+# ShredOS
+
+<p align="center">
+  A small bootable OS for securely erasing disks with <a href="https://github.com/martijnvanbrummelen/nwipe">nwipe</a> on x86 PCs, servers, and Intel-based Macs.
 </p>
 
-# ShredOS x86_64 - Disk Eraser
+<p align="center">
+  <a href="https://github.com/PartialVolume/shredos.x86_64/releases/latest"><img alt="Latest release" src="https://img.shields.io/github/v/release/PartialVolume/shredos.x86_64?label=release"></a>
+  <a href="https://github.com/PartialVolume/shredos.x86_64/releases"><img alt="Total downloads" src="https://img.shields.io/github/downloads/PartialVolume/shredos.x86_64/total?label=downloads"></a>
+  <a href="https://www.buymeacoffee.com/Shredos"><img alt="Support ShredOS" src="https://img.shields.io/badge/support-Buy%20Me%20a%20Coffee-yellow"></a>
+</p>
 
-## For PCs, Servers and Macs with Intel and AMD 64 & 32 bit processors
+> [!WARNING]
+> ShredOS is built to irreversibly erase data. Double-check every selected drive before starting a wipe, especially on systems with multiple internal, external, or USB-attached disks.
 
-#### As well as a 64bit versions, also included are 32bit .img & .iso images of ShredOS that will run on both 32bit and 64bit processors, see [Release Assets](https://github.com/PartialVolume/shredos.x86_64/releases) and the table of download links below. For those that wish to build their own ShredOS from source, rather than just burn the .img/.iso images, follow the build instructions and make use of the supplied build configurations. Please note the additional information provided to run ShredOS on Apple systems. 
-		
-#### For those that just want to get on with using ShredOS, you can download the pre-built .img or .iso images and burn them straight to USB flash drive or CD/DVD. Boot from the USB flash drive or CD/DVD and nwipe will appear ready for you to select your preferred wipe options.
-[![GitHub all releases](https://img.shields.io/github/downloads/PartialVolume/shredos.x86_64/total?label=Total%20downloads%20x86_64%20all%20releases,%2064%20and%2032bit%20code,%20.iso%20and%20.img%20&style=plastic)](https://github.com/PartialVolume/shredos.x86_64/releases)
+## Start Here
 
-### ShredOS version v2025.11_30_x86-64_0.41 [(Latest release - Release notes and downloads)](https://github.com/PartialVolume/shredos.x86_64/releases)
+| Need | Go to |
+| --- | --- |
+| Download a ready-to-use image | [Latest release](https://github.com/PartialVolume/shredos.x86_64/releases/latest) |
+| See every stable and pre-release build | [All releases](https://github.com/PartialVolume/shredos.x86_64/releases) |
+| Write ShredOS to USB, CD/DVD, or Ventoy | [Install media guide](#obtaining-and-writing-shredos-to-a-usb-flash-drive-the-easy-way) |
+| Configure nwipe, certificates, keyboard, display, or headless use | [Documentation map](#documentation-map) |
+| Build ShredOS from source | [Build from source](#build-from-source) |
 
-## Download the Latest ShredOS .img and .iso files for burning to USB flash drives and CD-R/DVD-R.
+ShredOS boots straight into nwipe's interactive interface. Choose the disks, choose the erasure method, review the selection, and start the wipe. It can also be configured for unattended `autonuke` workflows, PXE booting, custom scripts, persistent options, and PDF erasure certificates.
 
-NOTE! There may be pre-release versions that are newer than the latest versions listed below, To see all versions, [pre-release & latest](https://github.com/PartialVolume/shredos.x86_64/releases) The latest versions contain a full set of .img & .iso images in 32bit & 64bit while the pre-releases generally only contain a 64bit .img. Which should you use? Well, unless you need either 32 bit images or .iso images I would tend to download the very latest pre-release. Even the pre-releases are subjected to a fair amount of testing before they become a pre-release.
+<a id="download-img-and-iso-files-for-burning-to-usb-flash-drives-and-cd-rdvd-r"></a>
 
-### For all releases including latest and more recent pre-releases [releases](https://github.com/PartialVolume/shredos.x86_64/releases)
+## Download ShredOS
 
-Note for versions **after** _v2024.11_27_x86-64_0.38_: The .img files for burning to USB flash drives support both BIOS/UEFI booting, as well as saving of generated PDF reports to the USB flash drive. The .iso image also supports both BIOS/UEFI booting, burning to USB flash drives and CD/DVD-ROM and if you use the `partition-plus` iso, saving of generated PDF reports to the USB flash drive. Use the .img file whenever planning to customize ShredOS (`autonuke` setups, kernel parameters, ...). The .img file also allows direct interaction with the filesystem and modification of the GRUB boot menu, e.g. appending of kernel parameters, which the .iso file does not support due to filesystem constraints.
+The release page is the source of truth for current downloads, checksums, release notes, and pre-release builds.
 
-Note for versions **until** _v2024.11_27_x86-64_0.38_: The .img files for burning to USB flash drives support both BIOS/UEFI booting. The .iso image supports legacy BIOS booting only and not UEFI, however, a BIOS/UEFI version of the .iso is available in newer ShredOS versions.
-You can also consider [Ventoy (Open Source tool to create bootable USB drive for ISO/WIM/IMG/VHD(x)/EFI files)](https://github.com/ventoy/Ventoy) as a workaround to avoid BIOS/UEFI issues.
-		
-#### Demo video below: ShredOS automatically displays Nwipe's interactive GUI at boot.
-You can then select one or more drives to be erased, wipe method or pattern to be used, number of rounds, whether a zeros blanking pass is applied, verification options such as last pass, all passes or no verification. ShredOS and nwipe are highly configurable so if you prefer to run nwipe without a GUI then you can configure nwipe by applying nwipe options to the linux command line in grub.cfg on the USB flash drive.
+| Image | Use it for |
+| --- | --- |
+| `.img` | USB flash drives, persistent boot-media customization, GRUB edits, kernel parameters, and `autonuke` setups. Modern `.img` releases support BIOS and UEFI booting and can save generated PDF reports back to the USB drive. |
+| `.iso` | CD/DVD media, Ventoy, virtual machines, and USB-writing tools that prefer ISO input. Modern ISO releases support BIOS and UEFI booting. |
+| `partition-plus` ISO | ISO workflows that also need a writable partition for PDF reports or configuration. |
+
+Pre-releases may be newer than the latest stable release. Stable releases usually include the full set of 64-bit and 32-bit `.img` and `.iso` assets; pre-releases may contain fewer image formats.
+
+## Quick Start
+
+1. Download an image from [the latest release](https://github.com/PartialVolume/shredos.x86_64/releases/latest).
+2. Verify the checksum listed in the release notes.
+3. Write the image to boot media.
+
+For Linux:
+
+```sh
+sudo dd if=shredos.img of=/dev/sdX bs=4M status=progress conv=fsync
+```
+
+Replace `/dev/sdX` with the actual USB device, not a partition such as `/dev/sdX1`.
+
+For macOS, identify and unmount the USB device with `diskutil list` and `diskutil unmountDisk /dev/diskN`, then write to the raw disk device:
+
+```sh
+sudo dd if=shredos.img of=/dev/rdiskN bs=4m
+sync
+```
+
+For Windows, use [Rufus](https://rufus.ie/) or [Etcher](https://etcher.balena.io/). For Ventoy, copy the `.img` or `.iso` file to the Ventoy drive and select it from the Ventoy boot menu.
+
+4. Boot the target machine from the media.
+5. Review the drives detected by nwipe, choose the wipe options, and start only when the selection is correct.
+
+## Boot Experience
+
+ShredOS starts nwipe automatically. From there you can select one or more drives, choose a wipe method or pattern, set rounds and verification, and decide whether to apply a final blanking pass.
 
 ![Example wipe](/images/example_wipe.gif)
 
-#### ShredOS Certificate Generation & Configuration
-By default, ShredOS is configured to automatically generate an erasure certificate. Depending on your auditing requirements, you can choose between individual drive certificates or the new system-focused PDF certificate.
+## Features
 
-**Certificate Types**
-- Per-Drive Certificates: Generates an individual multipage PDF report for every single drive erased showing full erasure details and the drives smart data. No host information is normally provided on this certificate, just data related to the drive.
-- System-Focused Certificate: Consolidates the erasure data for the entire machine into a single, multi-page PDF. The first section provides erasure details of every selected drive, the next section provides host details such as host UUID and serial numbers, tags, SMBIOS data, while subsequent pages detail full SMART data logs for every HDD, SSD, or NVMe drive processed.
+- Boots on x86 PCs, servers, and Intel-based Macs with BIOS or UEFI.
+- Provides 64-bit and selected 32-bit builds.
+- Starts directly in nwipe's interactive GUI.
+- Supports multiple erasure methods and pseudo-random generators.
+- Generates PDF erasure certificates and log files.
+- Includes disk tools such as `smartmontools`, `hdparm`, `nvme-cli`, `sg3_utils`, `hexedit`, and `parallel`.
+- Supports persistent configuration, custom scripts, PXE booting, and controlled headless operation on trusted networks.
 
-**How to replace the default logo on the PDF certificates of erasure**
-If you want to replace the ShredOS/nwipe logo located on the top left of every PDF page with your own logo, create a JPEG image called logo.jpg. It should be between 256x256 and 1024x1024 resolution with a 1:1 aspect ratio. A 256x256 image has sufficient resolution to look reasonably sharp while keeping the logo file size as small as possible. The file should be about 30–50 KiB.
+## Certificates
 
-If it doesn't already exist, create a directory on the USB stick named /etc/nwipe/ and copy your logo.jpg file into it. If you have set up ShredOS to boot via PXE, or to obtain nwipe.conf and nwipe_customers.csv files from a TFTP/FTP server, you can also place your logo.jpg in the same directory on your remote server as nwipe.conf and nwipe_customers.csv.
+ShredOS can automatically generate PDF erasure certificates. Depending on your audit workflow, you can use per-drive certificates or a system-focused certificate.
 
-#### Below: Example of ShredOS's (Nwipe) multi page PDF certificate.
-The first page of the disk focused PDF certificate contains details of the erasure and whether it was successfully erased, failed due to drive errors, or partially erased due to HPA/DCO hidden sectors. Pages two and three contain the drives smart data.
-![Example Certificate](/images/PDF_certificate_example.gif)
+| Certificate | Contents |
+| --- | --- |
+| Per-drive | One multi-page PDF per erased drive with erasure details and SMART data. |
+| System-focused | One multi-page PDF for the whole machine, including selected drive results, host identifiers, tags, SMBIOS data, and SMART data for each processed HDD, SSD, or NVMe drive. |
 
-1. [What is ShredOS?](#what-is-shredos)
-1. [What do I do after I've erased everything on my disk? What is actually erased?](#what-do-i-do-after-ive-erased-everything-on-my-disk-what-is-actually-erased)
-1. [Nwipe's erasure methods](#nwipes-erasure-methods)
-1. [Obtaining and writing ShredOS to a USB flash drive - The easy way!](#obtaining-and-writing-shredos-to-a-usb-flash-drive-the-easy-way)
-   1. [Linux and Mac users](#linux-and-mac-users)
-   1. [Windows users](#windows-users)
-   1. [Multi OS with Ventoy](#multi-os-with-ventoy)
-   1. [How to edit the ShredOS /EFI/BOOT/grub.cfg and boot/grub.cfg files when using Ventoy with ShredOS .img files](#how-to-edit-the-shredos-efibootgrubcfg-and-bootgrubgrubcfg-files-when-using-ventoy-with-shredos-img-files)
-1. [A word about the MacBook Pro](#a-word-about-the-mac-book-pro)
-1. [Having trouble with USB adapters not working/hanging, want to buy one that works properly!](https://github.com/PartialVolume/shredos.x86_64/discussions/128#discussion-4906723)
-1. [Virtual terminals](#virtual-terminals)
-1. [How to exclude the fat formatted shredos boot drive from nwipe interactive and autonuke modes](https://github.com/PartialVolume/shredos.x86_64?tab=readme-ov-file#how-to-exclude-the-fat-formatted-shredos-boot-drive-from-nwipe-interactive-and-autonuke-modes)
-1. [How to run nwipe so you can specify nwipe command line options](#how-to-run-nwipe-so-you-can-specify-nwipe-command-line-options)
-1. [How to change the default nwipe options so the change persists between reboots](#how-to-change-the-default-nwipe-options-so-the-change-persists-between-reboots)
-1. [How to set the keyboard map using the loadkeys command (see here for persistent change between reboots](#how-to-set-the-keyboard-map-using-the-loadkeys-command-see-here-for-persistent-change-between-reboots)
-1. [How to make a persistent change to keyboard maps](#how-to-make-a-persistent-change-to-keyboard-maps)
-1. [Saving nwipes PDF certificates and log files to USB ftp or tftp servers](#saving-nwipes-pdf-certificates-and-log-files-to-USB-ftp-or-tftp-servers)
-   1. [Transferring nwipe log files to a USB storage device](#transferring-nwipe-log-files-to-a-usb-storage-device)
-   1. [Transferring nwipe log files to a ftp server using lftp](#transferring-nwipe-log-files-to-a-ftp-server-using-lftp)
-1. [Fetch and run custom scripts before and after wiping](#fetch-and-run-custom-scripts-before-and-after-wiping)
-1. [How to wipe drives on headless systems or systems with faulty display hardware. (For use on secure LANs only)](#how-to-wipe-drives-on-headless-systems-or-systems-with-faulty-display-hardware-for-use-on-secure-lans-only)
-1. [Nwipe's font size is too small, How to double the size of the text](#nwipes-font-size-is-too-small-how-to-double-the-size-of-the-text)
-1. [Included Packages](#Included-Packages)
-   1. [smartmontools](#smartmontools)
-   1. [hdparm](#hdparm)
-   1. [hexedit](#hexedit)
-   1. [nvme-cli](#hdparm)
-   1. [sg3_utils](#sg3_utils)
-   1. [parallel](#parallel)
-1. [Wipe SSD and NVME using hdparm and nvme-cli](#wipe-ssd-and-nvme-using-hdparm-and-nvme-cli)
-   1. [Wipe SSD](#wipe-ssd)
-   1. [Wipe NVMe](#wipe-nvme)
-1. [Compiling shredos and burning to USB stick, the harder way!](#compiling-shredos-and-burning-to-usb-stick-the-harder-way-)
-   1. [Install the following prerequisite software first. Without this software, the make command will fail](https://github.com/PartialVolume/shredos.x86_64/blob/master/README.md#install-the-following-prerequisite-software-first-without-this-software-the-make-command-will-fail)
-   1. [Download the ShredOS source using the git command and build ShredOS](https://github.com/PartialVolume/shredos.x86_64/blob/master/README.md#download-the-shredos-source-using-the-git-command-and-build-shredos)
-   1. [Commands to configure buildroot, you will only need to use these if you are making changes to ShredOS](https://github.com/PartialVolume/shredos.x86_64/blob/master/README.md#commands-to-configure-buildroot-you-will-only-need-to-use-these-if-you-are-making-changes-to-shredos)
-1. [Important ShredOS files and folders when building from source](https://github.com/PartialVolume/shredos.x86_64/blob/master/README.md#important-shredos-files-and-folders-when-building-from-source)
-	1. [../board/shredos/doimg.sh](https://github.com/PartialVolume/shredos.x86_64/blob/master/README.md#boardshredosdoimgsh)
-	1. [../board/shredos/version.txt](https://github.com/PartialVolume/shredos.x86_64/blob/master/README.md#boardshredosversiontxt)
-	1. [../board/shredos/fsoverlay/](https://github.com/PartialVolume/shredos.x86_64/blob/master/README.md#boardshredosfsoverlay)
-	1. [../board/shredos/fsoverlay/etc/init.d/S40network](https://github.com/PartialVolume/shredos.x86_64/blob/master/README.md#boardshredosfsoverlayetcinitds40network)
-	1. [../board/shredos/fsoverlay/usr/bin/nwipe_launcher](https://github.com/PartialVolume/shredos.x86_64/blob/master/README.md#boardshredosfsoverlayusrbinnwipe_launcher)
-	1. [../package/nwipe/](#packagenwipe)
-	1. [../package/nwipe/nwipe.mk](#packagenwipenwipemk)
-	1. [../package/nwipe/nwipe.hash](#packagenwipenwipehash)
-	1. [../package/nwipe/Config.in](#packagenwipeconfigin)
-	1. [../package/nwipe/002-nwipe-banner-patch.sh](#packagenwipe002-nwipe-banner-patchsh)
- 1. [Troubleshooting](#Troubleshooting)
- 	1. [Small Font Size and Inteface](#Small-Font-Size-and-Interface)
-  	1. [Disks with Non-Standard Blocksizes](#Drives-with-Non-Standard-Blocksizes)
-   	1. [Disks with Integrity Protection](#Drives-with-Integrity-Protection)
+To use your own certificate logo, place a square JPEG named `logo.jpg` in `/etc/nwipe/` on the ShredOS USB drive. A 256x256 to 1024x1024 image with a 1:1 aspect ratio is recommended. PXE or remote-configuration setups can place the same file beside `nwipe.conf` and `nwipe_customers.csv`.
+
+![Example certificate](/images/PDF_certificate_example.gif)
+
+## Build From Source
+
+ShredOS is built with Buildroot. For a standard 64-bit image:
+
+```sh
+git clone https://github.com/PartialVolume/shredos.x86_64.git
+cd shredos.x86_64
+make shredos_defconfig
+make
+ls output/images/shredos*
+```
+
+Available build configurations include:
+
+| Target | Description |
+| --- | --- |
+| `make shredos_defconfig` | USB image and hybrid ISO, 64-bit |
+| `make shredos_lite_defconfig` | Lighter USB image and hybrid ISO, 64-bit |
+| `make shredos_i686_lite_defconfig` | Lighter USB image and hybrid ISO, 32-bit |
+| `make shredos_iso_extra_defconfig` | Experimental hybrid ISO with appended writable partition, 64-bit |
+| `make shredos_iso_extra_i686_lite_defconfig` | Experimental lighter hybrid ISO with appended writable partition, 32-bit |
+
+See [Compiling ShredOS and burning to USB stick, the harder way](#compiling-shredos-and-burning-to-usb-stick-the-harder-way-) for dependencies, multi-target builds, and troubleshooting.
+
+## Documentation Map
+
+| Topic | Link |
+| --- | --- |
+| Project overview | [What is ShredOS?](#what-is-shredos) |
+| What gets erased | [What do I do after I have erased everything?](#what-do-i-do-after-ive-erased-everything-on-my-disk-what-is-actually-erased) |
+| Erasure methods | [Nwipe's erasure methods](#nwipes-erasure-methods) |
+| Writing boot media | [Obtaining and writing ShredOS](#obtaining-and-writing-shredos-to-a-usb-flash-drive-the-easy-way) |
+| Ventoy image editing | [Edit GRUB files when using Ventoy](#how-to-edit-the-shredos-efibootgrubcfg-and-bootgrubgrubcfg-files-when-using-ventoy-with-shredos-img-files) |
+| Apple Intel systems | [Information for Intel powered Apple devices](#informations-for-intel-powered-apple-devices) |
+| Virtual terminals | [Virtual Terminals](#virtual-terminals) |
+| Persistent nwipe options | [Change default nwipe options](#how-to-change-the-default-nwipe-options-so-the-change-persists-between-reboots) |
+| Keyboard layout | [Persistent keyboard maps](#how-to-make-a-persistent-change-to-keyboard-maps) |
+| Certificates and logs | [Saving certificates and log files](#saving-nwipes-pdf-certificates-and-log-files-to-usb-ftp-or-tftp-servers) |
+| Custom automation | [Fetch and run custom scripts](#fetch-and-run-custom-scripts-before-and-after-wiping) |
+| Headless systems | [Headless wiping](#how-to-wipe-drives-on-headless-systems-or-systems-with-faulty-display-hardware-for-use-on-secure-lans-only) |
+| Fonts and display scaling | [Double the text size](#nwipes-font-size-is-too-small-how-to-double-the-size-of-the-text) |
+| Included tools | [Included Packages](#included-packages) |
+| SSD and NVMe firmware erase | [Wipe SSD and NVMe using hdparm and nvme-cli](#wipe-ssd-and-nvme-using-hdparm-and-nvme-cli) |
+| Source build internals | [Important ShredOS files and folders](#important-shredos-files-and-folders-when-building-shredos-from-source) |
+| Troubleshooting | [Troubleshooting](#troubleshooting) |
 
 ## What is ShredOS?
 ShredOS is a USB bootable (BIOS or UEFI) small linux distribution with the sole purpose of securely erasing the entire contents of your
