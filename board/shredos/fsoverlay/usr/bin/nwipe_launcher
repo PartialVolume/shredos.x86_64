@@ -116,6 +116,18 @@ else
 	then
 		drive=$(cat /boot_device.txt)
 	fi
+
+	# Has the user requested to double the font size at boot?
+	# e.g. does the empty file /etc/nwipe/double_font_size exist
+	# on the boot device (USB stick).
+	mkdir -p /font_check
+	if mount "$drive_partition" /font_check 2>/dev/null; then
+		if [ -f /font_check/etc/nwipe/double_font_size ]; then
+			setfont -d
+		fi
+		umount /font_check
+	fi
+	rmdir /font_check 2>/dev/null
 fi
 
 # Has shredos_exclude_boot_disc="yes" been placed on the kernel command line?
