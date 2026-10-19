@@ -22,6 +22,7 @@ sole::respawn:/sbin/getty -L  console 0 vt100 # GENERIC_SERIAL
 2:3:respawn:/sbin/getty 38400 tty2 -n -l /bin/sh
 # tty3 is reserved for the regular console
 4:3:respawn:/sbin/getty 38400 tty4 -n -l /usr/bin/smartdmt_launcher
+5:3:respawn:/sbin/getty 38400 tty5 -n -l /usr/bin/shredos_hexviewer
 
 # Stuff to do for the 3-finger salute
 #ca::ctrlaltdel:/sbin/reboot

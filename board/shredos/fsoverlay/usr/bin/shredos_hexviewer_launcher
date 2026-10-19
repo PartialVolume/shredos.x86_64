@@ -1,0 +1,18 @@
+#!/bin/sh
+trap "echo" INT
+
+sleep 2
+if [ -x /usr/bin/shredos_hexviewer ]; then
+    while true; do
+        /usr/bin/shredos_hexviewer
+        echo "Press ENTER to restart shredos_hexviewer Terminal..."
+        read dummy
+        clear
+    done
+else
+    while true; do
+        echo "shredos_hexviewer Terminal is not available in this version of ShredOS."
+        read dummy
+        clear
+    done
+fi
