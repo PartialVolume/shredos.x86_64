@@ -7,11 +7,11 @@ config BR2_PACKAGE_SHREDOS_HEXVIEWER
 	  https://github.com/PartialVolume/shredos_hexviewer
 
 config BR2_PACKAGE_SHREDOS_HEXVIEWER_GIT_REVISION
-	string "Git revision (full commit SHA-1 or tag v1.7 ..)"
+	string "Git revision (full commit SHA-1 or tag v1.8 ..)"
 	depends on BR2_PACKAGE_SHREDOS_HEXVIEWER
-	default "v1.7"
+	default "v1.8"
 	help
 	  When 'Git revision' is selected above, this string is passed as the
 	  Git ref to check out. Examples:
 	    - 051e1aa0c9572b26301a33d40689adb544927d11 (full commit SHA-1)
-	    - v1.7 (tag)
+	    - v1.8 (tag)
