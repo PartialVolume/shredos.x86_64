@@ -16,6 +16,13 @@
   <a href="https://www.buymeacoffee.com/Shredos"><img alt="Support ShredOS" src="https://img.shields.io/badge/support-Buy%20Me%20a%20Coffee-yellow"></a>
 </p>
 
+> [!IMPORTANT]
+> **Official ShredOS Websites**
+>
+> As of **21 November 2026**, **[https://shredos.com](https://shredos.com)** is the new official ShredOS website, alongside our official source code and release repository at **[https://github.com/PartialVolume/shredos.x86_64](https://github.com/PartialVolume/shredos.x86_64)**.
+>
+> These are the **only** official homes of ShredOS. Be cautious of unofficial third-party lookalike sites (such as `shredos.net`) that serve ads or unverified downloads—always obtain official images and SHA256 checksums directly from our GitHub Releases page.
+
 > [!WARNING]
 > ShredOS is built to irreversibly erase data. Double-check every selected drive before starting a wipe, especially on systems with multiple internal, external, or USB-attached disks.
 
